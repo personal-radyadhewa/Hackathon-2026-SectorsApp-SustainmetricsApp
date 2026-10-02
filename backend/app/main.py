@@ -7,13 +7,16 @@ from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 
 from app.core.config import settings
 from app.api.routes import router as api_router
+import asyncio
 from app.services.scheduler import start_scheduler, stop_scheduler
+from app.services.seeder import seed_initial_demo_data
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: Start background cron engine
+    # Startup: Start background cron engine and pre-populate demo emitents
     start_scheduler()
+    asyncio.create_task(seed_initial_demo_data())
     yield
     # Shutdown: Stop scheduler
     stop_scheduler()
