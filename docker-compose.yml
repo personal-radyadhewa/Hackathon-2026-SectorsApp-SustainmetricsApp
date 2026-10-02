@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    container_name: sustainmetric-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: sustainmetric
+      POSTGRES_PASSWORD: sustainmetric_secret
+      POSTGRES_DB: sustainmetric_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
