@@ -124,7 +124,7 @@
       {#if selectedSpan}
         <div class="space-y-3 text-xs">
           <div>
-            <label class="text-[10px] uppercase font-semibold text-slate-500 block mb-0.5">Span Name</label>
+            <span class="text-[10px] uppercase font-semibold text-slate-500 block mb-0.5">Span Name</span>
             <div class="p-2 rounded bg-[#0A101F] border border-[#1A253D] font-mono text-emerald-400 font-bold">
               {selectedSpan.name}
             </div>
@@ -132,13 +132,13 @@
 
           <div class="grid grid-cols-2 gap-2">
             <div>
-              <label class="text-[10px] uppercase font-semibold text-slate-500 block mb-0.5">Latency</label>
+              <span class="text-[10px] uppercase font-semibold text-slate-500 block mb-0.5">Latency</span>
               <div class="p-2 rounded bg-[#0A101F] border border-[#1A253D] font-mono text-slate-200">
                 {selectedSpan.duration_ms.toFixed(2)} ms
               </div>
             </div>
             <div>
-              <label class="text-[10px] uppercase font-semibold text-slate-500 block mb-0.5">Service</label>
+              <span class="text-[10px] uppercase font-semibold text-slate-500 block mb-0.5">Service</span>
               <div class="p-2 rounded bg-[#0A101F] border border-[#1A253D] font-mono text-slate-200">
                 {selectedSpan.service_name}
               </div>
@@ -146,7 +146,7 @@
           </div>
 
           <div>
-            <label class="text-[10px] uppercase font-semibold text-slate-500 block mb-0.5">Trace Context</label>
+            <span class="text-[10px] uppercase font-semibold text-slate-500 block mb-0.5">Trace Context</span>
             <div class="p-2 rounded bg-[#0A101F] border border-[#1A253D] font-mono text-[10px] text-slate-300 space-y-1">
               <div>Trace ID: <span class="text-slate-400">{selectedSpan.trace_id}</span></div>
               <div>Span ID: <span class="text-slate-400">{selectedSpan.span_id}</span></div>
@@ -155,7 +155,7 @@
           </div>
 
           <div>
-            <label class="text-[10px] uppercase font-semibold text-slate-500 block mb-0.5">Recorded Attributes (Metadata)</label>
+            <span class="text-[10px] uppercase font-semibold text-slate-500 block mb-0.5">Recorded Attributes (Metadata)</span>
             <div class="p-2.5 rounded bg-[#0A101F] border border-[#1A253D] font-mono text-[11px] text-slate-300 max-h-48 overflow-y-auto">
               {#if selectedSpan.attributes && Object.keys(selectedSpan.attributes).length > 0}
                 <ul class="space-y-1">

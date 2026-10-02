@@ -10,7 +10,7 @@
   let messages = $state([
     {
       role: 'assistant',
-      content: `Hello! I'm your **SustainMetric AI Copilot**. I have real-time access to the FastMCP server, OJK TKBI 2024 technical taxonomy rules, and Sectors fundamental financials. Ask me anything about **${activeTicker}** or type another ticker to inspect.`,
+      content: `Hello! I'm your **SustainMetric AI Copilot**. I have real-time access to the FastMCP server, OJK TKBI 2024 technical taxonomy rules, and Sectors fundamental financials. Ask me anything about IDX tickers or technical criteria.`,
     },
   ]);
 
@@ -142,8 +142,9 @@
     {#if showKeySettings}
       <div class="p-3 bg-[#131B30] border-b border-[#1E293B] text-xs space-y-2">
         <div class="flex items-center justify-between">
-          <label class="text-[10px] uppercase font-semibold text-slate-400">Provider</label>
+          <label for="copilot-provider" class="text-[10px] uppercase font-semibold text-slate-400">Provider</label>
           <select
+            id="copilot-provider"
             bind:value={provider}
             class="bg-[#0B101E] border border-[#1E293B] rounded px-2 py-1 text-slate-200 text-xs focus:outline-none"
           >
@@ -154,8 +155,9 @@
         </div>
 
         <div>
-          <label class="text-[10px] uppercase font-semibold text-slate-400 block mb-1">API Key (Optional / Offline Default)</label>
+          <label for="copilot-apikey" class="text-[10px] uppercase font-semibold text-slate-400 block mb-1">API Key (Optional / Offline Default)</label>
           <input
+            id="copilot-apikey"
             type="password"
             bind:value={apiKey}
             placeholder="AIzaSy... / sk-..."

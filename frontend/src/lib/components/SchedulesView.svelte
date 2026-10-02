@@ -177,21 +177,18 @@
 
   <!-- Create Schedule Modal -->
   {#if showModal}
+    <!-- Backdrop -->
     <div
       class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4"
-      onclick={() => (showModal = false)}
-      onkeydown={(e) => e.key === 'Escape' && (showModal = false)}
-      role="button"
-      tabindex="0"
     >
       <div
-        class="bg-[#0C1222] border border-[#1E293B] rounded-xl max-w-md w-full p-5 shadow-2xl text-xs space-y-4"
-        onclick={(e) => e.stopPropagation()}
-        onkeydown={(e) => e.stopPropagation()}
-        role="region"
+        class="bg-[#0C1222] border border-[#1E293B] rounded-xl max-w-md w-full p-5 shadow-2xl text-xs space-y-4 relative z-10"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
       >
         <div class="flex items-center justify-between border-b border-[#1E293B] pb-3">
-          <h3 class="text-sm font-bold text-slate-100 flex items-center gap-2">
+          <h3 id="modal-title" class="text-sm font-bold text-slate-100 flex items-center gap-2">
             <Clock size={16} class="text-emerald-400" />
             <span>Create Recurring Green Audit Schedule</span>
           </h3>
@@ -206,8 +203,9 @@
 
         <form onsubmit={handleCreate} class="space-y-3.5">
           <div>
-            <label class="text-[10px] uppercase font-semibold text-slate-400 block mb-1">Schedule Name</label>
+            <label for="sched-name" class="text-[10px] uppercase font-semibold text-slate-400 block mb-1">Schedule Name</label>
             <input
+              id="sched-name"
               type="text"
               bind:value={name}
               placeholder="e.g. Weekly Geothermal Audit"
@@ -217,8 +215,9 @@
           </div>
 
           <div>
-            <label class="text-[10px] uppercase font-semibold text-slate-400 block mb-1">Target Emitents (Comma-separated)</label>
+            <label for="sched-tickers" class="text-[10px] uppercase font-semibold text-slate-400 block mb-1">Target Emitents (Comma-separated)</label>
             <input
+              id="sched-tickers"
               type="text"
               bind:value={tickersText}
               placeholder="e.g. PGEO, ADRO, BREN"
@@ -229,7 +228,7 @@
 
           <div>
             <div class="flex items-center justify-between mb-1">
-              <label class="text-[10px] uppercase font-semibold text-slate-400">Cron Expression</label>
+              <label for="sched-cron" class="text-[10px] uppercase font-semibold text-slate-400">Cron Expression</label>
               <div class="flex gap-1 text-[10px] text-slate-400">
                 <button type="button" onclick={() => applyPreset('0 8 * * 1')} class="text-emerald-400 hover:underline">Weekly Mon</button>
                 <span>•</span>
@@ -237,6 +236,7 @@
               </div>
             </div>
             <input
+              id="sched-cron"
               type="text"
               bind:value={cronExpr}
               placeholder="0 8 * * 1"
@@ -246,8 +246,9 @@
           </div>
 
           <div>
-            <label class="text-[10px] uppercase font-semibold text-slate-400 block mb-1">Alert Threshold Score (&lt; Consistency Score)</label>
+            <label for="sched-threshold" class="text-[10px] uppercase font-semibold text-slate-400 block mb-1">Alert Threshold Score (&lt; Consistency Score)</label>
             <input
+              id="sched-threshold"
               type="number"
               bind:value={alertScore}
               min="0"

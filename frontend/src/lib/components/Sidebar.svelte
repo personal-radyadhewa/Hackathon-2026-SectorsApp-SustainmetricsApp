@@ -52,9 +52,9 @@
 
     <!-- Ticker Selection Switcher -->
     <div class="px-4 py-3.5 border-b border-[#1E293B] bg-[#0E1527]/50">
-      <label class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold mb-2 block">
+      <span class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold mb-2 block">
         Active Emitent Ticker
-      </label>
+      </span>
       <div class="grid grid-cols-5 gap-1 mb-2.5">
         {#each predefinedTickers as t}
           <button
