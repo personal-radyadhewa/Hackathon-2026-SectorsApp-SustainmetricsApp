@@ -103,19 +103,19 @@
   ></div>
 
   <!-- Slide-out Drawer -->
-  <aside class="fixed top-0 right-0 w-[420px] max-w-full h-screen bg-white border-l border-slate-200 shadow-2xl z-50 flex flex-col justify-between animate-in slide-in-from-right duration-200">
+  <aside class="fixed top-0 right-0 w-[420px] max-w-full h-screen bg-white dark:bg-[#0E1527] border-l border-slate-200 dark:border-[#1E293B] shadow-2xl z-50 flex flex-col justify-between animate-in slide-in-from-right duration-200">
     <!-- Header -->
-    <div class="px-4 py-3.5 border-b border-slate-200 flex items-center justify-between bg-[#0F162B]">
+    <div class="px-4 py-3.5 border-b border-slate-200 dark:border-[#1E293B] flex items-center justify-between bg-[#0F162B]">
       <div class="flex items-center space-x-2">
         <div class="w-7 h-7 rounded-md bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
           <Bot size={16} />
         </div>
         <div>
-          <h3 class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+          <h3 class="text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
             SustainMetric Copilot
             <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono">FastMCP</span>
           </h3>
-          <p class="text-[10px] text-slate-500">Active context: <span class="font-mono text-emerald-400 font-semibold">{activeTicker}</span></p>
+          <p class="text-[10px] text-slate-500 dark:text-slate-400">Active context: <span class="font-mono text-emerald-400 font-semibold">{activeTicker}</span></p>
         </div>
       </div>
 
@@ -123,7 +123,7 @@
         <button
           type="button"
           onclick={() => (showKeySettings = !showKeySettings)}
-          class="p-1.5 rounded text-slate-500 hover:text-slate-800 hover:bg-slate-200 transition-colors"
+          class="p-1.5 rounded text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:bg-[#1E293B] transition-colors"
           title="LLM Provider Settings"
         >
           <Key size={14} />
@@ -131,7 +131,7 @@
         <button
           type="button"
           onclick={onClose}
-          class="p-1.5 rounded text-slate-500 hover:text-slate-800 hover:bg-slate-200 transition-colors"
+          class="p-1.5 rounded text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:bg-[#1E293B] transition-colors"
         >
           <X size={15} />
         </button>
@@ -140,13 +140,13 @@
 
     <!-- Provider Configuration Panel (Collapsible) -->
     {#if showKeySettings}
-      <div class="p-3 bg-white border-b border-slate-200 text-xs space-y-2">
+      <div class="p-3 bg-white dark:bg-[#0E1527] border-b border-slate-200 dark:border-[#1E293B] text-xs space-y-2">
         <div class="flex items-center justify-between">
-          <label for="copilot-provider" class="text-[10px] uppercase font-semibold text-slate-500">Provider</label>
+          <label for="copilot-provider" class="text-[10px] uppercase font-semibold text-slate-500 dark:text-slate-400">Provider</label>
           <select
             id="copilot-provider"
             bind:value={provider}
-            class="bg-slate-50 border border-slate-200 rounded px-2 py-1 text-slate-800 text-xs focus:outline-none"
+            class="bg-slate-50 dark:bg-[#090E1A] border border-slate-200 dark:border-[#1E293B] rounded px-2 py-1 text-slate-800 dark:text-slate-200 text-xs focus:outline-none"
           >
             <option value="gemini">Google Gemini</option>
             <option value="openai">OpenAI</option>
@@ -155,13 +155,13 @@
         </div>
 
         <div>
-          <label for="copilot-apikey" class="text-[10px] uppercase font-semibold text-slate-500 block mb-1">API Key (Optional / Offline Default)</label>
+          <label for="copilot-apikey" class="text-[10px] uppercase font-semibold text-slate-500 dark:text-slate-400 block mb-1">API Key (Optional / Offline Default)</label>
           <input
             id="copilot-apikey"
             type="password"
             bind:value={apiKey}
             placeholder="AIzaSy... / sk-..."
-            class="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs text-slate-800 focus:outline-none focus:border-emerald-500/50 font-mono"
+            class="w-full bg-slate-50 dark:bg-[#090E1A] border border-slate-200 dark:border-[#1E293B] rounded px-2 py-1 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-emerald-500/50 font-mono"
           />
         </div>
       </div>
@@ -171,13 +171,13 @@
     <div class="flex-1 overflow-y-auto p-4 space-y-3.5">
       {#each messages as msg}
         <div class="flex flex-col {msg.role === 'user' ? 'items-end' : 'items-start'}">
-          <span class="text-[10px] text-slate-400 mb-1 font-mono uppercase">
+          <span class="text-[10px] text-slate-400 dark:text-slate-500 mb-1 font-mono uppercase">
             {msg.role === 'user' ? 'Auditor' : 'Copilot AI'}
           </span>
           <div
             class="max-w-[90%] rounded-lg p-3 text-xs leading-relaxed whitespace-pre-wrap {msg.role === 'user'
               ? 'bg-emerald-600 text-slate-50 font-medium'
-              : 'bg-white border border-slate-200 text-slate-800 shadow-sm'}"
+              : 'bg-white dark:bg-[#0E1527] border border-slate-200 dark:border-[#1E293B] text-slate-800 dark:text-slate-200 shadow-sm'}"
           >
             {msg.content}
           </div>
@@ -193,42 +193,42 @@
     </div>
 
     <!-- Quick Prompts Chips -->
-    <div class="px-3 py-2 border-t border-slate-200 bg-white/40 flex gap-1.5 overflow-x-auto">
+    <div class="px-3 py-2 border-t border-slate-200 dark:border-[#1E293B] bg-white dark:bg-[#0E1527]/40 flex gap-1.5 overflow-x-auto">
       <button
         type="button"
         onclick={() => sendQuickPrompt(`Audit greenwashing flags for ${activeTicker}`)}
-        class="whitespace-nowrap px-2 py-1 bg-slate-100 hover:bg-slate-200 text-[11px] text-slate-700 rounded border border-slate-200 transition-colors"
+        class="whitespace-nowrap px-2 py-1 bg-slate-100 dark:bg-[#151E33] hover:bg-slate-200 dark:bg-[#1E293B] text-[11px] text-slate-700 dark:text-slate-300 rounded border border-slate-200 dark:border-[#1E293B] transition-colors"
       >
         🔍 Greenwashing flags
       </button>
       <button
         type="button"
         onclick={() => sendQuickPrompt(`Compare ${activeTicker} Capex allocation vs disclosures`)}
-        class="whitespace-nowrap px-2 py-1 bg-slate-100 hover:bg-slate-200 text-[11px] text-slate-700 rounded border border-slate-200 transition-colors"
+        class="whitespace-nowrap px-2 py-1 bg-slate-100 dark:bg-[#151E33] hover:bg-slate-200 dark:bg-[#1E293B] text-[11px] text-slate-700 dark:text-slate-300 rounded border border-slate-200 dark:border-[#1E293B] transition-colors"
       >
         💰 Capex Reality Check
       </button>
       <button
         type="button"
         onclick={() => sendQuickPrompt(`Show OJK TKBI TSC threshold for ${activeTicker}`)}
-        class="whitespace-nowrap px-2 py-1 bg-slate-100 hover:bg-slate-200 text-[11px] text-slate-700 rounded border border-slate-200 transition-colors"
+        class="whitespace-nowrap px-2 py-1 bg-slate-100 dark:bg-[#151E33] hover:bg-slate-200 dark:bg-[#1E293B] text-[11px] text-slate-700 dark:text-slate-300 rounded border border-slate-200 dark:border-[#1E293B] transition-colors"
       >
         📋 TKBI Criteria
       </button>
     </div>
 
     <!-- Input Footer -->
-    <form onsubmit={(e) => { e.preventDefault(); handleSend(); }} class="p-3 border-t border-slate-200 bg-[#0F162B] flex gap-2">
+    <form onsubmit={(e) => { e.preventDefault(); handleSend(); }} class="p-3 border-t border-slate-200 dark:border-[#1E293B] bg-[#0F162B] flex gap-2">
       <input
         type="text"
         bind:value={inputQuery}
         placeholder={`Ask Copilot about ${activeTicker} or TKBI criteria...`}
-        class="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 placeholder-slate-500 focus:outline-none focus:border-emerald-500/50"
+        class="flex-1 bg-white dark:bg-[#0E1527] border border-slate-200 dark:border-[#1E293B] rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500/50"
       />
       <button
         type="submit"
         disabled={isStreaming || !inputQuery.trim()}
-        class="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold transition-colors disabled:opacity-40"
+        class="p-2 rounded-lg bg-slate-900 dark:bg-emerald-500 hover:bg-slate-800 dark:hover:bg-emerald-400 text-white dark:text-slate-950 font-bold transition-colors disabled:opacity-40"
       >
         <Send size={15} />
       </button>

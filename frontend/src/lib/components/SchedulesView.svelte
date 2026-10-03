@@ -75,13 +75,13 @@
 
 <div class="space-y-6">
   <!-- Header -->
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-[#0E1527] border border-slate-200 dark:border-[#1E293B] rounded-xl p-5 shadow-sm">
     <div>
-      <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+      <h2 class="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
         <Clock size={18} class="text-emerald-400" />
         <span>Scheduled Audit Jobs & Watchlists</span>
       </h2>
-      <p class="text-xs text-slate-500">
+      <p class="text-xs text-slate-500 dark:text-slate-400">
         Automate recurring background green audits via Python APScheduler daemon.
       </p>
     </div>
@@ -89,7 +89,7 @@
     <button
       type="button"
       onclick={() => (showModal = true)}
-      class="flex items-center space-x-1.5 px-3 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg text-xs transition-colors self-start sm:self-auto shadow-sm"
+      class="flex items-center space-x-1.5 px-3 py-2 bg-slate-900 dark:bg-emerald-500 hover:bg-slate-800 dark:hover:bg-emerald-400 text-white dark:text-slate-950 font-bold rounded-lg text-xs transition-colors self-start sm:self-auto shadow-sm"
     >
       <Plus size={15} />
       <span>New Audit Schedule</span>
@@ -97,15 +97,15 @@
   </div>
 
   <!-- Schedules Grid / Table -->
-  <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+  <div class="bg-white dark:bg-[#0E1527] border border-slate-200 dark:border-[#1E293B] rounded-xl overflow-hidden shadow-sm">
     {#if schedules.length === 0}
-      <div class="text-center py-16 text-slate-400 text-xs">
+      <div class="text-center py-16 text-slate-400 dark:text-slate-500 text-xs">
         No recurring audit schedules configured. Click "New Audit Schedule" to automate your portfolio monitoring.
       </div>
     {:else}
       <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse text-xs">
-          <thead class="bg-slate-100 text-slate-700 font-semibold uppercase tracking-wider text-[10px] border-b border-slate-200">
+          <thead class="bg-slate-100 dark:bg-[#151E33] text-slate-700 dark:text-slate-300 font-semibold uppercase tracking-wider text-[10px] border-b border-slate-200 dark:border-[#1E293B]">
             <tr>
               <th class="py-3 px-4">Schedule Name</th>
               <th class="py-3 px-4">Cron Expression</th>
@@ -116,21 +116,21 @@
               <th class="py-3 px-4 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-[#1A253D] text-slate-700">
+          <tbody class="divide-y divide-[#1A253D] text-slate-700 dark:text-slate-300">
             {#each schedules as job}
-              <tr class="hover:bg-slate-50/60 transition-colors">
-                <td class="py-3 px-4 font-semibold text-slate-900">{job.name}</td>
+              <tr class="hover:bg-slate-50 dark:bg-[#090E1A]/60 transition-colors">
+                <td class="py-3 px-4 font-semibold text-slate-900 dark:text-slate-100">{job.name}</td>
                 <td class="py-3 px-4 font-mono text-emerald-400 font-bold">{job.cron_expression}</td>
                 <td class="py-3 px-4">
                   <div class="flex flex-wrap gap-1">
                     {#each job.tickers as t}
-                      <span class="px-1.5 py-0.5 rounded bg-slate-100 border border-slate-300 font-mono text-[10px] text-slate-800">
+                      <span class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-[#151E33] border border-slate-300 dark:border-[#223154] font-mono text-[10px] text-slate-800 dark:text-slate-200">
                         {t}
                       </span>
                     {/each}
                   </div>
                 </td>
-                <td class="py-3 px-4 font-mono text-slate-500">&lt; {job.alert_threshold_score} pts</td>
+                <td class="py-3 px-4 font-mono text-slate-500 dark:text-slate-400">&lt; {job.alert_threshold_score} pts</td>
                 <td class="py-3 px-4">
                   {#if job.last_status === 'SUCCESS'}
                     <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-mono text-[10px] font-bold">
@@ -141,10 +141,10 @@
                       {job.last_status}
                     </span>
                   {:else}
-                    <span class="text-slate-400 text-[10px] italic">Pending First Run</span>
+                    <span class="text-slate-400 dark:text-slate-500 text-[10px] italic">Pending First Run</span>
                   {/if}
                 </td>
-                <td class="py-3 px-4 font-mono text-slate-500 text-[11px]">
+                <td class="py-3 px-4 font-mono text-slate-500 dark:text-slate-400 text-[11px]">
                   {job.next_run_at ? new Date(job.next_run_at).toLocaleString() : 'Next Poller Interval'}
                 </td>
                 <td class="py-3 px-4 text-right">
@@ -152,7 +152,7 @@
                     <button
                       type="button"
                       onclick={() => handleRunNow(job)}
-                      class="p-1.5 rounded text-slate-500 hover:text-emerald-400 hover:bg-slate-200 transition-colors"
+                      class="p-1.5 rounded text-slate-500 dark:text-slate-400 hover:text-emerald-400 hover:bg-slate-200 dark:bg-[#1E293B] transition-colors"
                       title="Run immediately"
                     >
                       <Play size={13} />
@@ -160,7 +160,7 @@
                     <button
                       type="button"
                       onclick={() => handleDelete(job.id)}
-                      class="p-1.5 rounded text-slate-500 hover:text-rose-400 hover:bg-slate-200 transition-colors"
+                      class="p-1.5 rounded text-slate-500 dark:text-slate-400 hover:text-rose-400 hover:bg-slate-200 dark:bg-[#1E293B] transition-colors"
                       title="Delete schedule"
                     >
                       <Trash2 size={13} />
@@ -182,20 +182,20 @@
       class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4"
     >
       <div
-        class="bg-white border border-slate-200 rounded-xl max-w-md w-full p-5 shadow-2xl text-xs space-y-4 relative z-10"
+        class="bg-white dark:bg-[#0E1527] border border-slate-200 dark:border-[#1E293B] rounded-xl max-w-md w-full p-5 shadow-2xl text-xs space-y-4 relative z-10"
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
       >
-        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-          <h3 id="modal-title" class="text-sm font-bold text-slate-900 flex items-center gap-2">
+        <div class="flex items-center justify-between border-b border-slate-200 dark:border-[#1E293B] pb-3">
+          <h3 id="modal-title" class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
             <Clock size={16} class="text-emerald-400" />
             <span>Create Recurring Green Audit Schedule</span>
           </h3>
           <button
             type="button"
             onclick={() => (showModal = false)}
-            class="text-slate-500 hover:text-slate-800"
+            class="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200"
           >
             ✕
           </button>
@@ -203,33 +203,33 @@
 
         <form onsubmit={handleCreate} class="space-y-3.5">
           <div>
-            <label for="sched-name" class="text-[10px] uppercase font-semibold text-slate-500 block mb-1">Schedule Name</label>
+            <label for="sched-name" class="text-[10px] uppercase font-semibold text-slate-500 dark:text-slate-400 block mb-1">Schedule Name</label>
             <input
               id="sched-name"
               type="text"
               bind:value={name}
               placeholder="e.g. Weekly Geothermal Audit"
               required
-              class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:border-emerald-500/50"
+              class="w-full bg-white dark:bg-[#0E1527] border border-slate-200 dark:border-[#1E293B] rounded-lg px-3 py-2 text-slate-800 dark:text-slate-200 focus:outline-none focus:border-emerald-500/50"
             />
           </div>
 
           <div>
-            <label for="sched-tickers" class="text-[10px] uppercase font-semibold text-slate-500 block mb-1">Target Emitents (Comma-separated)</label>
+            <label for="sched-tickers" class="text-[10px] uppercase font-semibold text-slate-500 dark:text-slate-400 block mb-1">Target Emitents (Comma-separated)</label>
             <input
               id="sched-tickers"
               type="text"
               bind:value={tickersText}
               placeholder="e.g. PGEO, ADRO, BREN"
               required
-              class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-800 font-mono focus:outline-none focus:border-emerald-500/50"
+              class="w-full bg-white dark:bg-[#0E1527] border border-slate-200 dark:border-[#1E293B] rounded-lg px-3 py-2 text-slate-800 dark:text-slate-200 font-mono focus:outline-none focus:border-emerald-500/50"
             />
           </div>
 
           <div>
             <div class="flex items-center justify-between mb-1">
-              <label for="sched-cron" class="text-[10px] uppercase font-semibold text-slate-500">Cron Expression</label>
-              <div class="flex gap-1 text-[10px] text-slate-500">
+              <label for="sched-cron" class="text-[10px] uppercase font-semibold text-slate-500 dark:text-slate-400">Cron Expression</label>
+              <div class="flex gap-1 text-[10px] text-slate-500 dark:text-slate-400">
                 <button type="button" onclick={() => applyPreset('0 8 * * 1')} class="text-emerald-400 hover:underline">Weekly Mon</button>
                 <span>•</span>
                 <button type="button" onclick={() => applyPreset('0 0 * * *')} class="text-emerald-400 hover:underline">Daily</button>
@@ -241,34 +241,34 @@
               bind:value={cronExpr}
               placeholder="0 8 * * 1"
               required
-              class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-800 font-mono focus:outline-none focus:border-emerald-500/50"
+              class="w-full bg-white dark:bg-[#0E1527] border border-slate-200 dark:border-[#1E293B] rounded-lg px-3 py-2 text-slate-800 dark:text-slate-200 font-mono focus:outline-none focus:border-emerald-500/50"
             />
           </div>
 
           <div>
-            <label for="sched-threshold" class="text-[10px] uppercase font-semibold text-slate-500 block mb-1">Alert Threshold Score (&lt; Consistency Score)</label>
+            <label for="sched-threshold" class="text-[10px] uppercase font-semibold text-slate-500 dark:text-slate-400 block mb-1">Alert Threshold Score (&lt; Consistency Score)</label>
             <input
               id="sched-threshold"
               type="number"
               bind:value={alertScore}
               min="0"
               max="100"
-              class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-800 font-mono focus:outline-none focus:border-emerald-500/50"
+              class="w-full bg-white dark:bg-[#0E1527] border border-slate-200 dark:border-[#1E293B] rounded-lg px-3 py-2 text-slate-800 dark:text-slate-200 font-mono focus:outline-none focus:border-emerald-500/50"
             />
           </div>
 
-          <div class="flex justify-end gap-2 pt-2 border-t border-slate-200">
+          <div class="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-[#1E293B]">
             <button
               type="button"
               onclick={() => (showModal = false)}
-              class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors"
+              class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-[#151E33] text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:bg-[#1E293B] transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold transition-colors disabled:opacity-50"
+              class="px-3 py-1.5 rounded-lg bg-slate-900 dark:bg-emerald-500 hover:bg-slate-800 dark:hover:bg-emerald-400 text-white dark:text-slate-950 font-bold transition-colors disabled:opacity-50"
             >
               {isSubmitting ? 'Creating...' : 'Register Schedule'}
             </button>

@@ -40,23 +40,23 @@
 
 <div class="space-y-6">
   <!-- Top Banner: Emitent Identity & Status -->
-  <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+  <div class="bg-white dark:bg-[#0E1527] border border-slate-200 dark:border-[#1E293B] rounded-xl p-5 shadow-sm">
     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
       <div>
         <div class="flex items-center space-x-2.5 mb-1.5">
-          <span class="text-xl font-mono font-bold text-slate-900 tracking-tight">{auditRun?.ticker || 'TICKER'}</span>
+          <span class="text-xl font-mono font-bold text-slate-900 dark:text-slate-100 tracking-tight">{auditRun?.ticker || 'TICKER'}</span>
           <span class="text-xs px-2.5 py-0.5 rounded-full font-semibold border {quadStyle.bg} {quadStyle.text} {quadStyle.border}">
             {auditRun?.quadrant_label || 'Pending Audit'}
           </span>
-          <span class="text-xs px-2 py-0.5 rounded bg-slate-200 text-slate-500 font-mono">
+          <span class="text-xs px-2 py-0.5 rounded bg-slate-200 dark:bg-[#1E293B] text-slate-500 dark:text-slate-400 font-mono">
             OJK TKBI Versi 3
           </span>
         </div>
-        <p class="text-sm font-medium text-slate-700 flex items-center gap-2">
-          <Building2 size={15} class="text-slate-400" />
+        <p class="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2">
+          <Building2 size={15} class="text-slate-400 dark:text-slate-500" />
           <span>{auditRun?.company_name || 'Loading Emitent Data...'}</span>
           <span class="text-slate-600">•</span>
-          <span class="text-slate-500 text-xs font-mono">{auditRun?.subsector || 'Energy / Utilities'}</span>
+          <span class="text-slate-500 dark:text-slate-400 text-xs font-mono">{auditRun?.subsector || 'Energy / Utilities'}</span>
         </p>
       </div>
 
@@ -64,7 +64,7 @@
         <button
           type="button"
           onclick={() => onNavigateView('tkbi')}
-          class="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-xs font-medium text-slate-800 rounded-lg transition-colors"
+          class="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-100 dark:bg-[#151E33] hover:bg-slate-200 dark:bg-[#1E293B] border border-slate-300 dark:border-[#223154] text-xs font-medium text-slate-800 dark:text-slate-200 rounded-lg transition-colors"
         >
           <FileSpreadsheet size={14} class="text-emerald-400" />
           <span>Inspect TKBI Sheet</span>
@@ -73,7 +73,7 @@
         <button
           type="button"
           onclick={() => onNavigateView('traces')}
-          class="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-xs font-medium text-slate-800 rounded-lg transition-colors"
+          class="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-100 dark:bg-[#151E33] hover:bg-slate-200 dark:bg-[#1E293B] border border-slate-300 dark:border-[#223154] text-xs font-medium text-slate-800 dark:text-slate-200 rounded-lg transition-colors"
         >
           <TrendingUp size={14} class="text-blue-400" />
           <span>View Otel Traces</span>
@@ -85,90 +85,90 @@
   <!-- Primary Score Cards Grid -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
     <!-- Consistency Score -->
-    <div class="bg-white border border-slate-200 rounded-xl p-4.5 shadow-sm">
-      <div class="flex items-center justify-between text-slate-500 text-xs mb-2 font-medium">
+    <div class="bg-white dark:bg-[#0E1527] border border-slate-200 dark:border-[#1E293B] rounded-xl p-4.5 shadow-sm">
+      <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs mb-2 font-medium">
         <span>TKBI Consistency Score</span>
         <CheckCircle size={15} class="text-emerald-400" />
       </div>
       <div class="flex items-baseline space-x-2">
-        <span class="text-3xl font-mono font-bold text-slate-900">{auditRun?.consistency_score?.toFixed(1) ?? '--'}</span>
-        <span class="text-xs text-slate-400 font-mono">/ 100</span>
+        <span class="text-3xl font-mono font-bold text-slate-900 dark:text-slate-100">{auditRun?.consistency_score?.toFixed(1) ?? '--'}</span>
+        <span class="text-xs text-slate-400 dark:text-slate-500 font-mono">/ 100</span>
       </div>
-      <p class="text-[11px] text-slate-500 mt-2">
+      <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-2">
         Qualitative disclosure alignment against official technical criteria.
       </p>
     </div>
 
     <!-- Viability Score -->
-    <div class="bg-white border border-slate-200 rounded-xl p-4.5 shadow-sm">
-      <div class="flex items-center justify-between text-slate-500 text-xs mb-2 font-medium">
+    <div class="bg-white dark:bg-[#0E1527] border border-slate-200 dark:border-[#1E293B] rounded-xl p-4.5 shadow-sm">
+      <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs mb-2 font-medium">
         <span>Financial Viability Score</span>
         <DollarSign size={15} class="text-blue-400" />
       </div>
       <div class="flex items-baseline space-x-2">
-        <span class="text-3xl font-mono font-bold text-slate-900">{auditRun?.viability_score?.toFixed(1) ?? '--'}</span>
-        <span class="text-xs text-slate-400 font-mono">/ 100</span>
+        <span class="text-3xl font-mono font-bold text-slate-900 dark:text-slate-100">{auditRun?.viability_score?.toFixed(1) ?? '--'}</span>
+        <span class="text-xs text-slate-400 dark:text-slate-500 font-mono">/ 100</span>
       </div>
-      <p class="text-[11px] text-slate-500 mt-2">
+      <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-2">
         Balance sheet capacity, operating cash flow, and Capex coverage ratio.
       </p>
     </div>
 
     <!-- Capex Coverage Ratio -->
-    <div class="bg-white border border-slate-200 rounded-xl p-4.5 shadow-sm">
-      <div class="flex items-center justify-between text-slate-500 text-xs mb-2 font-medium">
+    <div class="bg-white dark:bg-[#0E1527] border border-slate-200 dark:border-[#1E293B] rounded-xl p-4.5 shadow-sm">
+      <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs mb-2 font-medium">
         <span>Capex Coverage (OCF/Capex)</span>
         <Scale size={15} class="text-amber-400" />
       </div>
       <div class="flex items-baseline space-x-2">
-        <span class="text-3xl font-mono font-bold text-slate-900">{coverageRatio?.toFixed(2) ?? '--'}x</span>
+        <span class="text-3xl font-mono font-bold text-slate-900 dark:text-slate-100">{coverageRatio?.toFixed(2) ?? '--'}x</span>
       </div>
-      <p class="text-[11px] text-slate-500 mt-2">
+      <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-2">
         {coverageRatio >= 1.0 ? '✅ Positive cashflow coverage for transition Capex.' : '⚠️ Relies on external debt/equity for Capex.'}
       </p>
     </div>
 
     <!-- Quadrant Matrix Designation -->
-    <div class="bg-white border border-slate-200 rounded-xl p-4.5 shadow-sm">
-      <div class="flex items-center justify-between text-slate-500 text-xs mb-2 font-medium">
+    <div class="bg-white dark:bg-[#0E1527] border border-slate-200 dark:border-[#1E293B] rounded-xl p-4.5 shadow-sm">
+      <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs mb-2 font-medium">
         <span>Matrix Classification</span>
         <ShieldAlert size={15} class="text-purple-400" />
       </div>
-      <div class="text-base font-bold text-slate-900 truncate">
+      <div class="text-base font-bold text-slate-900 dark:text-slate-100 truncate">
         {auditRun?.quadrant || 'Unclassified'}
       </div>
-      <p class="text-[11px] text-slate-500 mt-2 truncate">
+      <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-2 truncate">
         {auditRun?.quadrant_label || 'Run audit to determine quadrant'}
       </p>
     </div>
   </div>
 
   <!-- 2x2 Divergence Heatmap Scatter Matrix -->
-  <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+  <div class="bg-white dark:bg-[#0E1527] border border-slate-200 dark:border-[#1E293B] rounded-xl p-6 shadow-sm">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
       <div>
-        <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+        <h2 class="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
           <span>Divergence Matrix</span>
           <span class="text-xs px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-normal">
             Financial Capex vs. ESG Disclosures
           </span>
         </h2>
-        <p class="text-xs text-slate-500">
+        <p class="text-xs text-slate-500 dark:text-slate-400">
           Cross-references qualitative claims against empirical cash flows to identify greenwashing risk zones.
         </p>
       </div>
 
-      <div class="text-[11px] text-slate-500 flex items-center gap-3">
+      <div class="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-3">
         <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block"></span> Active ({auditRun?.ticker})</span>
-        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-500 inline-block"></span> Peers</span>
+        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-50 dark:bg-[#090E1A] inline-block"></span> Peers</span>
       </div>
     </div>
 
     <!-- Visual 2x2 Canvas Container -->
-    <div class="relative w-full h-80 bg-slate-50 border border-slate-200 rounded-lg overflow-hidden p-6 select-none">
+    <div class="relative w-full h-80 bg-slate-50 dark:bg-[#090E1A] border border-slate-200 dark:border-[#1E293B] rounded-lg overflow-hidden p-6 select-none">
       <!-- Grid Crosshair lines (X=50, Y=50) -->
-      <div class="absolute left-1/2 top-0 bottom-0 w-px bg-slate-200 border-r border-dashed border-slate-700"></div>
-      <div class="absolute top-1/2 left-0 right-0 h-px bg-slate-200 border-b border-dashed border-slate-700"></div>
+      <div class="absolute left-1/2 top-0 bottom-0 w-px bg-slate-200 dark:bg-[#1E293B] border-r border-dashed border-slate-700"></div>
+      <div class="absolute top-1/2 left-0 right-0 h-px bg-slate-200 dark:bg-[#1E293B] border-b border-dashed border-slate-700"></div>
 
       <!-- Quadrant Background Zones -->
       <!-- Q2: Top-Left (Low Viability, High Consistency) -> Greenwashing Risk Zone -->
@@ -212,10 +212,10 @@
           </div>
 
           <!-- Tooltip on hover -->
-          <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block bg-slate-50 border border-slate-300 text-[11px] font-mono text-slate-800 px-2.5 py-1.5 rounded-md shadow-xl whitespace-nowrap z-30">
+          <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block bg-slate-50 dark:bg-[#090E1A] border border-slate-300 dark:border-[#223154] text-[11px] font-mono text-slate-800 dark:text-slate-200 px-2.5 py-1.5 rounded-md shadow-xl whitespace-nowrap z-30">
             <div class="font-bold text-emerald-400">{peer.ticker} ({peer.company_name})</div>
             <div>Viability: {peer.x_viability.toFixed(1)} | Consistency: {peer.y_consistency.toFixed(1)}</div>
-            <div class="text-[10px] text-slate-500 font-sans">{peer.quadrant_label}</div>
+            <div class="text-[10px] text-slate-500 dark:text-slate-400 font-sans">{peer.quadrant_label}</div>
           </div>
         </button>
       {/each}
@@ -237,21 +237,21 @@
   <!-- Executive Summary & Findings -->
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <!-- Executive Summary Card -->
-    <div class="lg:col-span-2 bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-      <h3 class="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
+    <div class="lg:col-span-2 bg-white dark:bg-[#0E1527] border border-slate-200 dark:border-[#1E293B] rounded-xl p-5 shadow-sm">
+      <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 mb-3 flex items-center gap-2">
         <FileText size={16} class="text-emerald-400" />
         <span>Audit Summary</span>
       </h3>
-      <div class="text-xs leading-relaxed text-slate-700 bg-slate-50 p-4 rounded-lg border border-slate-200 font-mono">
+      <div class="text-xs leading-relaxed text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-[#090E1A] p-4 rounded-lg border border-slate-200 dark:border-[#1E293B] font-mono">
         {auditRun?.executive_summary || 'No audit summary generated yet. Click "Run Green Audit" to trigger.'}
       </div>
 
       {#if auditRun?.audit_findings && auditRun.audit_findings.length > 0}
         <div class="mt-4">
-          <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Key Disclosure & Technical Findings</h4>
+          <h4 class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Key Disclosure & Technical Findings</h4>
           <ul class="space-y-2">
             {#each auditRun.audit_findings as finding}
-              <li class="text-xs text-slate-700 flex items-start space-x-2 bg-slate-50/50 p-2.5 rounded border border-slate-200">
+              <li class="text-xs text-slate-700 dark:text-slate-300 flex items-start space-x-2 bg-slate-50 dark:bg-[#090E1A]/50 p-2.5 rounded border border-slate-200 dark:border-[#1E293B]">
                 <span class="text-emerald-400 font-bold shrink-0">•</span>
                 <span>{finding}</span>
               </li>
@@ -262,27 +262,27 @@
     </div>
 
     <!-- Fundamental Financials Snapshot -->
-    <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-      <h3 class="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
+    <div class="bg-white dark:bg-[#0E1527] border border-slate-200 dark:border-[#1E293B] rounded-xl p-5 shadow-sm">
+      <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 mb-3 flex items-center gap-2">
         <DollarSign size={16} class="text-blue-400" />
         <span>Financials</span>
       </h3>
       <div class="space-y-3 text-xs">
-        <div class="flex justify-between p-2 rounded bg-slate-50 border border-slate-200">
-          <span class="text-slate-500">Operating Cash Flow</span>
-          <span class="font-mono text-slate-800">IDR {ocfIDR.toFixed(2)} B</span>
+        <div class="flex justify-between p-2 rounded bg-slate-50 dark:bg-[#090E1A] border border-slate-200 dark:border-[#1E293B]">
+          <span class="text-slate-500 dark:text-slate-400">Operating Cash Flow</span>
+          <span class="font-mono text-slate-800 dark:text-slate-200">IDR {ocfIDR.toFixed(2)} B</span>
         </div>
-        <div class="flex justify-between p-2 rounded bg-slate-50 border border-slate-200">
-          <span class="text-slate-500">Capital Expenditures</span>
-          <span class="font-mono text-slate-800">IDR {capexIDR.toFixed(2)} B</span>
+        <div class="flex justify-between p-2 rounded bg-slate-50 dark:bg-[#090E1A] border border-slate-200 dark:border-[#1E293B]">
+          <span class="text-slate-500 dark:text-slate-400">Capital Expenditures</span>
+          <span class="font-mono text-slate-800 dark:text-slate-200">IDR {capexIDR.toFixed(2)} B</span>
         </div>
-        <div class="flex justify-between p-2 rounded bg-slate-50 border border-slate-200">
-          <span class="text-slate-500">Capex Coverage Ratio</span>
+        <div class="flex justify-between p-2 rounded bg-slate-50 dark:bg-[#090E1A] border border-slate-200 dark:border-[#1E293B]">
+          <span class="text-slate-500 dark:text-slate-400">Capex Coverage Ratio</span>
           <span class="font-mono font-bold {coverageRatio >= 1.0 ? 'text-emerald-400' : 'text-amber-400'}">{coverageRatio.toFixed(2)}x</span>
         </div>
-        <div class="flex justify-between p-2 rounded bg-slate-50 border border-slate-200">
-          <span class="text-slate-500">Return on Assets (ROA)</span>
-          <span class="font-mono text-slate-800">{auditRun?.financial_snapshot?.roa_pct ?? 0}%</span>
+        <div class="flex justify-between p-2 rounded bg-slate-50 dark:bg-[#090E1A] border border-slate-200 dark:border-[#1E293B]">
+          <span class="text-slate-500 dark:text-slate-400">Return on Assets (ROA)</span>
+          <span class="font-mono text-slate-800 dark:text-slate-200">{auditRun?.financial_snapshot?.roa_pct ?? 0}%</span>
         </div>
       </div>
     </div>

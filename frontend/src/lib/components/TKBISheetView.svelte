@@ -84,16 +84,16 @@
 
 <div class="space-y-4">
   <!-- Action Toolbar: Header & Export CTA Buttons -->
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white dark:bg-[#0E1527] border border-slate-200 dark:border-[#1E293B] rounded-xl p-4 shadow-sm">
     <div>
-      <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+      <h2 class="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
         <FileSpreadsheet size={18} class="text-emerald-400" />
         <span>Audit Sheet</span>
-        <span class="text-xs font-mono font-normal text-slate-500">
+        <span class="text-xs font-mono font-normal text-slate-500 dark:text-slate-400">
           ({filteredEntries.length} / {entries.length} criteria)
         </span>
       </h2>
-      <p class="text-xs text-slate-500">
+      <p class="text-xs text-slate-500 dark:text-slate-400">
         Template conforming to <span class="font-mono text-emerald-400">Template_Audit_TKBI.xlsx</span> with Human-In-The-Loop (HITL) audit verification.
       </p>
     </div>
@@ -104,7 +104,7 @@
         <a
           href={getExportXLSXUrl(auditRun.id)}
           download
-          class="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-emerald-400 border border-emerald-500/30 rounded-lg text-xs font-semibold transition-colors"
+          class="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-100 dark:bg-[#151E33] hover:bg-slate-200 dark:bg-[#1E293B] text-emerald-400 border border-emerald-500/30 rounded-lg text-xs font-semibold transition-colors"
         >
           <Download size={14} />
           <span>Export Stamped XLSX</span>
@@ -113,7 +113,7 @@
         <a
           href={getExportPDFUrl(auditRun.id)}
           download
-          class="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-lg text-xs transition-colors shadow-sm"
+          class="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-900 dark:bg-emerald-500 hover:bg-slate-800 dark:hover:bg-emerald-400 text-white dark:text-slate-950 font-semibold rounded-lg text-xs transition-colors shadow-sm"
         >
           <FileText size={14} />
           <span>Signed Audit PDF (SHA-256)</span>
@@ -132,24 +132,24 @@
   <!-- Filter and Search Bar -->
   <div class="flex flex-col sm:flex-row gap-3 items-center justify-between">
     <div class="relative w-full sm:w-80">
-      <Search size={14} class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+      <Search size={14} class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
       <input
         type="text"
         bind:value={searchQuery}
         placeholder="Filter by TSC ID, Bab, Sector..."
-        class="w-full bg-white border border-slate-200 rounded-lg pl-9 pr-3 py-1.5 text-xs text-slate-800 placeholder-slate-500 focus:outline-none focus:border-emerald-500/50"
+        class="w-full bg-white dark:bg-[#0E1527] border border-slate-200 dark:border-[#1E293B] rounded-lg pl-9 pr-3 py-1.5 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500/50"
       />
     </div>
 
     <div class="flex items-center space-x-2 self-start sm:self-auto">
-      <span class="text-xs text-slate-500 font-medium flex items-center gap-1">
+      <span class="text-xs text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1">
         <Filter size={13} /> Filter:
       </span>
       {#each ['ALL', 'HIJAU', 'TRANSISI', 'TIDAK'] as statusOpt}
         <button
           type="button"
           onclick={() => (filterStatus = statusOpt)}
-          class="px-2.5 py-1 text-xs font-mono font-medium rounded-md transition-colors {filterStatus === statusOpt ? 'bg-slate-900 text-white font-bold' : 'bg-white text-slate-500 hover:text-slate-800 border border-slate-200'}"
+          class="px-2.5 py-1 text-xs font-mono font-medium rounded-md transition-colors {filterStatus === statusOpt ? 'bg-slate-900 dark:bg-emerald-500 text-white dark:text-slate-950 font-bold' : 'bg-white dark:bg-[#0E1527] text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-[#1E293B]'}"
         >
           {statusOpt}
         </button>
@@ -158,10 +158,10 @@
   </div>
 
   <!-- 12-Column Data Grid Table -->
-  <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+  <div class="bg-white dark:bg-[#0E1527] border border-slate-200 dark:border-[#1E293B] rounded-xl overflow-hidden shadow-sm">
     <div class="overflow-x-auto max-h-[620px]">
       <table class="w-full text-left border-collapse text-xs">
-        <thead class="bg-slate-100 text-slate-700 font-semibold uppercase tracking-wider text-[10px] sticky top-0 z-10 border-b border-slate-200">
+        <thead class="bg-slate-100 dark:bg-[#151E33] text-slate-700 dark:text-slate-300 font-semibold uppercase tracking-wider text-[10px] sticky top-0 z-10 border-b border-slate-200 dark:border-[#1E293B]">
           <tr>
             <th class="py-3 px-3 w-16">Ticker</th>
             <th class="py-3 px-3 w-28">Sector</th>
@@ -177,10 +177,10 @@
             <th class="py-3 px-3 min-w-[220px]">Auditor Feedback (HITL)</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-[#1A253D] font-normal text-slate-700">
+        <tbody class="divide-y divide-[#1A253D] font-normal text-slate-700 dark:text-slate-300">
           {#if filteredEntries.length === 0}
             <tr>
-              <td colspan="12" class="text-center py-10 text-slate-400 text-xs">
+              <td colspan="12" class="text-center py-10 text-slate-400 dark:text-slate-500 text-xs">
                 No TKBI criteria matched your filter or no audit entries found.
               </td>
             </tr>
@@ -190,14 +190,14 @@
             {@const isEditingThis = editingId === item.id}
             {@const effectiveAns = item.auditor_override || item.jawaban_ai}
 
-            <tr class="hover:bg-slate-50/70 transition-colors {item.is_overridden ? 'bg-amber-950/10' : ''}">
-              <td class="py-2.5 px-3 font-mono font-bold text-slate-900">{item.kode_emiten}</td>
-              <td class="py-2.5 px-3 truncate max-w-[120px] text-slate-700" title={item.sektor}>{item.sektor}</td>
-              <td class="py-2.5 px-3 text-slate-700 text-[11px] leading-tight max-w-[160px]" title={item.bab}>{item.bab}</td>
-              <td class="py-2.5 px-3 font-mono text-slate-500">{item.kbli}</td>
+            <tr class="hover:bg-slate-50 dark:bg-[#090E1A]/70 transition-colors {item.is_overridden ? 'bg-amber-950/10' : ''}">
+              <td class="py-2.5 px-3 font-mono font-bold text-slate-900 dark:text-slate-100">{item.kode_emiten}</td>
+              <td class="py-2.5 px-3 truncate max-w-[120px] text-slate-700 dark:text-slate-300" title={item.sektor}>{item.sektor}</td>
+              <td class="py-2.5 px-3 text-slate-700 dark:text-slate-300 text-[11px] leading-tight max-w-[160px]" title={item.bab}>{item.bab}</td>
+              <td class="py-2.5 px-3 font-mono text-slate-500 dark:text-slate-400">{item.kbli}</td>
               <td class="py-2.5 px-3 font-mono font-semibold text-emerald-400">{item.tsc_id}</td>
-              <td class="py-2.5 px-3 text-[11px] leading-tight text-slate-700 max-w-[150px]" title={item.tsc}>{item.tsc}</td>
-              <td class="py-2.5 px-3 font-mono text-[10px] text-slate-500">{item.bentuk_jawaban}</td>
+              <td class="py-2.5 px-3 text-[11px] leading-tight text-slate-700 dark:text-slate-300 max-w-[150px]" title={item.tsc}>{item.tsc}</td>
+              <td class="py-2.5 px-3 font-mono text-[10px] text-slate-500 dark:text-slate-400">{item.bentuk_jawaban}</td>
 
               <!-- Jawaban AI / Effective Answer -->
               <td class="py-2.5 px-3 text-center">
@@ -210,23 +210,23 @@
               </td>
 
               <!-- Keyakinan AI -->
-              <td class="py-2.5 px-3 font-mono text-[11px] text-slate-500 text-center">{item.keyakinan_ai}</td>
+              <td class="py-2.5 px-3 font-mono text-[11px] text-slate-500 dark:text-slate-400 text-center">{item.keyakinan_ai}</td>
 
               <!-- Reasoning AI -->
-              <td class="py-2.5 px-3 text-[11px] leading-relaxed text-slate-700">{item.reasoning_ai}</td>
+              <td class="py-2.5 px-3 text-[11px] leading-relaxed text-slate-700 dark:text-slate-300">{item.reasoning_ai}</td>
 
               <!-- Bukti Citation -->
-              <td class="py-2.5 px-3 text-[11px] text-slate-500 font-mono leading-tight">{item.bukti}</td>
+              <td class="py-2.5 px-3 text-[11px] text-slate-500 dark:text-slate-400 font-mono leading-tight">{item.bukti}</td>
 
               <!-- Auditor Feedback & HITL Override Form -->
-              <td class="py-2.5 px-3 bg-slate-50/50">
+              <td class="py-2.5 px-3 bg-slate-50 dark:bg-[#090E1A]/50">
                 {#if isEditingThis}
-                  <div class="space-y-2 p-1.5 bg-slate-100 rounded-md border border-slate-300">
+                  <div class="space-y-2 p-1.5 bg-slate-100 dark:bg-[#151E33] rounded-md border border-slate-300 dark:border-[#223154]">
                     <div class="flex items-center gap-1.5">
-                      <span class="text-[10px] text-slate-500 font-semibold uppercase">Override:</span>
+                      <span class="text-[10px] text-slate-500 dark:text-slate-400 font-semibold uppercase">Override:</span>
                       <select
                         bind:value={overrideChoice}
-                        class="bg-slate-50 border border-slate-300 text-slate-800 text-xs rounded px-1.5 py-0.5 focus:outline-none"
+                        class="bg-slate-50 dark:bg-[#090E1A] border border-slate-300 dark:border-[#223154] text-slate-800 dark:text-slate-200 text-xs rounded px-1.5 py-0.5 focus:outline-none"
                       >
                         <option value="HIJAU">HIJAU</option>
                         <option value="TRANSISI">TRANSISI</option>
@@ -238,14 +238,14 @@
                       bind:value={feedbackText}
                       placeholder="Add compliance notes or justification..."
                       rows="2"
-                      class="w-full bg-slate-50 border border-slate-300 rounded p-1.5 text-xs text-slate-800 placeholder-slate-500 focus:outline-none focus:border-emerald-500/50"
+                      class="w-full bg-slate-50 dark:bg-[#090E1A] border border-slate-300 dark:border-[#223154] rounded p-1.5 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500/50"
                     ></textarea>
 
                     <div class="flex justify-end gap-1.5">
                       <button
                         type="button"
                         onclick={cancelEditing}
-                        class="px-2 py-0.5 bg-slate-200 text-slate-500 hover:text-slate-800 rounded text-[11px]"
+                        class="px-2 py-0.5 bg-slate-200 dark:bg-[#1E293B] text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200 rounded text-[11px]"
                       >
                         Cancel
                       </button>
@@ -253,7 +253,7 @@
                         type="button"
                         onclick={() => saveFeedback(item)}
                         disabled={savingId === item.id}
-                        class="px-2.5 py-0.5 bg-slate-900 text-white font-bold rounded text-[11px] flex items-center gap-1 disabled:opacity-50"
+                        class="px-2.5 py-0.5 bg-slate-900 dark:bg-emerald-500 text-white dark:text-slate-950 font-bold rounded text-[11px] flex items-center gap-1 disabled:opacity-50"
                       >
                         <Save size={12} />
                         <span>{savingId === item.id ? 'Saving...' : 'Save'}</span>
@@ -262,13 +262,13 @@
                   </div>
                 {:else}
                   <div class="flex items-start justify-between gap-1 group">
-                    <div class="text-[11px] text-slate-700 italic flex-1">
+                    <div class="text-[11px] text-slate-700 dark:text-slate-300 italic flex-1">
                       {item.auditor_feedback || '(No auditor feedback recorded)'}
                     </div>
                     <button
                       type="button"
                       onclick={() => startEditing(item)}
-                      class="p-1 rounded text-slate-500 hover:text-emerald-400 hover:bg-slate-200 transition-colors"
+                      class="p-1 rounded text-slate-500 dark:text-slate-400 hover:text-emerald-400 hover:bg-slate-200 dark:bg-[#1E293B] transition-colors"
                       title="Edit feedback & override"
                     >
                       <Edit3 size={13} />
