@@ -2,14 +2,14 @@
 
 @layer base {
   :root {
-    --bg-primary: #090D16;
-    --bg-surface: #0E1424;
-    --bg-card: #131B30;
-    --border-color: #1F2C4C;
+    --bg-primary: #f8fafc;
+    --bg-surface: #ffffff;
+    --bg-card: #ffffff;
+    --border-color: #e2e8f0;
     --accent-emerald: #10B981;
     --accent-jade: #059669;
-    --text-primary: #F1F5F9;
-    --text-muted: #94A3B8;
+    --text-primary: #0f172a;
+    --text-muted: #64748b;
   }
 
   body {
@@ -26,31 +26,31 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #090D16;
+  background: #f8fafc;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1F2C4C;
+  background: #cbd5e1;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #94a3b8;
 }
 
 /* Status Badges */
 .badge-hijau {
-  background-color: rgba(16, 185, 129, 0.15);
-  color: #34D399;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
 .badge-transisi {
-  background-color: rgba(245, 158, 11, 0.15);
-  color: #FBBF24;
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #d97706;
+  border: 1px solid rgba(245, 158, 11, 0.2);
 }
 
 .badge-tidak {
-  background-color: rgba(239, 68, 68, 0.15);
-  color: #F87171;
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.2);
 }

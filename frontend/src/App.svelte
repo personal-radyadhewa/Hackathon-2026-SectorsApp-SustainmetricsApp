@@ -98,7 +98,7 @@
   });
 </script>
 
-<div class="flex h-screen w-screen overflow-hidden bg-[#090D16] text-slate-100">
+<div class="flex h-screen w-screen overflow-hidden bg-slate-50 text-slate-900">
   <!-- Left Navigation Sidebar -->
   <Sidebar
     {currentView}
@@ -112,15 +112,15 @@
   />
 
   <!-- Main Viewport Area -->
-  <main class="flex-1 flex flex-col h-screen overflow-y-auto bg-[#090D16]">
+  <main class="flex-1 flex flex-col h-screen overflow-y-auto bg-slate-50">
     <!-- Top Bar with status & active emitent badge -->
-    <header class="h-14 border-b border-[#1E293B] bg-[#0C1222]/80 backdrop-blur-md px-6 flex items-center justify-between shrink-0 sticky top-0 z-30">
+    <header class="h-14 border-b border-slate-200 bg-white/80 backdrop-blur-md px-6 flex items-center justify-between shrink-0 sticky top-0 z-30">
       <div class="flex items-center space-x-3">
-        <span class="text-xs uppercase tracking-wider font-bold text-slate-400">Workspace</span>
+        <span class="text-xs uppercase tracking-wider font-bold text-slate-500">Workspace</span>
         <span class="text-slate-600">/</span>
         <span class="text-xs font-semibold text-emerald-400 font-mono">IDX:{activeTicker}</span>
         <span class="text-slate-600">/</span>
-        <span class="text-xs font-medium text-slate-300 capitalize">{currentView}</span>
+        <span class="text-xs font-medium text-slate-700 capitalize">{currentView}</span>
       </div>
 
       <div class="flex items-center space-x-3">
@@ -134,7 +134,7 @@
         <button
           type="button"
           onclick={() => (isCopilotOpen = true)}
-          class="flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#141E34] hover:bg-[#1D2B4A] border border-[#223154] text-xs font-medium text-slate-200 transition-colors"
+          class="flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-slate-100 hover:bg-slate-200 border border-slate-300 text-xs font-medium text-slate-800 transition-colors"
         >
           <span>🤖 AI Copilot</span>
         </button>
@@ -144,7 +144,7 @@
     <!-- Main Content Dynamic Container -->
     <div class="p-6 flex-1">
       {#if isLoading}
-        <div class="flex flex-col items-center justify-center h-96 space-y-3 text-slate-400 text-xs">
+        <div class="flex flex-col items-center justify-center h-96 space-y-3 text-slate-500 text-xs">
           <div class="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
           <span>Retrieving OJK TKBI data for {activeTicker}...</span>
         </div>
