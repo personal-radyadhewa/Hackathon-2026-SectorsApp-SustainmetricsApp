@@ -96,9 +96,15 @@
     await loadTickerData(activeTicker);
     await handleReloadSchedules();
   });
+  const viewLabels = {
+    dashboard: 'Overview',
+    tkbi: 'Green Checklist',
+    traces: 'Activity Log',
+    schedules: 'Automated Monitoring',
+  };
 </script>
 
-<div class="flex h-screen w-screen overflow-hidden bg-slate-50 dark:bg-[#090E1A] text-slate-900 dark:text-slate-100">
+<div class="flex h-screen w-screen overflow-hidden bg-slate-50 dark:bg-[#090D16] text-slate-900 dark:text-slate-100 font-sans">
   <!-- Left Navigation Sidebar -->
   <Sidebar
     {currentView}
@@ -112,41 +118,42 @@
   />
 
   <!-- Main Viewport Area -->
-  <main class="flex-1 flex flex-col h-screen overflow-y-auto bg-slate-50 dark:bg-[#090E1A]">
+  <main class="flex-1 flex flex-col h-screen overflow-y-auto bg-slate-50 dark:bg-[#090D16]">
     <!-- Top Bar with status & active emitent badge -->
-    <header class="h-14 border-b border-slate-200 dark:border-[#1E293B] bg-white dark:bg-[#0E1527]/80 backdrop-blur-md px-6 flex items-center justify-between shrink-0 sticky top-0 z-30">
-      <div class="flex items-center space-x-3">
-        <span class="text-xs uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400">Workspace</span>
-        <span class="text-slate-600">/</span>
-        <span class="text-xs font-semibold text-emerald-400 font-mono">IDX:{activeTicker}</span>
-        <span class="text-slate-600">/</span>
-        <span class="text-xs font-medium text-slate-700 dark:text-slate-300 capitalize">{currentView}</span>
+    <header class="h-14 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 backdrop-blur-md px-6 flex items-center justify-between shrink-0 sticky top-0 z-30 shadow-xs">
+      <div class="flex items-center space-x-2 text-sm">
+        <span class="text-xs font-medium text-slate-400 dark:text-slate-500">Company</span>
+        <span class="text-slate-300 dark:text-slate-700">/</span>
+        <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-mono">{activeTicker}</span>
+        <span class="text-slate-300 dark:text-slate-700">/</span>
+        <span class="text-xs font-medium text-slate-700 dark:text-slate-300">{viewLabels[currentView] || currentView}</span>
       </div>
 
       <div class="flex items-center space-x-3">
         {#if isAuditing}
-          <div class="flex items-center space-x-2 text-xs font-mono text-emerald-400">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-            <span>Auditing Pipeline Active...</span>
+          <div class="flex items-center space-x-2 text-xs font-medium text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 px-2.5 py-1 rounded-full">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+            <span>Analyzing {activeTicker}...</span>
           </div>
         {/if}
 
         <button
           type="button"
           onclick={() => (isCopilotOpen = true)}
-          class="flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-slate-100 dark:bg-[#151E33] hover:bg-slate-200 dark:bg-[#1E293B] border border-slate-300 dark:border-[#223154] text-xs font-medium text-slate-800 dark:text-slate-200 transition-colors"
+          class="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-800 dark:text-slate-200 shadow-xs transition-colors"
         >
-          <span>🤖 AI Copilot</span>
+          <span class="text-emerald-500">✨</span>
+          <span>Ask Sustainability Copilot</span>
         </button>
       </div>
     </header>
 
     <!-- Main Content Dynamic Container -->
-    <div class="p-6 flex-1">
+    <div class="p-6 md:p-8 flex-1 max-w-7xl w-full mx-auto">
       {#if isLoading}
-        <div class="flex flex-col items-center justify-center h-96 space-y-3 text-slate-500 dark:text-slate-400 text-xs">
-          <div class="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-          <span>Retrieving OJK TKBI data for {activeTicker}...</span>
+        <div class="flex flex-col items-center justify-center h-96 space-y-3 text-slate-500 dark:text-slate-400 text-sm">
+          <div class="w-7 h-7 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+          <span>Loading sustainability profile for {activeTicker}...</span>
         </div>
       {:else if currentView === 'dashboard'}
         <DashboardView

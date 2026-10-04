@@ -1,5 +1,5 @@
 <script>
-  import { Bot, Send, X, Sparkles, CheckCircle2, ChevronDown, Key } from '@lucide/svelte';
+  import { Bot, Send, X, Sparkles, CheckCircle2, ChevronDown, Key, SlidersHorizontal } from '@lucide/svelte';
 
   let {
     isOpen = false,
@@ -10,7 +10,9 @@
   let messages = $state([
     {
       role: 'assistant',
-      content: `Hello! I'm your **SustainMetric AI Copilot**. I have real-time access to the FastMCP server, OJK TKBI 2024 technical taxonomy rules, and Sectors fundamental financials. Ask me anything about IDX tickers or technical criteria.`,
+      content: `Hello! I'm your **Sustainability Copilot**. I analyze official Indonesian company disclosures, sustainability reports, and verified financial filings.
+
+Ask me anything about company environmental compliance, green investments, or taxonomy criteria.`,
     },
   ]);
 
@@ -95,27 +97,26 @@
 {#if isOpen}
   <!-- Backdrop -->
   <div
-    class="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 transition-opacity"
+    class="fixed inset-0 bg-black/40 backdrop-blur-2xs z-40 transition-opacity"
     onclick={onClose}
     onkeydown={(e) => e.key === 'Escape' && onClose()}
     role="button"
     tabindex="0"
   ></div>
 
-  <!-- Slide-out Drawer -->
-  <aside class="fixed top-0 right-0 w-[420px] max-w-full h-screen bg-white dark:bg-[#0E1527] border-l border-slate-200 dark:border-[#1E293B] shadow-2xl z-50 flex flex-col justify-between animate-in slide-in-from-right duration-200">
+  <!-- Slide-out Drawer (Hermes Agent Style) -->
+  <aside class="fixed top-0 right-0 w-[440px] max-w-full h-screen bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-2xl z-50 flex flex-col justify-between animate-in slide-in-from-right duration-200">
     <!-- Header -->
-    <div class="px-4 py-3.5 border-b border-slate-200 dark:border-[#1E293B] flex items-center justify-between bg-[#0F162B]">
-      <div class="flex items-center space-x-2">
-        <div class="w-7 h-7 rounded-md bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-          <Bot size={16} />
+    <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/40">
+      <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/60 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+          <Bot size={18} />
         </div>
         <div>
-          <h3 class="text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
-            SustainMetric Copilot
-            <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono">FastMCP</span>
+          <h3 class="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+            Sustainability Copilot
           </h3>
-          <p class="text-[10px] text-slate-500 dark:text-slate-400">Active context: <span class="font-mono text-emerald-400 font-semibold">{activeTicker}</span></p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">Context: <span class="font-semibold text-slate-700 dark:text-slate-300 font-mono">{activeTicker}</span></p>
         </div>
       </div>
 
@@ -123,30 +124,31 @@
         <button
           type="button"
           onclick={() => (showKeySettings = !showKeySettings)}
-          class="p-1.5 rounded text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:bg-[#1E293B] transition-colors"
-          title="LLM Provider Settings"
+          class="p-2 rounded-md text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          title="AI Settings"
         >
-          <Key size={14} />
+          <SlidersHorizontal size={15} />
         </button>
         <button
           type="button"
           onclick={onClose}
-          class="p-1.5 rounded text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:bg-[#1E293B] transition-colors"
+          class="p-2 rounded-md text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          title="Close"
         >
-          <X size={15} />
+          <X size={16} />
         </button>
       </div>
     </div>
 
     <!-- Provider Configuration Panel (Collapsible) -->
     {#if showKeySettings}
-      <div class="p-3 bg-white dark:bg-[#0E1527] border-b border-slate-200 dark:border-[#1E293B] text-xs space-y-2">
-        <div class="flex items-center justify-between">
-          <label for="copilot-provider" class="text-[10px] uppercase font-semibold text-slate-500 dark:text-slate-400">Provider</label>
+      <div class="p-4 bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 text-xs space-y-3">
+        <div>
+          <label for="copilot-provider" class="text-[11px] font-medium text-slate-600 dark:text-slate-400 block mb-1">AI Provider</label>
           <select
             id="copilot-provider"
             bind:value={provider}
-            class="bg-slate-50 dark:bg-[#090E1A] border border-slate-200 dark:border-[#1E293B] rounded px-2 py-1 text-slate-800 dark:text-slate-200 text-xs focus:outline-none"
+            class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-md px-3 py-1.5 text-slate-800 dark:text-slate-200 text-xs focus:outline-none"
           >
             <option value="gemini">Google Gemini</option>
             <option value="openai">OpenAI</option>
@@ -155,29 +157,29 @@
         </div>
 
         <div>
-          <label for="copilot-apikey" class="text-[10px] uppercase font-semibold text-slate-500 dark:text-slate-400 block mb-1">API Key (Optional / Offline Default)</label>
+          <label for="copilot-apikey" class="text-[11px] font-medium text-slate-600 dark:text-slate-400 block mb-1">API Key (Optional / Uses System Default)</label>
           <input
             id="copilot-apikey"
             type="password"
             bind:value={apiKey}
             placeholder="AIzaSy... / sk-..."
-            class="w-full bg-slate-50 dark:bg-[#090E1A] border border-slate-200 dark:border-[#1E293B] rounded px-2 py-1 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-emerald-500/50 font-mono"
+            class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-md px-3 py-1.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none font-mono"
           />
         </div>
       </div>
     {/if}
 
     <!-- Chat Messages Scroll Area -->
-    <div class="flex-1 overflow-y-auto p-4 space-y-3.5">
+    <div class="flex-1 overflow-y-auto p-5 space-y-4">
       {#each messages as msg}
         <div class="flex flex-col {msg.role === 'user' ? 'items-end' : 'items-start'}">
-          <span class="text-[10px] text-slate-400 dark:text-slate-500 mb-1 font-mono uppercase">
-            {msg.role === 'user' ? 'Auditor' : 'Copilot AI'}
+          <span class="text-[10px] text-slate-400 dark:text-slate-500 mb-1 px-1 font-medium">
+            {msg.role === 'user' ? 'You' : 'Sustainability Copilot'}
           </span>
           <div
-            class="max-w-[90%] rounded-lg p-3 text-xs leading-relaxed whitespace-pre-wrap {msg.role === 'user'
-              ? 'bg-emerald-600 text-slate-50 font-medium'
-              : 'bg-white dark:bg-[#0E1527] border border-slate-200 dark:border-[#1E293B] text-slate-800 dark:text-slate-200 shadow-sm'}"
+            class="max-w-[92%] rounded-2xl p-3.5 text-xs leading-relaxed whitespace-pre-wrap {msg.role === 'user'
+              ? 'bg-slate-900 dark:bg-emerald-600 text-white rounded-tr-xs shadow-xs font-normal'
+              : 'bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 text-slate-800 dark:text-slate-200 rounded-tl-xs shadow-2xs'}"
           >
             {msg.content}
           </div>
@@ -185,50 +187,50 @@
       {/each}
 
       {#if isStreaming}
-        <div class="flex items-center space-x-2 text-xs text-emerald-400 animate-pulse py-1">
-          <Sparkles size={13} />
-          <span>Executing FastMCP tool reasoning...</span>
+        <div class="flex items-center space-x-2 text-xs text-emerald-600 dark:text-emerald-400 animate-pulse py-1 px-2">
+          <Sparkles size={14} />
+          <span>Analyzing sustainability reports & financials...</span>
         </div>
       {/if}
     </div>
 
     <!-- Quick Prompts Chips -->
-    <div class="px-3 py-2 border-t border-slate-200 dark:border-[#1E293B] bg-white dark:bg-[#0E1527]/40 flex gap-1.5 overflow-x-auto">
+    <div class="px-4 py-2.5 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/30 flex gap-2 overflow-x-auto">
       <button
         type="button"
-        onclick={() => sendQuickPrompt(`Audit greenwashing flags for ${activeTicker}`)}
-        class="whitespace-nowrap px-2 py-1 bg-slate-100 dark:bg-[#151E33] hover:bg-slate-200 dark:bg-[#1E293B] text-[11px] text-slate-700 dark:text-slate-300 rounded border border-slate-200 dark:border-[#1E293B] transition-colors"
+        onclick={() => sendQuickPrompt(`Are there any greenwashing risks for ${activeTicker}?`)}
+        class="whitespace-nowrap px-3 py-1.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-xs text-slate-700 dark:text-slate-300 rounded-full border border-slate-200 dark:border-slate-700 transition-colors shadow-2xs"
       >
-        🔍 Greenwashing flags
+        🔍 Greenwashing risk check
       </button>
       <button
         type="button"
-        onclick={() => sendQuickPrompt(`Compare ${activeTicker} Capex allocation vs disclosures`)}
-        class="whitespace-nowrap px-2 py-1 bg-slate-100 dark:bg-[#151E33] hover:bg-slate-200 dark:bg-[#1E293B] text-[11px] text-slate-700 dark:text-slate-300 rounded border border-slate-200 dark:border-[#1E293B] transition-colors"
+        onclick={() => sendQuickPrompt(`How much does ${activeTicker} spend on green projects vs conventional business?`)}
+        class="whitespace-nowrap px-3 py-1.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-xs text-slate-700 dark:text-slate-300 rounded-full border border-slate-200 dark:border-slate-700 transition-colors shadow-2xs"
       >
-        💰 Capex Reality Check
+        💰 Green spending breakdown
       </button>
       <button
         type="button"
-        onclick={() => sendQuickPrompt(`Show OJK TKBI TSC threshold for ${activeTicker}`)}
-        class="whitespace-nowrap px-2 py-1 bg-slate-100 dark:bg-[#151E33] hover:bg-slate-200 dark:bg-[#1E293B] text-[11px] text-slate-700 dark:text-slate-300 rounded border border-slate-200 dark:border-[#1E293B] transition-colors"
+        onclick={() => sendQuickPrompt(`What are the key environmental criteria for ${activeTicker}?`)}
+        class="whitespace-nowrap px-3 py-1.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-xs text-slate-700 dark:text-slate-300 rounded-full border border-slate-200 dark:border-slate-700 transition-colors shadow-2xs"
       >
-        📋 TKBI Criteria
+        📋 Requirements summary
       </button>
     </div>
 
     <!-- Input Footer -->
-    <form onsubmit={(e) => { e.preventDefault(); handleSend(); }} class="p-3 border-t border-slate-200 dark:border-[#1E293B] bg-[#0F162B] flex gap-2">
+    <form onsubmit={(e) => { e.preventDefault(); handleSend(); }} class="p-3.5 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex gap-2">
       <input
         type="text"
         bind:value={inputQuery}
-        placeholder={`Ask Copilot about ${activeTicker} or TKBI criteria...`}
-        class="flex-1 bg-white dark:bg-[#0E1527] border border-slate-200 dark:border-[#1E293B] rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500/50"
+        placeholder={`Ask a question about ${activeTicker}...`}
+        class="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-emerald-500 shadow-2xs"
       />
       <button
         type="submit"
         disabled={isStreaming || !inputQuery.trim()}
-        class="p-2 rounded-lg bg-slate-900 dark:bg-emerald-500 hover:bg-slate-800 dark:hover:bg-emerald-400 text-white dark:text-slate-950 font-bold transition-colors disabled:opacity-40"
+        class="p-2.5 rounded-xl bg-slate-900 dark:bg-emerald-500 hover:bg-slate-800 dark:hover:bg-emerald-400 text-white dark:text-slate-950 font-medium transition-colors shadow-xs disabled:opacity-40"
       >
         <Send size={15} />
       </button>
