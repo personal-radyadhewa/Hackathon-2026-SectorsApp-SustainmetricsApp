@@ -1,14 +1,15 @@
 <script>
   import {
     Sparkles,
-    Send,
+    Paperclip,
+    Search,
+    ChevronDown,
+    Mic,
     ArrowUp,
+    FolderPlus,
+    Plus,
     SlidersHorizontal,
     Trash2,
-    ShieldCheck,
-    Building2,
-    CheckCircle2,
-    AlertCircle,
   } from '@lucide/svelte';
 
   let {
@@ -16,15 +17,7 @@
     companyName = '',
   } = $props();
 
-  let messages = $state([
-    {
-      role: 'assistant',
-      content: `Hello! I'm your **Sustainability AI Assistant**.
-
-I can answer questions regarding official disclosures, green capital expenditures, and OJK Green Taxonomy (TKBI 2024) compliance. What would you like to explore?`,
-    },
-  ]);
-
+  let messages = $state([]);
   let inputQuery = $state('');
   let isStreaming = $state(false);
   let provider = $state('gemini');
@@ -40,7 +33,7 @@ I can answer questions regarding official disclosures, green capital expenditure
     messages = [...messages, { role: 'user', content: userMsg }];
     isStreaming = true;
 
-    // Append empty assistant message to populate via SSE
+    // Append empty assistant placeholder to populate via SSE
     messages = [...messages, { role: 'assistant', content: '' }];
     const assistantIndex = messages.length - 1;
 
@@ -102,63 +95,52 @@ I can answer questions regarding official disclosures, green capital expenditure
     handleSend();
   }
 
-  function handleResetChat() {
-    messages = [
-      {
-        role: 'assistant',
-        content: `Chat cleared. Ask me anything about **${activeTicker}** or their environmental compliance.`,
-      },
-    ];
+  function handleNewChat() {
+    messages = [];
+    inputQuery = '';
   }
 </script>
 
-<div class="max-w-4xl mx-auto h-[calc(100vh-8.5rem)] flex flex-col justify-between">
-  <!-- Top Bar: Context & Quick Actions -->
-  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-xs flex items-center justify-between shrink-0 mb-4">
-    <div class="flex items-center space-x-3">
-      <div class="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-        <Sparkles size={18} />
-      </div>
-      <div>
-        <h2 class="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-          <span>Ask AI about {activeTicker}</span>
-          <span class="text-xs px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-mono font-medium">IDX:{activeTicker}</span>
-        </h2>
-        <p class="text-xs text-slate-500 dark:text-slate-400">
-          Interactive assistant connected to audited financials & OJK TKBI 2024 criteria.
-        </p>
-      </div>
+<div class="flex-1 flex flex-col h-[calc(100vh-7rem)] overflow-hidden">
+  <!-- Top Bar: Title & Pill Actions (exact reference style) -->
+  <div class="px-6 py-3 flex items-center justify-between shrink-0 border-b border-slate-100 dark:border-slate-800/80 bg-white/50 dark:bg-slate-900/50 backdrop-blur-xs">
+    <div class="flex items-center space-x-2.5">
+      <h1 class="text-lg font-semibold text-slate-900 dark:text-slate-100 tracking-tight">Ask AI</h1>
+      <span class="text-xs px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-mono">
+        IDX:{activeTicker}
+      </span>
     </div>
 
-    <div class="flex items-center space-x-1.5">
+    <div class="flex items-center space-x-2">
       <button
         type="button"
         onclick={() => (showSettings = !showSettings)}
-        class="p-2 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-        title="AI Settings"
+        class="flex items-center space-x-1.5 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-2xs"
+        title="Settings"
       >
-        <SlidersHorizontal size={15} />
+        <SlidersHorizontal size={13} />
+        <span>Settings</span>
       </button>
 
       <button
         type="button"
-        onclick={handleResetChat}
-        class="p-2 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-        title="Clear conversation"
+        onclick={handleNewChat}
+        class="flex items-center space-x-1 px-3.5 py-1.5 rounded-full bg-slate-900 dark:bg-emerald-500 hover:bg-slate-800 dark:hover:bg-emerald-400 text-white dark:text-slate-950 text-xs font-medium transition-all shadow-xs"
       >
-        <Trash2 size={15} />
+        <Plus size={14} />
+        <span>New chat</span>
       </button>
     </div>
   </div>
 
   <!-- Settings Panel (Collapsible) -->
   {#if showSettings}
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-xs mb-4 text-xs space-y-3">
+    <div class="mx-6 mt-3 p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xs text-xs space-y-3">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <label for="provider-select" class="font-medium text-slate-700 dark:text-slate-300 block mb-1">Model Provider</label>
+          <label for="chat-provider" class="font-medium text-slate-700 dark:text-slate-300 block mb-1">Model Provider</label>
           <select
-            id="provider-select"
+            id="chat-provider"
             bind:value={provider}
             class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-900 dark:text-slate-100"
           >
@@ -169,12 +151,12 @@ I can answer questions regarding official disclosures, green capital expenditure
         </div>
 
         <div>
-          <label for="apikey-input" class="font-medium text-slate-700 dark:text-slate-300 block mb-1">API Key (Optional / Offline Default)</label>
+          <label for="chat-apikey" class="font-medium text-slate-700 dark:text-slate-300 block mb-1">API Key (Optional / Uses System Default)</label>
           <input
-            id="apikey-input"
+            id="chat-apikey"
             type="password"
             bind:value={apiKey}
-            placeholder="System default key will be used if blank"
+            placeholder="AIzaSy... / sk-..."
             class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs font-mono"
           />
         </div>
@@ -182,76 +164,156 @@ I can answer questions regarding official disclosures, green capital expenditure
     </div>
   {/if}
 
-  <!-- Messages Scroll Area -->
-  <div class="flex-1 overflow-y-auto space-y-4 pr-1 py-1">
-    {#each messages as msg}
-      <div class="flex flex-col {msg.role === 'user' ? 'items-end' : 'items-start'}">
-        <span class="text-[10px] text-slate-400 dark:text-slate-500 mb-1 px-1 font-medium">
-          {msg.role === 'user' ? 'You' : `AI Assistant (${activeTicker})`}
-        </span>
-        <div
-          class="max-w-[85%] rounded-2xl p-4 text-xs leading-relaxed whitespace-pre-wrap {msg.role === 'user'
-            ? 'bg-slate-900 dark:bg-emerald-600 text-white rounded-tr-xs shadow-xs font-normal'
-            : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 rounded-tl-xs shadow-xs'}"
-        >
-          {msg.content}
+  <!-- Content Area -->
+  {#if messages.length === 0}
+    <!-- Hero State: Centered Title & Floating Chat Box (WITHOUT background device graphic) -->
+    <div class="flex-1 flex flex-col items-center justify-center p-6 max-w-2xl mx-auto w-full -mt-6">
+      <!-- Clean Hero Headline -->
+      <h2 class="text-3xl font-light text-slate-800 dark:text-slate-200 tracking-tight text-center mb-7">
+        Hello, what's on <strong class="font-bold text-slate-950 dark:text-white">your mind?</strong>
+      </h2>
+
+      <!-- The Chat Box (Reference Styling) -->
+      <div class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm hover:shadow-md transition-shadow p-4">
+        <!-- Input Top Row with Sparkle Icon -->
+        <div class="flex items-start space-x-2.5 mb-5 px-1">
+          <Sparkles size={16} class="text-blue-500 shrink-0 mt-0.5" />
+          <textarea
+            bind:value={inputQuery}
+            onkeydown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSend();
+              }
+            }}
+            placeholder={`Ask me anything about ${activeTicker} or Indonesia Green Taxonomy (TKBI)...`}
+            rows="2"
+            class="w-full bg-transparent text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none resize-none leading-relaxed"
+          ></textarea>
+        </div>
+
+        <!-- Chat Box Bottom Action Bar -->
+        <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800/80 px-1">
+          <div class="flex items-center space-x-3 text-xs text-slate-500 dark:text-slate-400">
+            <button
+              type="button"
+              onclick={() => handleQuickPrompt(`Check environmental criteria citations for ${activeTicker}`)}
+              class="flex items-center space-x-1.5 hover:text-slate-900 dark:hover:text-slate-200 transition-colors"
+            >
+              <Paperclip size={14} />
+              <span>Attach</span>
+            </button>
+
+            <button
+              type="button"
+              onclick={() => handleQuickPrompt(`Verify OJK TKBI compliance status for ${activeTicker}`)}
+              class="flex items-center space-x-1.5 hover:text-slate-900 dark:hover:text-slate-200 transition-colors"
+            >
+              <Search size={14} />
+              <span>Search</span>
+            </button>
+
+            <div class="flex items-center space-x-1 hover:text-slate-900 dark:hover:text-slate-200 cursor-pointer">
+              <span>Company: {activeTicker}</span>
+              <ChevronDown size={12} />
+            </div>
+          </div>
+
+          <div class="flex items-center space-x-2">
+            <button
+              type="button"
+              class="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
+              title="Voice query"
+            >
+              <Mic size={16} />
+            </button>
+
+            <button
+              type="button"
+              onclick={handleSend}
+              disabled={isStreaming || !inputQuery.trim()}
+              class="w-8 h-8 rounded-full bg-slate-950 dark:bg-emerald-500 hover:bg-slate-800 dark:hover:bg-emerald-400 text-white dark:text-slate-950 flex items-center justify-center transition-all disabled:opacity-40 shadow-xs"
+            >
+              <ArrowUp size={16} />
+            </button>
+          </div>
         </div>
       </div>
-    {/each}
 
-    {#if isStreaming}
-      <div class="flex items-center space-x-2 text-xs text-emerald-600 dark:text-emerald-400 animate-pulse py-2 px-2">
-        <Sparkles size={14} />
-        <span>Analyzing {activeTicker} disclosure reports & financial cash flows...</span>
+      <!-- Quick Question Suggestions below chat box -->
+      <div class="flex flex-wrap justify-center gap-2 mt-5 text-xs">
+        <button
+          type="button"
+          onclick={() => handleQuickPrompt(`What are the primary greenwashing risks for ${activeTicker}?`)}
+          class="px-3 py-1.5 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-2xs"
+        >
+          🔍 Greenwashing risks
+        </button>
+        <button
+          type="button"
+          onclick={() => handleQuickPrompt(`Compare ${activeTicker}'s operating cash flow vs green capital expenditure.`)}
+          class="px-3 py-1.5 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-2xs"
+        >
+          💰 Capex vs Disclosures
+        </button>
+        <button
+          type="button"
+          onclick={() => handleQuickPrompt(`Show OJK TKBI Versi 3 criteria alignment for ${activeTicker}.`)}
+          class="px-3 py-1.5 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-2xs"
+        >
+          📋 TKBI Taxonomy criteria
+        </button>
       </div>
-    {/if}
-  </div>
-
-  <!-- Prompt Suggestions & Input Box (Fixed at bottom of chat) -->
-  <div class="mt-4 pt-2 shrink-0 space-y-2.5">
-    <!-- Quick Question Chips -->
-    <div class="flex gap-2 overflow-x-auto pb-1 text-xs">
-      <button
-        type="button"
-        onclick={() => handleQuickPrompt(`What are the key greenwashing risks or disclosure gaps for ${activeTicker}?`)}
-        class="whitespace-nowrap px-3 py-1.5 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-2xs"
-      >
-        🔍 Greenwashing risk check
-      </button>
-      <button
-        type="button"
-        onclick={() => handleQuickPrompt(`Break down ${activeTicker}'s capital expenditure into green vs conventional spending.`)}
-        class="whitespace-nowrap px-3 py-1.5 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-2xs"
-      >
-        💰 Green spending vs Capex
-      </button>
-      <button
-        type="button"
-        onclick={() => handleQuickPrompt(`Is ${activeTicker} compliant with OJK TKBI Versi 3 technical criteria?`)}
-        class="whitespace-nowrap px-3 py-1.5 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-2xs"
-      >
-        📋 TKBI compliance summary
-      </button>
     </div>
+  {:else}
+    <!-- Active Conversation Mode -->
+    <div class="flex-1 flex flex-col justify-between overflow-hidden px-6 py-4 max-w-3xl mx-auto w-full">
+      <div class="flex-1 overflow-y-auto space-y-4 pr-1">
+        {#each messages as msg}
+          <div class="flex flex-col {msg.role === 'user' ? 'items-end' : 'items-start'}">
+            <span class="text-[10px] text-slate-400 dark:text-slate-500 mb-1 px-1 font-medium">
+              {msg.role === 'user' ? 'You' : `AI Assistant (${activeTicker})`}
+            </span>
+            <div
+              class="max-w-[85%] rounded-2xl p-4 text-xs leading-relaxed whitespace-pre-wrap {msg.role === 'user'
+                ? 'bg-slate-900 dark:bg-emerald-600 text-white rounded-tr-xs shadow-xs font-normal'
+                : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 rounded-tl-xs shadow-xs'}"
+            >
+              {msg.content}
+            </div>
+          </div>
+        {/each}
 
-    <!-- Main Input Bar -->
-    <form
-      onsubmit={(e) => { e.preventDefault(); handleSend(); }}
-      class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-2 pl-4 shadow-sm flex items-center gap-2"
-    >
-      <input
-        type="text"
-        bind:value={inputQuery}
-        placeholder={`Ask anything about ${activeTicker}...`}
-        class="flex-1 bg-transparent text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none"
-      />
-      <button
-        type="submit"
-        disabled={isStreaming || !inputQuery.trim()}
-        class="w-8 h-8 rounded-xl bg-slate-900 dark:bg-emerald-500 hover:bg-slate-800 dark:hover:bg-emerald-400 text-white dark:text-slate-950 flex items-center justify-center transition-all disabled:opacity-40 shadow-xs shrink-0"
-      >
-        <ArrowUp size={16} />
-      </button>
-    </form>
-  </div>
+        {#if isStreaming}
+          <div class="flex items-center space-x-2 text-xs text-blue-600 dark:text-emerald-400 animate-pulse py-2 px-2">
+            <Sparkles size={14} />
+            <span>Analyzing {activeTicker} disclosure reports & financial cash flows...</span>
+          </div>
+        {/if}
+      </div>
+
+      <!-- Bottom Chat Box in Conversation Mode -->
+      <div class="mt-3 pt-2 shrink-0">
+        <div class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm p-3">
+          <div class="flex items-center space-x-2">
+            <input
+              type="text"
+              bind:value={inputQuery}
+              onkeydown={(e) => e.key === 'Enter' && handleSend()}
+              placeholder={`Ask a follow-up about ${activeTicker}...`}
+              class="flex-1 bg-transparent text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none px-2"
+            />
+            <button
+              type="button"
+              onclick={handleSend}
+              disabled={isStreaming || !inputQuery.trim()}
+              class="w-7 h-7 rounded-full bg-slate-950 dark:bg-emerald-500 hover:bg-slate-800 dark:hover:bg-emerald-400 text-white dark:text-slate-950 flex items-center justify-center transition-all disabled:opacity-40 shadow-xs"
+            >
+              <ArrowUp size={14} />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  {/if}
 </div>
