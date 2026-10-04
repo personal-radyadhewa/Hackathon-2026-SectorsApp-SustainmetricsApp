@@ -13,6 +13,7 @@
     Search,
     ChevronDown,
     SlidersHorizontal,
+    Plus,
   } from '@lucide/svelte';
 
   let {
@@ -24,6 +25,7 @@
 
   let isDarkMode = $state(false);
   let searchQuery = $state('');
+  let customTickerInput = $state('');
 
   import { onMount } from 'svelte';
   onMount(() => {
@@ -48,10 +50,18 @@
   }
 
   const predefinedTickers = ['PGEO', 'ADRO', 'BBRI', 'BREN', 'BUMI'];
+
+  function handleCustomTickerSubmit(e) {
+    e.preventDefault();
+    if (customTickerInput.trim()) {
+      onSelectTicker(customTickerInput.trim().toUpperCase());
+      customTickerInput = '';
+    }
+  }
 </script>
 
 <aside class="w-60 bg-transparent flex flex-col justify-between shrink-0 h-screen select-none pl-4 py-4 pr-2">
-  <div class="flex flex-col space-y-4">
+  <div class="flex flex-col space-y-3.5">
     <!-- Brand Logo -->
     <div class="flex items-center space-x-2.5 px-2 pt-1 pb-0.5">
       <div class="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-xs font-bold text-xs">
@@ -62,7 +72,7 @@
       </h1>
     </div>
 
-    <!-- Search Input (exact reference styling) -->
+    <!-- Search Input -->
     <div class="px-1">
       <div class="relative flex items-center">
         <Search size={13} class="absolute left-3 text-slate-400" />
@@ -78,8 +88,51 @@
       </div>
     </div>
 
-    <!-- Categorized Menu (exact match to uploaded image) -->
-    <div class="space-y-4 overflow-y-auto max-h-[calc(100vh-270px)] pr-1">
+    <!-- Target Company Watcher Card (Positioned At The Top) -->
+    <div class="px-1">
+      <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-2.5 shadow-2xs space-y-2">
+        <div class="flex items-center justify-between px-1">
+          <span class="text-[10px] uppercase font-semibold text-slate-400 dark:text-slate-500 tracking-wider">
+            Target Company
+          </span>
+          <span class="text-[10px] font-mono font-bold text-blue-600 dark:text-emerald-400">
+            {activeTicker}
+          </span>
+        </div>
+
+        <!-- Quick Pick Tickers -->
+        <div class="grid grid-cols-5 gap-1">
+          {#each predefinedTickers as t}
+            <button
+              type="button"
+              onclick={() => onSelectTicker(t)}
+              class="py-1 px-1 text-[11px] font-mono font-semibold rounded-lg transition-all text-center {activeTicker === t ? 'bg-slate-900 text-white dark:bg-emerald-500 dark:text-slate-950 shadow-xs' : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'}"
+            >
+              {t}
+            </button>
+          {/each}
+        </div>
+
+        <!-- Custom Stock Code Picker Form -->
+        <form onsubmit={handleCustomTickerSubmit} class="flex items-center gap-1.5 pt-0.5">
+          <input
+            type="text"
+            bind:value={customTickerInput}
+            placeholder="Custom ticker..."
+            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700 rounded-lg px-2.5 py-1 text-[11px] font-mono text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-500 uppercase"
+          />
+          <button
+            type="submit"
+            class="px-2 py-1 bg-slate-900 dark:bg-emerald-500 hover:bg-slate-800 dark:hover:bg-emerald-400 text-white dark:text-slate-950 text-[10px] font-medium rounded-lg transition-colors shrink-0"
+          >
+            Pick
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Categorized Menu (Exact Match To Reference) -->
+    <div class="space-y-4 overflow-y-auto max-h-[calc(100vh-340px)] pr-1">
       <!-- Section 1: Overview -->
       <div class="space-y-1">
         <div class="flex items-center justify-between px-2 text-[11px] font-medium text-slate-400 dark:text-slate-500 mb-1">
@@ -143,22 +196,6 @@
           <Calendar size={15} class={currentView === 'schedules' ? 'text-blue-600 dark:text-emerald-400' : 'text-slate-400'} />
           <span>Multi-calendar</span>
         </button>
-
-        <!-- Company Filter (Subtle Pill Dropdown) -->
-        <div class="px-2 pt-1 pb-1">
-          <div class="text-[10px] text-slate-400 mb-1">Target Company:</div>
-          <div class="flex flex-wrap gap-1">
-            {#each predefinedTickers as t}
-              <button
-                type="button"
-                onclick={() => onSelectTicker(t)}
-                class="px-2 py-0.5 rounded-md text-[10px] font-mono font-semibold transition-all {activeTicker === t ? 'bg-slate-900 text-white dark:bg-emerald-500 dark:text-slate-950' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200/60 dark:border-slate-700'}"
-              >
-                {t}
-              </button>
-            {/each}
-          </div>
-        </div>
       </div>
 
       <!-- Section 3: Manager -->
@@ -187,9 +224,9 @@
     </div>
   </div>
 
-  <!-- Bottom Helper Card & User Row (Exact Match to Uploaded Image) -->
+  <!-- Bottom Helper Card & User Profile Row -->
   <div class="space-y-3 pt-2">
-    <!-- "How can I help?" Card (Exact Reference) -->
+    <!-- "How can I help?" Card -->
     <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 text-center shadow-2xs space-y-1.5">
       <div class="text-xs font-semibold text-slate-900 dark:text-slate-100">
         How can I help?
@@ -209,7 +246,7 @@
       </div>
     </div>
 
-    <!-- User Profile Bar (David Admin ↕ - Exact Reference) -->
+    <!-- User Profile Bar (David Admin ↕) -->
     <div class="flex items-center justify-between px-1 py-1">
       <div class="flex items-center space-x-2.5">
         <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center text-white font-bold text-xs shadow-xs overflow-hidden">
