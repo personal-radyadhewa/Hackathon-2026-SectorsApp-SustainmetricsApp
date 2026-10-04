@@ -27,8 +27,19 @@
   let searchQuery = $state('');
   let customTickerInput = $state('');
 
-  import { onMount } from 'svelte';
+  let tickersList = $state(['PGEO', 'ADRO', 'BBRI', 'BREN', 'BUMI']);
+
   onMount(() => {
+    try {
+      const saved = localStorage.getItem('sustainmetric_tickers');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          tickersList = parsed;
+        }
+      }
+    } catch (e) {}
+
     if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.documentElement.classList.add('dark');
       isDarkMode = true;
@@ -49,13 +60,35 @@
     }
   }
 
-  const predefinedTickers = ['PGEO', 'ADRO', 'BBRI', 'BREN', 'BUMI'];
+  function saveTickers(updated) {
+    try {
+      localStorage.setItem('sustainmetric_tickers', JSON.stringify(updated));
+    } catch (e) {}
+  }
 
   function handleCustomTickerSubmit(e) {
     e.preventDefault();
-    if (customTickerInput.trim()) {
-      onSelectTicker(customTickerInput.trim().toUpperCase());
+    const clean = customTickerInput.trim().toUpperCase();
+    if (clean) {
+      if (!tickersList.includes(clean)) {
+        tickersList = [...tickersList, clean];
+        saveTickers(tickersList);
+      }
+      onSelectTicker(clean);
       customTickerInput = '';
+    }
+  }
+
+  function handleRemoveTicker(t, e) {
+    e.stopPropagation();
+    if (tickersList.length <= 1) {
+      alert('Keep at least one company in your watch list.');
+      return;
+    }
+    tickersList = tickersList.filter((item) => item !== t);
+    saveTickers(tickersList);
+    if (activeTicker === t) {
+      onSelectTicker(tickersList[0]);
     }
   }
 </script>
@@ -100,32 +133,42 @@
           </span>
         </div>
 
-        <!-- Quick Pick Tickers -->
-        <div class="grid grid-cols-5 gap-1">
-          {#each predefinedTickers as t}
+        <!-- Dynamic Watchlist Tickers Pills with Remove × -->
+        <div class="flex flex-wrap gap-1">
+          {#each tickersList as t}
             <button
               type="button"
               onclick={() => onSelectTicker(t)}
-              class="py-1 px-1 text-[11px] font-mono font-semibold rounded-lg transition-all text-center {activeTicker === t ? 'bg-slate-900 text-white dark:bg-emerald-500 dark:text-slate-950 shadow-xs' : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'}"
+              class="group flex items-center py-1 px-2 text-[11px] font-mono font-semibold rounded-lg transition-all {activeTicker === t ? 'bg-slate-900 text-white dark:bg-emerald-500 dark:text-slate-950 shadow-xs' : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'}"
             >
-              {t}
+              <span>{t}</span>
+              <span
+                role="button"
+                tabindex="0"
+                onclick={(e) => handleRemoveTicker(t, e)}
+                onkeydown={(e) => e.key === 'Enter' && handleRemoveTicker(t, e)}
+                title="Remove {t} from watchlist"
+                class="ml-1.5 -mr-0.5 text-[9px] text-slate-400 hover:text-rose-500 opacity-60 hover:opacity-100 transition-opacity"
+              >
+                ✕
+              </span>
             </button>
           {/each}
         </div>
 
-        <!-- Custom Stock Code Picker Form -->
+        <!-- Add Custom Stock Code Form -->
         <form onsubmit={handleCustomTickerSubmit} class="flex items-center gap-1.5 pt-0.5">
           <input
             type="text"
             bind:value={customTickerInput}
-            placeholder="Custom ticker..."
+            placeholder="+ Add company..."
             class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700 rounded-lg px-2.5 py-1 text-[11px] font-mono text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-500 uppercase"
           />
           <button
             type="submit"
             class="px-2 py-1 bg-slate-900 dark:bg-emerald-500 hover:bg-slate-800 dark:hover:bg-emerald-400 text-white dark:text-slate-950 text-[10px] font-medium rounded-lg transition-colors shrink-0"
           >
-            Pick
+            Add
           </button>
         </form>
       </div>
