@@ -1,14 +1,18 @@
 <script>
   import {
-    Sun,
-    Moon,
     LayoutDashboard,
     FileSpreadsheet,
     Activity,
     Clock,
-    Bot,
     Sparkles,
-    ShieldCheck,
+    Calendar,
+    MessageSquare,
+    ChevronsUpDown,
+    Sun,
+    Moon,
+    Search,
+    ChevronDown,
+    SlidersHorizontal,
   } from '@lucide/svelte';
 
   let {
@@ -19,6 +23,7 @@
   } = $props();
 
   let isDarkMode = $state(false);
+  let searchQuery = $state('');
 
   import { onMount } from 'svelte';
   onMount(() => {
@@ -43,149 +48,186 @@
   }
 
   const predefinedTickers = ['PGEO', 'ADRO', 'BBRI', 'BREN', 'BUMI'];
-  let customTickerInput = $state('');
-
-  function handleCustomTickerSubmit(e) {
-    e.preventDefault();
-    if (customTickerInput.trim()) {
-      onSelectTicker(customTickerInput.trim().toUpperCase());
-      customTickerInput = '';
-    }
-  }
 </script>
 
-<aside class="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between shrink-0 h-screen select-none">
-  <div class="flex flex-col">
-    <!-- Logo & Brand Header -->
-    <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-      <div class="flex items-center space-x-2.5">
-        <div class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/60 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-          <ShieldCheck size={18} />
-        </div>
-        <div>
-          <h1 class="text-sm font-semibold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
-            SustainMetric <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-medium">IDX</span>
-          </h1>
-          <p class="text-[11px] text-slate-500 dark:text-slate-400">Green Auditor</p>
-        </div>
+<aside class="w-60 bg-transparent flex flex-col justify-between shrink-0 h-screen select-none pl-4 py-4 pr-2">
+  <div class="flex flex-col space-y-4">
+    <!-- Brand Logo -->
+    <div class="flex items-center space-x-2.5 px-2 pt-1 pb-0.5">
+      <div class="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-xs font-bold text-xs">
+        <Sparkles size={16} class="fill-current" />
       </div>
+      <h1 class="text-base font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+        AI Manager
+      </h1>
     </div>
 
-    <!-- Company Selector -->
-    <div class="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/30">
-      <span class="text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold mb-2 block">
-        Select Company
-      </span>
-      <div class="grid grid-cols-5 gap-1 mb-2.5">
-        {#each predefinedTickers as t}
-          <button
-            type="button"
-            onclick={() => onSelectTicker(t)}
-            class="py-1 px-1.5 text-xs font-semibold rounded-md transition-all text-center {activeTicker === t ? 'bg-slate-900 text-white dark:bg-emerald-500 dark:text-slate-950 shadow-xs' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200/60 dark:border-slate-700'}"
-          >
-            {t}
-          </button>
-        {/each}
-      </div>
-
-      <form onsubmit={handleCustomTickerSubmit} class="flex items-center gap-1.5">
+    <!-- Search Input (exact reference styling) -->
+    <div class="px-1">
+      <div class="relative flex items-center">
+        <Search size={13} class="absolute left-3 text-slate-400" />
         <input
           type="text"
-          bind:value={customTickerInput}
-          placeholder="Enter stock code..."
-          class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md px-2.5 py-1 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+          bind:value={searchQuery}
+          placeholder="Search..."
+          class="w-full bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl pl-8 pr-10 py-1.5 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-2xs"
         />
+        <div class="absolute right-2 px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-[10px] text-slate-400 font-mono">
+          ⌘ S
+        </div>
+      </div>
+    </div>
+
+    <!-- Categorized Menu (exact match to uploaded image) -->
+    <div class="space-y-4 overflow-y-auto max-h-[calc(100vh-270px)] pr-1">
+      <!-- Section 1: Overview -->
+      <div class="space-y-1">
+        <div class="flex items-center justify-between px-2 text-[11px] font-medium text-slate-400 dark:text-slate-500 mb-1">
+          <span>Overview</span>
+          <div class="w-4 h-4 rounded-full bg-slate-950 dark:bg-slate-800 text-white flex items-center justify-center text-[9px] shadow-2xs">
+            ▾
+          </div>
+        </div>
+
         <button
-          type="submit"
-          class="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-medium rounded-md border border-slate-200 dark:border-slate-700 transition-colors"
+          type="button"
+          onclick={() => onSelectView('dashboard')}
+          class="w-full flex items-center space-x-3 px-2.5 py-1.5 rounded-xl text-xs font-medium transition-all {currentView === 'dashboard' ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-semibold shadow-2xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'}"
         >
-          Go
+          <LayoutDashboard size={15} class={currentView === 'dashboard' ? 'text-blue-600 dark:text-emerald-400' : 'text-slate-400'} />
+          <span>Dashboard</span>
         </button>
-      </form>
+
+        <button
+          type="button"
+          onclick={() => onSelectView('chat')}
+          class="w-full flex items-center space-x-3 px-2.5 py-1.5 rounded-xl text-xs font-medium transition-all {currentView === 'chat' ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-semibold shadow-2xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'}"
+        >
+          <Sparkles size={15} class={currentView === 'chat' ? 'text-blue-600 dark:text-emerald-400' : 'text-slate-400'} />
+          <span>Ask AI</span>
+        </button>
+
+        <button
+          type="button"
+          onclick={() => onSelectView('tkbi')}
+          class="w-full flex items-center space-x-3 px-2.5 py-1.5 rounded-xl text-xs font-medium transition-all {currentView === 'tkbi' ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-semibold shadow-2xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'}"
+        >
+          <FileSpreadsheet size={15} class={currentView === 'tkbi' ? 'text-blue-600 dark:text-emerald-400' : 'text-slate-400'} />
+          <span>Green Checklist</span>
+        </button>
+
+        <button
+          type="button"
+          onclick={() => onSelectView('traces')}
+          class="w-full flex items-center space-x-3 px-2.5 py-1.5 rounded-xl text-xs font-medium transition-all {currentView === 'traces' ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-semibold shadow-2xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'}"
+        >
+          <Activity size={15} class={currentView === 'traces' ? 'text-blue-600 dark:text-emerald-400' : 'text-slate-400'} />
+          <span>Activity Log</span>
+        </button>
+      </div>
+
+      <!-- Section 2: Tools -->
+      <div class="space-y-1">
+        <div class="flex items-center justify-between px-2 text-[11px] font-medium text-slate-400 dark:text-slate-500 mb-1">
+          <span>Tools</span>
+          <div class="w-4 h-4 rounded-full bg-slate-950 dark:bg-slate-800 text-white flex items-center justify-center text-[9px] shadow-2xs">
+            ▾
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onclick={() => onSelectView('schedules')}
+          class="w-full flex items-center space-x-3 px-2.5 py-1.5 rounded-xl text-xs font-medium transition-all {currentView === 'schedules' ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-semibold shadow-2xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'}"
+        >
+          <Calendar size={15} class={currentView === 'schedules' ? 'text-blue-600 dark:text-emerald-400' : 'text-slate-400'} />
+          <span>Multi-calendar</span>
+        </button>
+
+        <!-- Company Filter (Subtle Pill Dropdown) -->
+        <div class="px-2 pt-1 pb-1">
+          <div class="text-[10px] text-slate-400 mb-1">Target Company:</div>
+          <div class="flex flex-wrap gap-1">
+            {#each predefinedTickers as t}
+              <button
+                type="button"
+                onclick={() => onSelectTicker(t)}
+                class="px-2 py-0.5 rounded-md text-[10px] font-mono font-semibold transition-all {activeTicker === t ? 'bg-slate-900 text-white dark:bg-emerald-500 dark:text-slate-950' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200/60 dark:border-slate-700'}"
+              >
+                {t}
+              </button>
+            {/each}
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Manager -->
+      <div class="space-y-1">
+        <div class="flex items-center justify-between px-2 text-[11px] font-medium text-slate-400 dark:text-slate-500 mb-1">
+          <span>Manager</span>
+          <div class="w-4 h-4 rounded-full bg-slate-950 dark:bg-slate-800 text-white flex items-center justify-center text-[9px] shadow-2xs">
+            ▾
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onclick={toggleTheme}
+          class="w-full flex items-center space-x-3 px-2.5 py-1.5 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors"
+        >
+          {#if isDarkMode}
+            <Moon size={15} class="text-slate-400" />
+            <span>Dark Theme</span>
+          {:else}
+            <Sun size={15} class="text-amber-500" />
+            <span>Light Theme</span>
+          {/if}
+        </button>
+      </div>
     </div>
-
-    <!-- Primary Action: Ask about activeTicker -->
-    <div class="p-3">
-      <button
-        type="button"
-        onclick={() => onSelectView('chat')}
-        class="w-full flex items-center justify-center space-x-2 py-2 px-3 rounded-lg bg-slate-900 dark:bg-emerald-500 hover:bg-slate-800 dark:hover:bg-emerald-400 text-white dark:text-slate-950 font-medium text-xs transition-all shadow-xs"
-      >
-        <Sparkles size={14} />
-        <span>Ask about {activeTicker}</span>
-      </button>
-    </div>
-
-    <!-- Main Navigation Links -->
-    <nav class="px-3 py-1 space-y-1">
-      <button
-        type="button"
-        onclick={() => onSelectView('chat')}
-        class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-medium transition-all {currentView === 'chat' ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-semibold shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100'}"
-      >
-        <Bot size={16} class={currentView === 'chat' ? 'text-emerald-500' : 'text-slate-400 dark:text-slate-500'} />
-        <span>Ask AI Assistant</span>
-      </button>
-
-      <button
-        type="button"
-        onclick={() => onSelectView('dashboard')}
-        class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-medium transition-all {currentView === 'dashboard' ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-semibold shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100'}"
-      >
-        <LayoutDashboard size={16} class={currentView === 'dashboard' ? 'text-emerald-500' : 'text-slate-400 dark:text-slate-500'} />
-        <span>Company Overview</span>
-      </button>
-
-      <button
-        type="button"
-        onclick={() => onSelectView('tkbi')}
-        class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-medium transition-all {currentView === 'tkbi' ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-semibold shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100'}"
-      >
-        <FileSpreadsheet size={16} class={currentView === 'tkbi' ? 'text-emerald-500' : 'text-slate-400 dark:text-slate-500'} />
-        <span>Green Checklist</span>
-      </button>
-
-      <button
-        type="button"
-        onclick={() => onSelectView('traces')}
-        class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-medium transition-all {currentView === 'traces' ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-semibold shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100'}"
-      >
-        <Activity size={16} class={currentView === 'traces' ? 'text-emerald-500' : 'text-slate-400 dark:text-slate-500'} />
-        <span>Activity Log</span>
-      </button>
-
-      <button
-        type="button"
-        onclick={() => onSelectView('schedules')}
-        class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-medium transition-all {currentView === 'schedules' ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-semibold shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100'}"
-      >
-        <Clock size={16} class={currentView === 'schedules' ? 'text-emerald-500' : 'text-slate-400 dark:text-slate-500'} />
-        <span>Automated Monitoring</span>
-      </button>
-    </nav>
   </div>
 
-  <!-- Footer -->
-  <div class="p-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
-    <button
-      type="button"
-      onclick={toggleTheme}
-      class="w-full flex items-center justify-between px-3 py-2 rounded-lg border bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700/80 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-xs font-medium shadow-2xs"
-    >
-      <div class="flex items-center space-x-2">
-        {#if isDarkMode}
-          <Moon size={15} class="text-slate-400" />
-          <span>Dark Mode</span>
-        {:else}
-          <Sun size={15} class="text-amber-500" />
-          <span>Light Mode</span>
-        {/if}
+  <!-- Bottom Helper Card & User Row (Exact Match to Uploaded Image) -->
+  <div class="space-y-3 pt-2">
+    <!-- "How can I help?" Card (Exact Reference) -->
+    <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 text-center shadow-2xs space-y-1.5">
+      <div class="text-xs font-semibold text-slate-900 dark:text-slate-100">
+        How can I help?
       </div>
-      <span class="text-[10px] text-slate-400">Switch</span>
-    </button>
+      <p class="text-[11px] text-slate-400 leading-tight">
+        Ask me anything just a voice
+      </p>
+      <div class="pt-1.5">
+        <button
+          type="button"
+          onclick={() => onSelectView('chat')}
+          class="w-full py-1.5 px-3.5 rounded-full border border-blue-600/30 text-blue-600 dark:text-blue-400 text-xs font-medium hover:bg-blue-50 dark:hover:bg-blue-950/40 transition-colors flex items-center justify-center gap-1.5 shadow-2xs"
+        >
+          <MessageSquare size={13} />
+          <span>Chat with AI</span>
+        </button>
+      </div>
+    </div>
 
-    <div class="px-2 py-1 text-center text-[10px] text-slate-400 dark:text-slate-500">
-      <span>Indonesia Green Taxonomy (TKBI v3)</span>
+    <!-- User Profile Bar (David Admin ↕ - Exact Reference) -->
+    <div class="flex items-center justify-between px-1 py-1">
+      <div class="flex items-center space-x-2.5">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center text-white font-bold text-xs shadow-xs overflow-hidden">
+          <span>D</span>
+        </div>
+        <div>
+          <div class="text-xs font-semibold text-slate-900 dark:text-slate-100">David</div>
+          <div class="text-[10px] text-slate-400">Admin</div>
+        </div>
+      </div>
+      <button
+        type="button"
+        onclick={toggleTheme}
+        class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"
+        title="Switch Theme"
+      >
+        <ChevronsUpDown size={14} />
+      </button>
     </div>
   </div>
 </aside>
