@@ -7,8 +7,7 @@
     Activity,
     Clock,
     Bot,
-    Play,
-    RefreshCw,
+    Sparkles,
     ShieldCheck,
   } from '@lucide/svelte';
 
@@ -17,14 +16,9 @@
     onSelectView,
     activeTicker = 'PGEO',
     onSelectTicker,
-    onTriggerAudit,
-    isAuditing = false,
-    onToggleCopilot,
-    isCopilotOpen = false,
   } = $props();
 
-    let isDarkMode = $state(false);
-
+  let isDarkMode = $state(false);
 
   import { onMount } from 'svelte';
   onMount(() => {
@@ -105,31 +99,34 @@
           type="submit"
           class="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-medium rounded-md border border-slate-200 dark:border-slate-700 transition-colors"
         >
-          Check
+          Go
         </button>
       </form>
     </div>
 
-    <!-- Action Button -->
+    <!-- Primary Action: Ask about activeTicker -->
     <div class="p-3">
       <button
         type="button"
-        onclick={onTriggerAudit}
-        disabled={isAuditing}
-        class="w-full flex items-center justify-center space-x-2 py-2 px-3 rounded-lg bg-slate-900 dark:bg-emerald-500 hover:bg-slate-800 dark:hover:bg-emerald-400 text-white dark:text-slate-950 font-medium text-xs transition-all shadow-xs disabled:opacity-50"
+        onclick={() => onSelectView('chat')}
+        class="w-full flex items-center justify-center space-x-2 py-2 px-3 rounded-lg bg-slate-900 dark:bg-emerald-500 hover:bg-slate-800 dark:hover:bg-emerald-400 text-white dark:text-slate-950 font-medium text-xs transition-all shadow-xs"
       >
-        {#if isAuditing}
-          <RefreshCw size={14} class="animate-spin" />
-          <span>Analyzing {activeTicker}...</span>
-        {:else}
-          <Play size={14} class="fill-current" />
-          <span>Analyze {activeTicker}</span>
-        {/if}
+        <Sparkles size={14} />
+        <span>Ask about {activeTicker}</span>
       </button>
     </div>
 
     <!-- Main Navigation Links -->
     <nav class="px-3 py-1 space-y-1">
+      <button
+        type="button"
+        onclick={() => onSelectView('chat')}
+        class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-medium transition-all {currentView === 'chat' ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-semibold shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100'}"
+      >
+        <Bot size={16} class={currentView === 'chat' ? 'text-emerald-500' : 'text-slate-400 dark:text-slate-500'} />
+        <span>Ask AI Assistant</span>
+      </button>
+
       <button
         type="button"
         onclick={() => onSelectView('dashboard')}
@@ -168,7 +165,7 @@
     </nav>
   </div>
 
-  <!-- Footer & AI Copilot Trigger -->
+  <!-- Footer -->
   <div class="p-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
     <button
       type="button"
@@ -185,18 +182,6 @@
         {/if}
       </div>
       <span class="text-[10px] text-slate-400">Switch</span>
-    </button>
-
-    <button
-      type="button"
-      onclick={onToggleCopilot}
-      class="w-full flex items-center justify-between px-3 py-2 rounded-lg border {isCopilotOpen ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-300' : 'bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700/80 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'} transition-colors text-xs font-medium shadow-2xs"
-    >
-      <div class="flex items-center space-x-2">
-        <Bot size={15} class={isCopilotOpen ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'} />
-        <span>AI Copilot</span>
-      </div>
-      <span class="w-2 h-2 rounded-full {isCopilotOpen ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300 dark:bg-slate-600'}"></span>
     </button>
 
     <div class="px-2 py-1 text-center text-[10px] text-slate-400 dark:text-slate-500">
