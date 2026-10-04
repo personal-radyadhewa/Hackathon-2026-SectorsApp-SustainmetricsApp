@@ -1,19 +1,11 @@
 <script>
   import { onMount } from 'svelte';
-  import {
-    ChevronLeft,
-    Bell,
-    MessageSquare,
-    Headphones,
-    Sparkles,
-  } from '@lucide/svelte';
-
   import Sidebar from './lib/components/Sidebar.svelte';
-  import AskAIView from './lib/components/AskAIView.svelte';
   import DashboardView from './lib/components/DashboardView.svelte';
   import TKBISheetView from './lib/components/TKBISheetView.svelte';
   import TraceWaterfallView from './lib/components/TraceWaterfallView.svelte';
   import SchedulesView from './lib/components/SchedulesView.svelte';
+  import AICopilotDrawer from './lib/components/AICopilotDrawer.svelte';
 
   import {
     fetchAudits,
@@ -25,7 +17,7 @@
     fetchSchedules,
   } from './lib/api.js';
 
-  let currentView = $state('ask-ai');
+  let currentView = $state('dashboard');
   let activeTicker = $state('PGEO');
   let auditRun = $state(null);
   let tkbiEntries = $state([]);
@@ -33,11 +25,13 @@
   let benchmarks = $state([]);
   let schedules = $state([]);
   let isAuditing = $state(false);
+  let isCopilotOpen = $state(false);
   let isLoading = $state(true);
 
   async function loadTickerData(ticker) {
     isLoading = true;
     try {
+      // Find latest audit for this ticker in audits list
       const allAudits = await fetchAudits();
       const existing = allAudits.find((a) => a.ticker === ticker);
 
@@ -46,9 +40,11 @@
         tkbiEntries = await fetchTKBIEntries(existing.id);
         traces = await fetchAuditTraces(existing.id);
       } else {
+        // Automatically trigger audit for fresh ticker
         await handleTriggerAudit(ticker);
       }
 
+      // Refresh benchmark scatter plot
       const benchData = await fetchBenchmarks();
       benchmarks = benchData.tickers || [];
     } catch (err) {
@@ -71,7 +67,7 @@
         benchmarks = benchData.tickers || [];
       }
     } catch (err) {
-      alert(`Audit error: ${err.message}`);
+      alert(`Audit trigger error: ${err.message}`);
     } finally {
       isAuditing = false;
     }
@@ -100,17 +96,15 @@
     await loadTickerData(activeTicker);
     await handleReloadSchedules();
   });
-
   const viewLabels = {
-    'ask-ai': 'Ask AI',
-    dashboard: 'Dashboard',
+    dashboard: 'Overview',
     tkbi: 'Green Checklist',
     traces: 'Activity Log',
     schedules: 'Automated Monitoring',
   };
 </script>
 
-<div class="flex h-screen w-screen overflow-hidden bg-[#f4f5f7] dark:bg-[#080b11] text-slate-900 dark:text-slate-100 font-sans">
+<div class="flex h-screen w-screen overflow-hidden bg-slate-50 dark:bg-[#090D16] text-slate-900 dark:text-slate-100 font-sans">
   <!-- Left Navigation Sidebar -->
   <Sidebar
     {currentView}
@@ -119,108 +113,79 @@
     onSelectTicker={handleSelectTicker}
     onTriggerAudit={() => handleTriggerAudit(activeTicker)}
     {isAuditing}
+    onToggleCopilot={() => (isCopilotOpen = !isCopilotOpen)}
+    {isCopilotOpen}
   />
 
-  <!-- Main Viewport Area (curved canvas container matching reference) -->
-  <main class="flex-1 flex flex-col h-[calc(100vh-1.75rem)] my-3.5 mr-3.5 rounded-[30px] bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden">
-    <!-- Top Bar inside Canvas (exact reference styling) -->
-    <header class="h-14 border-b border-slate-100 dark:border-slate-800/80 px-6 flex items-center justify-between shrink-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md">
-      <div class="flex items-center space-x-3 text-xs">
-        <button
-          type="button"
-          class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"
-          title="Toggle view"
-        >
-          <ChevronLeft size={16} />
-        </button>
-        <div class="flex items-center space-x-1.5 text-slate-400">
-          <span>Overview</span>
-          <span>/</span>
-          <span class="font-medium text-slate-900 dark:text-slate-100">{viewLabels[currentView] || currentView}</span>
-        </div>
+  <!-- Main Viewport Area -->
+  <main class="flex-1 flex flex-col h-screen overflow-y-auto bg-slate-50 dark:bg-[#090D16]">
+    <!-- Top Bar with status & active emitent badge -->
+    <header class="h-14 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 backdrop-blur-md px-6 flex items-center justify-between shrink-0 sticky top-0 z-30 shadow-xs">
+      <div class="flex items-center space-x-2 text-sm">
+        <span class="text-xs font-medium text-slate-400 dark:text-slate-500">Company</span>
+        <span class="text-slate-300 dark:text-slate-700">/</span>
+        <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-mono">{activeTicker}</span>
+        <span class="text-slate-300 dark:text-slate-700">/</span>
+        <span class="text-xs font-medium text-slate-700 dark:text-slate-300">{viewLabels[currentView] || currentView}</span>
       </div>
 
       <div class="flex items-center space-x-3">
         {#if isAuditing}
-          <div class="flex items-center space-x-2 text-xs font-medium text-blue-600 dark:text-emerald-400 bg-blue-50 dark:bg-emerald-950/40 border border-blue-200 dark:border-emerald-800 px-2.5 py-1 rounded-full">
-            <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-ping"></span>
+          <div class="flex items-center space-x-2 text-xs font-medium text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 px-2.5 py-1 rounded-full">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
             <span>Analyzing {activeTicker}...</span>
           </div>
         {/if}
 
-        <!-- Header Icons (exact reference: Notification bell with badge, chat, headset) -->
         <button
           type="button"
-          class="relative p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
-          title="Notifications"
+          onclick={() => (isCopilotOpen = true)}
+          class="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-800 dark:text-slate-200 shadow-xs transition-colors"
         >
-          <Bell size={16} />
-          <span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-        </button>
-
-        <button
-          type="button"
-          onclick={() => (currentView = 'ask-ai')}
-          class="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
-          title="Ask AI"
-        >
-          <MessageSquare size={16} />
-        </button>
-
-        <button
-          type="button"
-          class="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
-          title="Support & Guides"
-        >
-          <Headphones size={16} />
+          <span class="text-emerald-500">✨</span>
+          <span>Ask Sustainability Copilot</span>
         </button>
       </div>
     </header>
 
-    <!-- Main Content Container -->
-    <div class="flex-1 overflow-y-auto">
-      {#if isLoading && currentView !== 'ask-ai'}
+    <!-- Main Content Dynamic Container -->
+    <div class="p-6 md:p-8 flex-1 max-w-7xl w-full mx-auto">
+      {#if isLoading}
         <div class="flex flex-col items-center justify-center h-96 space-y-3 text-slate-500 dark:text-slate-400 text-sm">
-          <div class="w-7 h-7 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-          <span>Loading company data for {activeTicker}...</span>
+          <div class="w-7 h-7 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+          <span>Loading sustainability profile for {activeTicker}...</span>
         </div>
-      {:else if currentView === 'ask-ai'}
-        <AskAIView
-          {activeTicker}
-          onSelectTicker={handleSelectTicker}
-        />
       {:else if currentView === 'dashboard'}
-        <div class="p-6 md:p-8 max-w-7xl mx-auto">
-          <DashboardView
-            {auditRun}
-            {benchmarks}
-            onSelectTicker={handleSelectTicker}
-            onNavigateView={(v) => (currentView = v)}
-          />
-        </div>
+        <DashboardView
+          {auditRun}
+          {benchmarks}
+          onSelectTicker={handleSelectTicker}
+          onNavigateView={(v) => (currentView = v)}
+        />
       {:else if currentView === 'tkbi'}
-        <div class="p-6 md:p-8 max-w-7xl mx-auto">
-          <TKBISheetView
-            {auditRun}
-            entries={tkbiEntries}
-            onReloadEntries={handleReloadEntries}
-          />
-        </div>
+        <TKBISheetView
+          {auditRun}
+          entries={tkbiEntries}
+          onReloadEntries={handleReloadEntries}
+        />
       {:else if currentView === 'traces'}
-        <div class="p-6 md:p-8 max-w-7xl mx-auto">
-          <TraceWaterfallView
-            {auditRun}
-            {traces}
-          />
-        </div>
+        <TraceWaterfallView
+          {auditRun}
+          {traces}
+        />
       {:else if currentView === 'schedules'}
-        <div class="p-6 md:p-8 max-w-7xl mx-auto">
-          <SchedulesView
-            {schedules}
-            onReloadSchedules={handleReloadSchedules}
-          />
-        </div>
+        <SchedulesView
+          {schedules}
+          onReloadSchedules={handleReloadSchedules}
+        />
       {/if}
     </div>
   </main>
+
+  <!-- Slide-out AI Copilot Drawer -->
+  <AICopilotDrawer
+    isOpen={isCopilotOpen}
+    onClose={() => (isCopilotOpen = false)}
+    {activeTicker}
+  />
 </div>
