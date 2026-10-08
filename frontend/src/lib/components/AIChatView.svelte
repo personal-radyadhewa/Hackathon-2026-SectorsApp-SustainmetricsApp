@@ -11,6 +11,7 @@
     Check,
     Key,
     ShieldAlert,
+    Trash2,
   } from '@lucide/svelte';
 
   marked.setOptions({
@@ -18,10 +19,26 @@
     breaks: true,
   });
 
+  function stripThinkingProcess(text) {
+    if (!text) return '';
+    // 1. Remove <think>...</think> tags and content
+    let clean = text.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+    if (clean.includes('</think>')) {
+      clean = clean.split('</think>').pop().trim();
+    }
+    // 2. Filter leaked scratchpad loops like "Let me double-check... Actually..." before final Markdown
+    const matchHeading = clean.match(/(###\s+.+)/);
+    if (matchHeading && (clean.startsWith('Let me') || clean.includes('Let me double-check') || clean.includes('Wait, let me read') || clean.includes('Wait, I need to be careful'))) {
+      clean = clean.substring(clean.indexOf(matchHeading[1])).trim();
+    }
+    return clean;
+  }
+
   function renderMarkdown(content) {
     if (!content) return '';
     try {
-      return marked.parse(content);
+      const sanitized = stripThinkingProcess(content);
+      return marked.parse(sanitized);
     } catch {
       return content;
     }
@@ -199,6 +216,12 @@
     inputQuery = '';
     saveChatHistory(activeTicker, []);
   }
+
+  function handleClearChat() {
+    messages = [];
+    inputQuery = '';
+    saveChatHistory(activeTicker, []);
+  }
 </script>
 
 <div class="flex-1 flex flex-col h-[calc(100vh-6.5rem)] overflow-hidden">
@@ -237,6 +260,18 @@
           <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
         {/if}
       </button>
+
+      {#if messages.length > 0}
+        <button
+          type="button"
+          onclick={handleClearChat}
+          class="flex items-center space-x-1 px-3 py-1.5 rounded-full border border-rose-200 dark:border-rose-900/60 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-xs font-medium transition-colors cursor-pointer shadow-2xs"
+          title="Delete saved local chat for {activeTicker}"
+        >
+          <Trash2 size={13} />
+          <span>Clear chat</span>
+        </button>
+      {/if}
 
       <button
         type="button"

@@ -82,6 +82,21 @@ from app.db.models import AuditRun
 from sustainmetric.scoring_engine import ScoringEngine
 
 
+def _format_financial_val(val: Any) -> str:
+    """Format numerical financial quantities into readable IDR denominations."""
+    if isinstance(val, (int, float)):
+        if abs(val) >= 1_000_000_000_000:
+            return f"Rp {val / 1_000_000_000_000:.2f} Trillion (IDR {val:,.0f})"
+        elif abs(val) >= 1_000_000_000:
+            return f"Rp {val / 1_000_000_000:.2f} Billion (IDR {val:,.0f})"
+        elif abs(val) >= 1_000_000:
+            return f"Rp {val / 1_000_000:.2f} Million (IDR {val:,.0f})"
+        elif isinstance(val, float):
+            return f"{val:.2f}"
+        return f"{val:,}"
+    return str(val)
+
+
 async def get_emiten_audit_context(ticker: str, db: Optional[AsyncSession] = None) -> str:
     """Retrieve saved DB audit result or compute live audit context for system prompt."""
     clean = ticker.strip().upper()
@@ -97,23 +112,24 @@ async def get_emiten_audit_context(ticker: str, db: Optional[AsyncSession] = Non
     if audit:
         findings_bullets = "\n".join([f"- {f}" for f in (audit.audit_findings or [])[:6]])
         fin = audit.financial_snapshot or {}
-        fin_bullets = ", ".join([f"{k}: {v}" for k, v in list(fin.items())[:5]]) if fin else "Audited regular filings"
+        fin_bullets = "\n".join([f"- {k.replace('_', ' ').title()}: {_format_financial_val(v)}" for k, v in list(fin.items())[:8]]) if fin else "- Audited regular filings"
         return (
             f"You are the expert SustainMetric AI Green Auditor for Indonesian listed companies.\n"
             f"The user is inspecting Indonesian Stock Exchange company: {audit.company_name or clean} (IDX: {clean}).\n\n"
             f"### Official Audit Results for IDX:{clean}:\n"
             f"- Company Name: {audit.company_name or clean}\n"
-            f"- Subsector: {audit.subsector or 'Transportation & Logistics'}\n"
+            f"- Subsector: {audit.subsector or 'Indonesian Public Company'}\n"
             f"- OJK TKBI Quadrant: {audit.quadrant} ({audit.quadrant_label or ''})\n"
             f"- Consistency Score: {audit.consistency_score}/100\n"
             f"- Viability Score: {audit.viability_score}/100\n"
             f"- Executive Summary: {audit.executive_summary or 'Audit completed.'}\n"
-            f"- Key Audit Findings & Disclosures:\n{findings_bullets or '- Disclosures audited against OJK TKBI guidelines.'}\n"
-            f"- Financial & ESG Data: {fin_bullets}\n\n"
-            f"### Instructions for Response:\n"
+            f"- Key Audit Findings & Disclosures:\n{findings_bullets or '- Disclosures audited against OJK TKBI guidelines.'}\n\n"
+            f"### Financial & ESG Disclosures:\n{fin_bullets}\n\n"
+            f"### Strict Response Instructions:\n"
             f"1. Interpret any user query about '{clean}' or company performance as referring to this Indonesian public company ({audit.company_name or clean}, IDX: {clean}). NEVER answer with dictionary words, Greek mythology, or unrelated meanings.\n"
-            f"2. Explain its real business, its OJK TKBI sustainability/green rating, and its ESG transition viability.\n"
-            f"3. Format your response cleanly using Markdown (bold headings, bullet points, structured analysis)."
+            f"2. Output ONLY the final analytical response directly in structured Markdown (tables, bold headings, bullet points).\n"
+            f"3. NEVER output internal thoughts, draft deliberations, counting loops, or scratchpad text (e.g. do NOT write 'Let me double check', 'Wait', or 'Actually').\n"
+            f"4. Detail its real business, its OJK TKBI sustainability/green rating, and its ESG transition viability."
         )
 
     # Fallback to SectorsClient & ScoringEngine if not yet in DB
@@ -127,6 +143,8 @@ async def get_emiten_audit_context(ticker: str, db: Optional[AsyncSession] = Non
         comp_name = overview.get("company_name") or clean
         subsector = overview.get("subsector") or overview.get("sector") or "Transportation & Logistics"
         findings_bullets = "\n".join([f"- {f}" for f in eval_res.get("audit_findings", [])[:5]])
+        fin = financials or {}
+        fin_bullets = "\n".join([f"- {k.replace('_', ' ').title()}: {_format_financial_val(v)}" for k, v in list(fin.items())[:8]]) if fin else "- Audited regular filings"
         return (
             f"You are the expert SustainMetric AI Green Auditor for Indonesian listed companies.\n"
             f"The user is inspecting Indonesian Stock Exchange company: {comp_name} (IDX: {clean}).\n\n"
@@ -138,10 +156,12 @@ async def get_emiten_audit_context(ticker: str, db: Optional[AsyncSession] = Non
             f"- Consistency Score: {eval_res.get('consistency_score')}/100\n"
             f"- Viability Score: {eval_res.get('viability_score')}/100\n"
             f"- Key Findings:\n{findings_bullets}\n\n"
-            f"### Instructions for Response:\n"
+            f"### Financial & ESG Disclosures:\n{fin_bullets}\n\n"
+            f"### Strict Response Instructions:\n"
             f"1. Ground your response strictly in the context of this IDX listed company ({comp_name}, IDX: {clean}). NEVER answer with dictionary words or mythology.\n"
-            f"2. Detail its core business, its sustainability standing, and transition risks under OJK TKBI.\n"
-            f"3. Format your response cleanly using Markdown (bold headings, bullet points, structured analysis)."
+            f"2. Output ONLY the final analytical response directly in structured Markdown (tables, bold headings, bullet points).\n"
+            f"3. NEVER output internal thoughts, draft deliberations, counting loops, or scratchpad text (e.g. do NOT write 'Let me double check', 'Wait', or 'Actually').\n"
+            f"4. Detail its core business, its sustainability standing, and transition risks under OJK TKBI."
         )
     except Exception:
         return (
