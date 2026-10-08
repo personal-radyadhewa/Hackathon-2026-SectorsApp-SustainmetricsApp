@@ -97,12 +97,22 @@ python --version
 node --version
 npm --version
 git --version
+npm list marked
 ```
 
 Python virtual environment support is also required:
 
 ```powershell
 python -m venv --help
+```
+
+If `npm list marked` shows `(empty)` or returns an error, install the missing package inside the `frontend` directory:
+
+PowerShell
+
+```powershell
+cd frontend
+npm install marked
 ```
 
 If all commands above work and the versions meet the requirements, you can continue directly to the [Quickstart Guide](#quickstart-guide).
