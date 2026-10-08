@@ -20,7 +20,6 @@
 
   let selectedSpan = $state(null);
 
-  // Compute maximum duration for timeline scaling
   let maxDuration = $derived(
     traces.length > 0 ? Math.max(...traces.map((s) => s.duration_ms || 1)) : 100
   );
@@ -61,24 +60,24 @@
 
 <div class="space-y-6">
   <!-- Audit Activity Header -->
-  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-xs">
+  <div class="bg-white dark:bg-[#0F172A] border border-slate-200/80 dark:border-slate-800 rounded-xl p-6 shadow-sm">
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
-        <div class="flex items-center space-x-2 mb-1.5">
-          <Activity size={18} class="text-emerald-500" />
-          <h2 class="text-base font-semibold text-slate-900 dark:text-slate-100">Audit Process & Activity Log</h2>
+        <div class="flex items-center space-x-2.5 mb-1.5">
+          <Activity size={18} class="text-[#047857] dark:text-[#34D399]" />
+          <h2 class="text-base font-headline font-bold text-slate-900 dark:text-slate-100">Audit Process &amp; Activity Log</h2>
         </div>
-        <p class="text-xs text-slate-500 dark:text-slate-400">
+        <p class="text-xs font-body text-slate-500 dark:text-slate-400">
           Transparent step-by-step history showing how data was retrieved and analyzed.
         </p>
       </div>
 
-      <div class="flex flex-wrap items-center gap-2 text-xs">
-        <span class="px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium">
+      <div class="flex flex-wrap items-center gap-2 text-xs font-mono">
+        <span class="px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-[#162032] border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium">
           Total Steps: <strong class="text-slate-900 dark:text-slate-100">{traces.length}</strong>
         </span>
-        <span class="px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium">
-          Total Time: <strong class="text-slate-900 dark:text-slate-100 font-mono">{totalDuration.toFixed(0)} ms</strong>
+        <span class="px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-[#162032] border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium">
+          Total Latency: <strong class="text-[#047857] dark:text-[#34D399] tabular-nums">{totalDuration.toFixed(0)} ms</strong>
         </span>
       </div>
     </div>
@@ -86,15 +85,15 @@
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <!-- Steps Timeline (2 Columns) -->
-    <div class="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-xs">
-      <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4 flex items-center justify-between">
+    <div class="lg:col-span-2 bg-white dark:bg-[#0F172A] border border-slate-200/80 dark:border-slate-800 rounded-xl p-6 shadow-sm">
+      <h3 class="text-xs font-mono font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-4 flex items-center justify-between">
         <span>Execution Timeline</span>
-        <span class="text-[11px] font-normal text-slate-400 font-sans">Click any step to inspect</span>
+        <span class="text-xs font-normal text-slate-400 font-sans">Click step to inspect telemetry</span>
       </h3>
 
       {#if traces.length === 0}
-        <div class="text-center py-14 text-slate-400 dark:text-slate-500 text-xs">
-          No audit activity captured yet. Click "Analyze" on a company to run the audit pipeline.
+        <div class="text-center py-14 text-slate-400 dark:text-slate-500 text-xs font-mono">
+          No audit activity captured yet. Click "Audit Now" to run the audit pipeline.
         </div>
       {/if}
 
@@ -111,12 +110,12 @@
             role="button"
             tabindex="0"
             class="p-4 rounded-xl border transition-all cursor-pointer {isSelected
-              ? 'bg-slate-50 dark:bg-slate-800 border-emerald-500 shadow-xs ring-1 ring-emerald-500/30'
-              : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'}"
+              ? 'bg-slate-50 dark:bg-[#162032] border-[#047857] dark:border-[#34D399] shadow-xs'
+              : 'bg-white dark:bg-[#0F172A] border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'}"
           >
             <div class="flex items-center justify-between mb-2">
               <div class="flex items-center space-x-3">
-                <div class="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
+                <div class="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center text-[#047857] dark:text-[#34D399] shrink-0">
                   <Icon size={14} />
                 </div>
                 <div>
@@ -128,18 +127,19 @@
                 </div>
               </div>
 
-              <div class="flex items-center space-x-2 text-xs">
-                <span class="font-mono text-slate-600 dark:text-slate-400 text-[11px]">{span.duration_ms.toFixed(1)} ms</span>
-                <span class="px-2 py-0.5 rounded-full text-[10px] font-medium {span.status === 'OK' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' : 'bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300 border border-rose-200 dark:border-rose-800'}">
-                  {span.status === 'OK' ? 'Completed' : 'Error'}
+              <div class="flex items-center space-x-2 text-xs font-mono">
+                <span class="text-slate-600 dark:text-slate-400 text-[11px] tabular-nums">{span.duration_ms.toFixed(1)} ms</span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border {span.status === 'OK' ? 'badge-hijau' : 'badge-tidak'}">
+                  <span class="w-1.5 h-1.5 rounded-full {span.status === 'OK' ? 'bg-[#047857] dark:bg-[#34D399]' : 'bg-[#DC2626] dark:bg-[#F87171]'}"></span>
+                  <span>{span.status === 'OK' ? 'Completed' : 'Error'}</span>
                 </span>
               </div>
             </div>
 
             <!-- Progress Bar Representation -->
-            <div class="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden mt-3">
+            <div class="w-full bg-slate-100 dark:bg-[#162032] h-1.5 rounded-full overflow-hidden mt-3">
               <div
-                class="h-full rounded-full bg-emerald-500 transition-all duration-300"
+                class="h-full rounded-full bg-[#047857] dark:bg-[#34D399] transition-all duration-300"
                 style="width: {barWidthPct}%;"
               ></div>
             </div>
@@ -149,11 +149,11 @@
     </div>
 
     <!-- Step Details Inspector (1 Column) -->
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-xs h-fit">
-      <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4 flex items-center justify-between">
+    <div class="bg-white dark:bg-[#0F172A] border border-slate-200/80 dark:border-slate-800 rounded-xl p-6 shadow-sm h-fit">
+      <h3 class="text-xs font-mono font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-4 flex items-center justify-between">
         <span>Step Inspector</span>
         {#if selectedSpan}
-          <span class="text-[10px] px-2 py-0.5 rounded-full font-medium {selectedSpan.status === 'OK' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300' : 'bg-rose-50 text-rose-700'}">
+          <span class="text-[10px] px-2.5 py-0.5 rounded-full font-mono font-bold border {selectedSpan.status === 'OK' ? 'badge-hijau' : 'badge-tidak'}">
             {selectedSpan.status === 'OK' ? 'Success' : 'Failed'}
           </span>
         {/if}
@@ -164,7 +164,7 @@
         <div class="space-y-4 text-xs">
           <div>
             <span class="text-[11px] font-medium text-slate-500 dark:text-slate-400 block mb-1">Action Name</span>
-            <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold text-slate-900 dark:text-slate-100">
+            <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-[#162032] border border-slate-200 dark:border-slate-700 font-semibold text-slate-900 dark:text-slate-100 font-mono">
               {stepInfo.title}
             </div>
           </div>
@@ -172,27 +172,27 @@
           <div class="grid grid-cols-2 gap-2">
             <div>
               <span class="text-[11px] font-medium text-slate-500 dark:text-slate-400 block mb-1">Duration</span>
-              <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-slate-800 dark:text-slate-200">
+              <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-[#162032] border border-slate-200 dark:border-slate-700 font-mono text-slate-800 dark:text-slate-200 tabular-nums">
                 {selectedSpan.duration_ms.toFixed(1)} ms
               </div>
             </div>
             <div>
               <span class="text-[11px] font-medium text-slate-500 dark:text-slate-400 block mb-1">Status</span>
-              <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-emerald-600 dark:text-emerald-400 font-medium">
+              <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-[#162032] border border-slate-200 dark:border-slate-700 text-[#047857] dark:text-[#34D399] font-mono font-medium">
                 {selectedSpan.status === 'OK' ? 'Verified OK' : 'Failed'}
               </div>
             </div>
           </div>
 
           <div>
-            <span class="text-[11px] font-medium text-slate-500 dark:text-slate-400 block mb-1">Parameters & Metadata</span>
-            <div class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[11px] max-h-48 overflow-y-auto">
+            <span class="text-[11px] font-medium text-slate-500 dark:text-slate-400 block mb-1">Parameters &amp; Metadata</span>
+            <div class="p-3 rounded-lg bg-slate-50 dark:bg-[#162032] border border-slate-200 dark:border-slate-700 text-[11px] max-h-48 overflow-y-auto font-mono">
               {#if selectedSpan.attributes && Object.keys(selectedSpan.attributes).length > 0}
                 <ul class="space-y-2">
                   {#each Object.entries(selectedSpan.attributes) as [key, val]}
                     <li class="flex flex-col">
-                      <span class="text-slate-500 dark:text-slate-400 text-[10px] font-medium">{key}</span>
-                      <span class="text-slate-900 dark:text-slate-100 font-mono text-[11px] font-medium break-all">{val}</span>
+                      <span class="text-slate-500 dark:text-slate-400 text-[10px]">{key}</span>
+                      <span class="text-slate-900 dark:text-slate-100 font-medium break-all">{val}</span>
                     </li>
                   {/each}
                 </ul>

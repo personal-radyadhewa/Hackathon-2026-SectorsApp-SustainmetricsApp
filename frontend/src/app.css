@@ -1,55 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300..900;1,300..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 @import "tailwindcss";
 
 @variant dark (&:is(.dark *));
 
 @layer base {
   :root {
-    --background: #f8fafc;
-    --foreground: #0f172a;
+    --background: #faf8ff;
+    --foreground: #131b2e;
     --card: #ffffff;
-    --card-foreground: #0f172a;
-    --primary: #0f172a;
+    --card-foreground: #131b2e;
+    --primary: #047857;
     --primary-foreground: #ffffff;
-    --secondary: #f1f5f9;
-    --secondary-foreground: #1e293b;
-    --muted: #f8fafc;
+    --secondary: #1d4ed8;
+    --secondary-foreground: #ffffff;
+    --tertiary: #d97706;
+    --tertiary-foreground: #ffffff;
+    --muted: #f2f3ff;
     --muted-foreground: #64748b;
-    --accent: #f1f5f9;
-    --accent-foreground: #0f172a;
+    --accent: #eaedff;
+    --accent-foreground: #131b2e;
     --border: #e2e8f0;
-    --ring: #0f172a;
+    --ring: #047857;
   }
 
   .dark {
-    --background: #090d16;
+    --background: #070a11;
     --foreground: #f8fafc;
     --card: #0f172a;
     --card-foreground: #f8fafc;
-    --primary: #10b981;
-    --primary-foreground: #042f2e;
-    --secondary: #1e293b;
-    --secondary-foreground: #f8fafc;
-    --muted: #1e293b;
+    --primary: #34d399;
+    --primary-foreground: #064e3b;
+    --secondary: #60a5fa;
+    --secondary-foreground: #0f172a;
+    --tertiary: #fbbf24;
+    --tertiary-foreground: #0f172a;
+    --muted: #162032;
     --muted-foreground: #94a3b8;
     --accent: #1e293b;
     --accent-foreground: #f8fafc;
     --border: #1e293b;
-    --ring: #10b981;
+    --ring: #34d399;
   }
 
   body {
     background-color: var(--background);
     color: var(--foreground);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", "Helvetica Neue", Arial, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
   }
 }
 
+.font-headline {
+  font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.font-body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.font-mono, code, kbd, samp, pre {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-feature-settings: 'tnum' 1, 'zero' 1;
+}
+
 /* Custom scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
@@ -63,45 +82,45 @@
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #1e293b;
 }
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #334155;
 }
 
-/* Status Badges - shadcn style */
+/* Executive Precision Status Badges */
 .badge-hijau {
   background-color: #ecfdf5;
-  color: #047857;
+  color: #065f46;
   border: 1px solid #a7f3d0;
 }
 
 .badge-transisi {
   background-color: #fffbeb;
-  color: #b45309;
+  color: #92400e;
   border: 1px solid #fde68a;
 }
 
 .badge-tidak {
   background-color: #fef2f2;
-  color: #b91c1c;
+  color: #991b1b;
   border: 1px solid #fecaca;
 }
 
 .dark .badge-hijau {
-  background-color: rgba(16, 185, 129, 0.15);
+  background-color: rgba(52, 211, 153, 0.12);
   color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  border: 1px solid rgba(52, 211, 153, 0.35);
 }
 
 .dark .badge-transisi {
-  background-color: rgba(245, 158, 11, 0.15);
+  background-color: rgba(251, 191, 36, 0.12);
   color: #fbbf24;
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  border: 1px solid rgba(251, 191, 36, 0.35);
 }
 
 .dark .badge-tidak {
-  background-color: rgba(239, 68, 68, 0.15);
+  background-color: rgba(248, 113, 113, 0.12);
   color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  border: 1px solid rgba(248, 113, 113, 0.35);
 }

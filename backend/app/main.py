@@ -15,11 +15,14 @@ from app.services.seeder import seed_initial_demo_data
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup: Start background cron engine and pre-populate demo emitents
-    start_scheduler()
-    asyncio.create_task(seed_initial_demo_data())
+    import os
+    if not os.getenv("PYTEST_CURRENT_TEST"):
+        start_scheduler()
+        asyncio.create_task(seed_initial_demo_data())
     yield
     # Shutdown: Stop scheduler
-    stop_scheduler()
+    if not os.getenv("PYTEST_CURRENT_TEST"):
+        stop_scheduler()
 
 
 app = FastAPI(
