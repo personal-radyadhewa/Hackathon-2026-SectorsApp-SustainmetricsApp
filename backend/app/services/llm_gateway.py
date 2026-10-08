@@ -132,19 +132,31 @@ async def stream_chat_completion(
     )
 
     client_headers = {"Authorization": f"Bearer {key}"} if key else {}
-    req_payload = {
+    if provider == "openrouter":
+        client_headers["HTTP-Referer"] = "https://sustainmetric.app"
+        client_headers["X-Title"] = "SustainMetric IDX Harness"
+
+    req_payload: dict[str, Any] = {
         "model": model,
         "messages": messages,
         "stream": True,
-        "tools": AVAILABLE_TOOLS,
     }
+    # Free models / OpenRouter / Ollama often reject OpenAI `tools` schema with 400 Bad Request
+    if provider in ("openai", "gemini"):
+        req_payload["tools"] = AVAILABLE_TOOLS
 
     try:
         async with httpx.AsyncClient(timeout=60.0) as client:
             async with client.stream("POST", f"{base_url}/chat/completions", headers=client_headers, json=req_payload) as response:
                 if response.status_code != 200:
-                    err_text = await response.aread()
-                    yield f"event: error\ndata: {json.dumps({'error': err_text.decode('utf-8')})}\n\n"
+                    err_bytes = await response.aread()
+                    err_raw = err_bytes.decode("utf-8", errors="replace")
+                    try:
+                        err_json = json.loads(err_raw)
+                        err_msg = err_json.get("error", {}).get("message") or err_json.get("message") or err_raw
+                    except Exception:
+                        err_msg = err_raw
+                    yield f"event: error\ndata: {json.dumps({'error': f'[{provider} HTTP {response.status_code}] {err_msg}'})}\n\n"
                     return
 
                 async for line in response.aiter_lines():
@@ -162,4 +174,4 @@ async def stream_chat_completion(
                         yield "event: done\ndata: [DONE]\n\n"
                         break
     except Exception as e:
-        yield f"event: error\ndata: {json.dumps({'error': str(e)})}\n\n"
+        yield f"event: error\ndata: {json.dumps({'error': f'Gateway exception: {str(e)}'})}\n\n"

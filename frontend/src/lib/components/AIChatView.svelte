@@ -118,10 +118,24 @@
                 }
               } catch (e) {}
             }
+          } else if (line.includes('event: error')) {
+            const dataMatch = line.match(/data: (.+)/);
+            if (dataMatch) {
+              try {
+                const parsed = JSON.parse(dataMatch[1]);
+                messages[assistantIndex].content += `\n\n⚠️ ${parsed.error || 'Provider stream error'}`;
+              } catch (e) {
+                messages[assistantIndex].content += `\n\n⚠️ Provider stream error`;
+              }
+            }
           } else if (line.includes('event: done')) {
             isStreaming = false;
           }
         }
+      }
+
+      if (!messages[assistantIndex].content.trim()) {
+        messages[assistantIndex].content = `⚠️ No response received from ${selectedProvider} (${selectedModel}). Check your API key in Settings or try another model.`;
       }
     } catch (err) {
       messages[assistantIndex].content += `\n\n❌ Connection error: ${err.message}`;
