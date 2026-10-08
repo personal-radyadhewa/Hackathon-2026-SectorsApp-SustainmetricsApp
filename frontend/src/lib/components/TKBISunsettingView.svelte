@@ -26,7 +26,6 @@
 
   // Diagnostic form state for Auditor / Fund Manager
   let instrumentType = $state('BOND'); // 'BOND' (Obligasi Hijau / Sukuk), 'SYNDICATED' (Pinjaman Bertarget / Sindikasi), 'GENERAL' (Fasilitas Kredit Umum)
-  let instrumentName = $state('Obligasi Hijau PGEO Tahap I');
   let contractAmountMiliar = $state(2500); // Rp 2,500 Miliar = Rp 2.5 Trillion
   let issueYear = $state(2023);
   let facilityTenorYears = $state(7);
@@ -91,7 +90,6 @@
 
   function applyPreset(p) {
     instrumentType = p.type;
-    instrumentName = p.name;
     contractAmountMiliar = p.amount;
     issueYear = p.issue;
     facilityTenorYears = p.tenor;
@@ -342,19 +340,6 @@
             Kredit Umum
           </button>
         </div>
-      </div>
-
-      <!-- Instrument Name -->
-      <div>
-        <label for="inst-name" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-          {$currentLang === 'id' ? 'Nama Fasilitas / Surat Berharga:' : 'Facility / Bond Name:'}
-        </label>
-        <input
-          id="inst-name"
-          type="text"
-          bind:value={instrumentName}
-          class="w-full bg-slate-50 dark:bg-[#162032] border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-medium text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-[#047857]"
-        />
       </div>
 
       <!-- Plafon / Nominal Exposure -->
