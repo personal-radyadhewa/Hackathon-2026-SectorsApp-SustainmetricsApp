@@ -64,58 +64,46 @@
     }, 2000);
   }
 
-  function getHostname(urlStr) {
-    try {
-      return new URL(urlStr).hostname;
-    } catch {
-      return 'Portal';
-    }
+  function sanitizeSnippet(text) {
+    if (!text) return '';
+    return text.replace(/https?:\/\/sectors\.app\/company\/[A-Za-z0-9_-]+/g, 'SectorsApp Telemetry Pipeline');
   }
 
   function parseEvidenceSource(domain, rawBukti, ticker, categoryTag) {
-    let sourceUrl = `https://sectors.app/company/${ticker}`;
-    let sourceDocumentName = 'Laporan Keberlanjutan Auditan FY2024';
+    let sourceDocumentName = `Laporan Keberlanjutan Auditan ${ticker} 2024`;
     let sourcePage = 'Bab Tata Kelola & Lingkungan';
     let sourceProvider = 'PT Bursa Efek Indonesia (IDX) & SectorsApp';
 
     if (rawBukti) {
-      const urlMatch = rawBukti.match(/https?:\/\/[^\s\),]+/);
-      if (urlMatch) {
-        sourceUrl = urlMatch[0];
-      }
-      const pageMatch = rawBukti.match(/hal\.\s*[\d\-–\s,]+/i);
+      const pageMatch = rawBukti.match(/hal\.\s*[\d\-–\s,]+(?:\s*\([^\)]+\))?/i);
       if (pageMatch) {
         sourcePage = pageMatch[0].trim();
       }
-      const docMatch = rawBukti.match(/Laporan [^,\.\(\)]+/i);
+      const docMatch = rawBukti.match(/Laporan\s+[^,\.\(\)]+/i);
       if (docMatch) {
-        sourceDocumentName = docMatch[0].trim();
+        sourceDocumentName = docMatch[0].replace(/\s+hal\.?$/i, '').trim();
       }
     }
 
     if (domain === 'FINANCIAL_VIABILITY') {
-      sourceDocumentName = 'Laporan Keuangan Konsolidasian Tahunan FY2024 (Auditan)';
+      sourceDocumentName = `Laporan Keuangan Konsolidasian ${ticker} FY2024 (Auditan)`;
       sourcePage = 'Laporan Arus Kas & Posisi Keuangan (Catatan Atas LK)';
       sourceProvider = 'PT Bursa Efek Indonesia (IDX) & SectorsApp Financial Telemetry';
-      sourceUrl = `https://sectors.app/company/${ticker}`;
     } else if (domain === 'DNSH_SAFEGUARDS') {
       sourceDocumentName = 'Registri Evaluasi Ketaatan Lingkungan Hidup PROPER';
       sourcePage = 'SK Penetapan Peringkat Kinerja Lingkungan Hidup Perusahaan';
       sourceProvider = 'Kementerian Lingkungan Hidup dan Kehutanan (KLHK RI)';
-      sourceUrl = 'https://proper.menlhk.go.id/';
     } else if (domain === 'PORTFOLIO_AGGREGATION') {
       sourceDocumentName = 'Buku Panduan OJK Taksonomi Keuangan Berkelanjutan Indonesia (TKBI v3.0)';
       sourcePage = 'Tingkat 2 (Entitas) Bab 5 Agregasi Portofolio Korporasi';
       sourceProvider = 'Otoritas Jasa Keuangan (OJK RI)';
-      sourceUrl = 'https://ojk.go.id/id/berita-dan-kegiatan/publikasi/Pages/Taksonomi-Keuangan-Berkelanjutan-Indonesia.aspx';
     } else if (domain === 'AUDITOR_SYNTHESIS') {
       sourceDocumentName = 'SustainMetric Multi-Agent Telemetry Inference Engine';
       sourcePage = 'Telemetry Span Synthesis Matrix (POJK-51 / TKBI)';
       sourceProvider = 'SustainMetric LLM Telemetry Audit Core';
-      sourceUrl = `https://sectors.app/company/${ticker}`;
     }
 
-    return { sourceUrl, sourceDocumentName, sourcePage, sourceProvider };
+    return { sourceDocumentName, sourcePage, sourceProvider };
   }
 
   function formatIDR(val) {
@@ -238,9 +226,10 @@
           claim:
             entry.tsc ||
             'Aktivitas ekonomi memenuhi kriteria penapisan teknis emisi dan efisiensi energi TKBI v3.0.',
-          evidenceSnippet:
+          evidenceSnippet: sanitizeSnippet(
             entry.bukti ||
-            'Filing Reference: Disclosed in statutory sustainability report & operational environmental permits.',
+              'Filing Reference: Disclosed in statutory sustainability report & operational environmental permits.'
+          ),
           sourceOrigin: `Laporan Keberlanjutan Auditan FY2024 / Registri OJK TKBI v3.0`,
           citationId: `SR:${ticker}/${entry.tsc_id}`,
           verdict: isHijau ? 'HIJAU' : isTransisi ? 'TRANSISI' : 'TIDAK',
@@ -687,7 +676,7 @@
                     title="Klik untuk menelusuri data lineage & dokumen asal"
                   >
                     <span>Telusuri Asal</span>
-                    <ExternalLink size={10} />
+                    <FileCheck2 size={11} />
                   </button>
                 </div>
 
@@ -758,7 +747,7 @@
                       title="Buka panel penelusuran bukti audit resmi"
                     >
                       <span>Telusuri</span>
-                      <ExternalLink size={10} />
+                      <FileCheck2 size={10} />
                     </button>
                   </div>
                   <button
@@ -769,9 +758,9 @@
                   >
                     <div class="flex items-center justify-between gap-1.5">
                       <span class="text-[11px] font-mono text-slate-800 dark:text-slate-200 truncate group-hover:text-emerald-700 dark:group-hover:text-emerald-300 font-medium">
-                        {selectedEvidence.sourceOrigin}
+                        {selectedEvidence.sourceDocumentName || selectedEvidence.sourceOrigin}
                       </span>
-                      <ExternalLink size={11} class="text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 shrink-0" />
+                      <FileCheck2 size={11} class="text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 shrink-0" />
                     </div>
                   </button>
                 </div>
@@ -1083,27 +1072,15 @@
           </span>
         </div>
 
-        <!-- 4. Tombol Aksi Langsung ke Sumber -->
-        <div class="pt-2 flex flex-col sm:flex-row items-center justify-end gap-2.5 border-t border-slate-100 dark:border-slate-800">
+        <!-- 4. Tombol Aksi Modal (Tutup) -->
+        <div class="pt-3 flex items-center justify-end border-t border-slate-100 dark:border-slate-800">
           <button
             type="button"
             onclick={closeSourceTrace}
-            class="w-full sm:w-auto px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+            class="px-6 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 text-xs font-bold transition-all shadow-xs cursor-pointer"
           >
             Tutup
           </button>
-
-          {#if tracingItem.sourceUrl}
-            <a
-              href={tracingItem.sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#047857] hover:bg-[#065F46] text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
-            >
-              <span>Buka Portal Sumber Resmi ({getHostname(tracingItem.sourceUrl)})</span>
-              <ExternalLink size={13} />
-            </a>
-          {/if}
         </div>
       </div>
     </div>
