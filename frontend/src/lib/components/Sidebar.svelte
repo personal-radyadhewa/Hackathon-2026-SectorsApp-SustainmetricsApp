@@ -96,8 +96,9 @@
   }
 </script>
 
-<aside class="w-64 bg-slate-50/70 dark:bg-[#070A11] border-r border-slate-200/80 dark:border-slate-800/80 flex flex-col shrink-0 h-screen select-none px-4 py-4 overflow-y-auto overflow-x-hidden">
-  <div class="flex flex-col space-y-4 flex-1">
+<aside class="w-64 bg-slate-50/70 dark:bg-[#070A11] border-r border-slate-200/80 dark:border-slate-800/80 flex flex-col justify-between shrink-0 h-screen select-none px-4 py-4 overflow-hidden">
+  <!-- Pinned Top Brand & Search Header -->
+  <div class="shrink-0 space-y-3 pb-2">
     <!-- Brand / System Title with Sustainability Emblem -->
     <div class="flex items-center space-x-3 px-1 pt-1 pb-1">
       <div class="w-8 h-8 rounded-lg bg-[#047857] dark:bg-[#34D399] flex items-center justify-center text-white dark:text-[#064E3B] font-headline font-bold text-base shadow-xs">
@@ -129,7 +130,10 @@
         />
       </div>
     </div>
+  </div>
 
+  <!-- Scrollable Middle Section: Watchlist, Menus & Navigation -->
+  <div class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden space-y-4 pr-1 sidebar-scroll py-1">
     <!-- Target Emitents Watcher Card -->
     <div class="bg-white dark:bg-[#0F172A] border border-slate-200/80 dark:border-slate-800 rounded-xl p-3 shadow-2xs space-y-2">
       <div class="flex items-center justify-between gap-1">
@@ -408,8 +412,8 @@
     </div>
   </div>
 
-  <!-- Bottom Helper Card & User Profile Row -->
-  <div class="space-y-3 pt-4 mt-4 shrink-0 border-t border-slate-200/60 dark:border-slate-800/60">
+  <!-- Bottom Pinned Controls: Helper Card & User Profile Row -->
+  <div class="space-y-3 pt-3 shrink-0 border-t border-slate-200/80 dark:border-slate-800">
     <!-- ESG Mandate Badge Card -->
     <div class="p-3 bg-white dark:bg-[#0F172A] border border-slate-200/80 dark:border-slate-800 rounded-xl flex flex-col gap-1 shadow-2xs">
       <div class="flex items-center gap-1.5">
@@ -464,17 +468,17 @@
 </aside>
 
 <style>
-  aside::-webkit-scrollbar {
+  .sidebar-scroll::-webkit-scrollbar {
     width: 4px;
   }
-  aside::-webkit-scrollbar-track {
+  .sidebar-scroll::-webkit-scrollbar-track {
     background: transparent;
   }
-  aside::-webkit-scrollbar-thumb {
+  .sidebar-scroll::-webkit-scrollbar-thumb {
     background: rgba(148, 163, 184, 0.25);
     border-radius: 4px;
   }
-  aside::-webkit-scrollbar-thumb:hover {
+  .sidebar-scroll::-webkit-scrollbar-thumb:hover {
     background: rgba(148, 163, 184, 0.45);
   }
 </style>
