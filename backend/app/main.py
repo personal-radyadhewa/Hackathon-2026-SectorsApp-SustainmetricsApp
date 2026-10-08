@@ -14,9 +14,17 @@ from app.services.seeder import seed_initial_demo_data
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: Start background cron engine and pre-populate demo emitents
+    # Startup: Auto-create tables if missing, start background cron engine and pre-populate demo emitents
     import os
     if not os.getenv("PYTEST_CURRENT_TEST"):
+        try:
+            from app.db.session import engine
+            from app.db.models import Base
+            async with engine.begin() as conn:
+                await conn.run_sync(Base.metadata.create_all)
+        except Exception as e:
+            print(f"[Lifespan] Schema initialization notice: {e}")
+
         start_scheduler()
         asyncio.create_task(seed_initial_demo_data())
     yield

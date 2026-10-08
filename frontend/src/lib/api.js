@@ -23,7 +23,16 @@ export async function triggerAudit(tickers) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ tickers }),
   });
-  if (!res.ok) throw new Error('Failed to trigger audit');
+  if (!res.ok) {
+    let detail = 'Failed to trigger audit';
+    try {
+      const errData = await res.json();
+      if (errData.detail) {
+        detail = typeof errData.detail === 'string' ? errData.detail : JSON.stringify(errData.detail);
+      }
+    } catch {}
+    throw new Error(detail);
+  }
   return res.json();
 }
 
