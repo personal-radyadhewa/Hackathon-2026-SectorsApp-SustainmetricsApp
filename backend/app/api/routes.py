@@ -17,7 +17,7 @@ from app.services.excel_exporter import generate_stamped_excel_buffer
 from app.services.pdf_generator import generate_signed_audit_pdf
 from app.services.llm_gateway import stream_chat_completion
 from sustainmetric.data.tkbi_sectors_catalog import TKBI_8_SECTORS
-from sustainmetric.data.tkbi_sdt_catalog import (
+from app.data.tkbi_sdt_catalog import (
     SDT_UMKM_CRITERIA,
     SDT_DNSH_QUESTIONS,
     SDT_SOCIAL_ASPECTS_QUESTIONS,

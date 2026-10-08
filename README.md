@@ -24,15 +24,16 @@ An end-to-end audit harness and live dashboard built on top of **SustainMetric F
 │   • APScheduler Background Cron Runner                                 │
 │   • 1-Click Stamped XLSX & Cryptographic SHA-256 Signed PDF Exporter   │
 └──────────────▲──────────────────────────────────────────▲──────────────┘
-               │ SQLAlchemy + asyncpg                     │ Direct Core
+               │ SQLAlchemy + asyncpg                     │ PyPI: sustainmetric-idx
 ┌──────────────▼─────────────┐             ┌──────────────▼──────────────┐
 │  DATABASE (PostgreSQL)     │             │    SUSTAINMETRIC MCP CORE   │
-│  • Container: Port 5432    │             │  • Sectors App API v2 Cache │
-│  • Alembic Migrations      │             │  • TKBI Vector Store Cosine │
-│  • audit_runs              │             │  • 4-Quadrant Scoring Math  │
-│  • tkbi_audit_entries      │             │  • 8 TKBI Sectors Catalog   │
-│  • audit_traces (Otel)     │             │  • Heuristic Greenwashing   │
-│  • scheduled_jobs          │             │    Risk Penalties           │
+│  • Container: Port 5432    │             │  • PyPI: sustainmetric-idx  │
+│  • Alembic Migrations      │             │  • Sectors App API v2 Cache │
+│  • audit_runs              │             │  • TKBI Vector Store Cosine │
+│  • tkbi_audit_entries      │             │  • 4-Quadrant Scoring Math  │
+│  • audit_traces (Otel)     │             │  • 8 TKBI Sectors Catalog   │
+│  • scheduled_jobs          │             │  • Heuristic Greenwashing   │
+│  • grandfathering & SDT    │             │    Risk Penalties           │
 └────────────────────────────┘             └─────────────────────────────┘
 ```
 
@@ -109,6 +110,7 @@ Run the test suite covering both end-to-end pipeline execution and REST endpoint
 $env:PYTHONPATH="backend"
 .\.venv\Scripts\pytest.exe backend\tests\ -v
 ```
-Result: **2 passed in ~2.2s**
+Result: **8 passed in ~2.9s**
 - `test_audit_runner.py`: Verifies PGEO audit pipeline, 14 TKBI entries, and OpenTelemetry spans.
 - `test_api_endpoints.py`: Verifies health check, trigger, HITL patch, Excel/PDF signed exports, schedules, and SSE chat.
+- `test_tkbi_endpoints.py`: Verifies OJK TKBI taxonomy explorer, SDT UMKM decision trees, grandfathering scenarios, and portfolio aggregator.
