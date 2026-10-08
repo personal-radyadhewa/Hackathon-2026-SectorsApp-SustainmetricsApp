@@ -1,5 +1,6 @@
 <script>
   import { onMount } from 'svelte';
+  import { marked } from 'marked';
   import {
     Sparkles,
     ChevronDown,
@@ -11,6 +12,20 @@
     Key,
     ShieldAlert,
   } from '@lucide/svelte';
+
+  marked.setOptions({
+    gfm: true,
+    breaks: true,
+  });
+
+  function renderMarkdown(content) {
+    if (!content) return '';
+    try {
+      return marked.parse(content);
+    } catch {
+      return content;
+    }
+  }
 
   let {
     activeTicker = 'PGEO',
@@ -86,6 +101,7 @@
           provider,
           model,
           api_key: apiKey,
+          ticker: activeTicker,
         }),
       });
 
@@ -397,13 +413,19 @@
             <span class="text-[10px] text-slate-400 dark:text-slate-500 mb-1 px-1 font-medium font-mono">
               {msg.role === 'user' ? 'You' : `AI Assistant (${activeTicker})`}
             </span>
-            <div
-              class="max-w-[85%] rounded-2xl p-4 text-xs leading-relaxed whitespace-pre-wrap {msg.role === 'user'
-                ? 'bg-[#047857] text-white rounded-tr-xs shadow-xs font-normal'
-                : 'bg-white dark:bg-[#0F172A] border border-slate-200/80 dark:border-slate-800 text-slate-800 dark:text-slate-200 rounded-tl-xs shadow-xs'}"
-            >
-              {msg.content}
-            </div>
+            {#if msg.role === 'user'}
+              <div
+                class="max-w-[85%] rounded-2xl p-4 text-xs leading-relaxed whitespace-pre-wrap bg-[#047857] text-white rounded-tr-xs shadow-xs font-normal"
+              >
+                {msg.content}
+              </div>
+            {:else}
+              <div
+                class="max-w-[85%] rounded-2xl p-4 text-xs leading-relaxed bg-white dark:bg-[#0F172A] border border-slate-200/80 dark:border-slate-800 text-slate-800 dark:text-slate-200 rounded-tl-xs shadow-xs chat-markdown"
+              >
+                {@html renderMarkdown(msg.content)}
+              </div>
+            {/if}
           </div>
         {/each}
 
@@ -456,3 +478,91 @@
     </div>
   {/if}
 </div>
+
+<style>
+  :global(.chat-markdown) {
+    word-break: break-word;
+  }
+  :global(.chat-markdown h1) {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-top: 0.75rem;
+    margin-bottom: 0.35rem;
+    color: inherit;
+  }
+  :global(.chat-markdown h2) {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-top: 0.65rem;
+    margin-bottom: 0.3rem;
+    color: inherit;
+  }
+  :global(.chat-markdown h3) {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+    margin-bottom: 0.25rem;
+    color: inherit;
+  }
+  :global(.chat-markdown h4) {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 0.4rem;
+    margin-bottom: 0.2rem;
+    color: inherit;
+  }
+  :global(.chat-markdown p) {
+    margin-bottom: 0.5rem;
+    line-height: 1.55;
+  }
+  :global(.chat-markdown p:last-child) {
+    margin-bottom: 0;
+  }
+  :global(.chat-markdown ul) {
+    list-style-type: disc;
+    padding-left: 1.25rem;
+    margin-bottom: 0.5rem;
+    margin-top: 0.25rem;
+  }
+  :global(.chat-markdown ol) {
+    list-style-type: decimal;
+    padding-left: 1.25rem;
+    margin-bottom: 0.5rem;
+    margin-top: 0.25rem;
+  }
+  :global(.chat-markdown li) {
+    margin-bottom: 0.25rem;
+    line-height: 1.5;
+  }
+  :global(.chat-markdown strong) {
+    font-weight: 600;
+    color: inherit;
+  }
+  :global(.chat-markdown code) {
+    font-family: monospace;
+    font-size: 0.75rem;
+    padding: 0.1rem 0.3rem;
+    border-radius: 0.25rem;
+    background-color: rgba(148, 163, 184, 0.2);
+  }
+  :global(.chat-markdown pre) {
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    background-color: rgba(15, 23, 42, 0.8);
+    color: #e2e8f0;
+    overflow-x: auto;
+    margin: 0.5rem 0;
+  }
+  :global(.chat-markdown blockquote) {
+    border-left: 3px solid #10b981;
+    padding-left: 0.75rem;
+    margin: 0.5rem 0;
+    font-style: italic;
+    opacity: 0.9;
+  }
+  :global(.chat-markdown hr) {
+    border: 0;
+    border-top: 1px solid rgba(148, 163, 184, 0.25);
+    margin: 0.75rem 0;
+  }
+</style>

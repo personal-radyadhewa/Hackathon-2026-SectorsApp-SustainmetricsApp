@@ -50,6 +50,7 @@ class ChatRequest(BaseModel):
     provider: Optional[str] = "gemini"
     model: Optional[str] = "gemini-2.5-flash"
     api_key: Optional[str] = ""
+    ticker: Optional[str] = None
 
 
 class TKBISimulatorRequest(BaseModel):
@@ -411,13 +412,15 @@ async def delete_schedule(schedule_id: str, db: AsyncSession = Depends(get_db)):
 # --- Built-in AI Copilot Chat Endpoint ---
 
 @router.post("/chat")
-async def chat_endpoint(req: ChatRequest):
+async def chat_endpoint(req: ChatRequest, db: AsyncSession = Depends(get_db)):
     """Streaming SSE endpoint for AI Copilot chat with FastMCP tool execution."""
     generator = stream_chat_completion(
         messages=req.messages,
         provider=req.provider or "gemini",
         model=req.model or "gemini-2.5-flash",
         api_key=req.api_key or "",
+        ticker=req.ticker,
+        db=db,
     )
     return StreamingResponse(generator, media_type="text/event-stream")
 
