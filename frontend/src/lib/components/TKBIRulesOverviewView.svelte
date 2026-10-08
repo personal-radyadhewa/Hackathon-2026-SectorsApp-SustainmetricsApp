@@ -3,7 +3,6 @@
     BookOpen,
     Sliders,
     Compass,
-    PieChart,
     Hourglass,
     ArrowRight,
     CheckCircle2,
@@ -46,27 +45,15 @@
       color: 'blue',
     },
     {
-      id: 'portfolio',
-      icon: PieChart,
-      badge: 'Hal. 4-5 Panduan OJK',
-      titleId: 'Kesehatan Portofolio & Holding',
-      titleEn: 'Portfolio & Group Health Aggregator',
-      purposeId: 'Menghitung total persentase hijau jika satu grup perusahaan atau bank memiliki banyak anak usaha dan proyek yang berbeda.',
-      purposeEn: 'Calculates the overall green percentage when a parent group or bank manages diverse subsidiaries and projects.',
-      howItWorksId: 'Masukkan daftar anak usaha/pinjaman dan nilainya; sistem otomatis menghitung berapa % yang sudah hijau dan berapa yang butuh perhatian.',
-      howItWorksEn: 'Enter subsidiaries or loans with their monetary values; the calculator tallies the exact % aligned with green finance guidelines.',
-      color: 'indigo',
-    },
-    {
       id: 'sunsetting',
       icon: Hourglass,
       badge: 'Hal. 6-8 Panduan OJK',
-      titleId: 'Masa Transisi & Aturan Perlindungan',
-      titleEn: 'Rule Transition Timeline & Protection',
-      purposeId: 'Panduan waktu perlindungan (sampai 7 tahun) agar proyek lama tidak langsung dicoret saat pemerintah memperbarui standar hijau.',
-      purposeEn: 'Explains grace periods (up to 7 years) so existing investments are protected when government environmental rules get stricter.',
-      howItWorksId: 'Pilih tahun awal proyek dan target perbaikan untuk mengetahui berapa lama proyek Anda terlindungi dari perubahan aturan.',
-      howItWorksEn: 'Input your project start year and upgrade plan to see how long your business remains officially grandfathered.',
+      titleId: 'Uji Proteksi Utang Hijau (Grace Period)',
+      titleEn: 'Green Debt & Grace Period Stress-Tester',
+      purposeId: 'Stress-test kepastian hukum obligasi hijau dan kredit sindikasi ketika kriteria TSC diperketat (Sunsetting). Menghitung plafon terlindungi vs berisiko brown.',
+      purposeEn: 'Stress-test legal grandfathering for green bonds and syndicated loans when TSC rules tighten. Computes protected vs at-risk brown exposures.',
+      howItWorksId: 'Pilih jenis fasilitas (obligasi/sindikasi), tahun terbit, sisa tenor, dan skenario OJK untuk melihat persentase proteksi serta memicu AI Audit Copilot.',
+      howItWorksEn: 'Select facility type, tenor, and OJK sunsetting scenario to calculate statutory coverage and run live AI Copilot regulatory stress-tests.',
       color: 'amber',
     },
   ];
@@ -84,8 +71,8 @@
     </h1>
     <p class="font-body text-xs md:text-sm text-slate-600 dark:text-slate-300 mt-2 max-w-3xl leading-relaxed">
       {$currentLang === 'id'
-        ? 'Bagian ini berisi 4 modul panduan praktis berdasarkan buku resmi OJK Taksonomi Keuangan Berkelanjutan Indonesia (TKBI). Anda tidak perlu membaca dokumen ratusan halaman—semua aturan telah disederhanakan menjadi simulator interaktif dan panduan yang mudah dipahami.'
-        : 'This section contains 4 practical tools based on Indonesia Financial Services Authority (OJK) Green Taxonomy. Instead of parsing hundreds of regulatory pages, you can simulate outcomes and look up requirements directly below.'}
+        ? 'Bagian ini berisi 3 modul panduan praktis berdasarkan buku resmi OJK Taksonomi Keuangan Berkelanjutan Indonesia (TKBI). Anda tidak perlu membaca dokumen ratusan halaman—semua aturan telah disederhanakan menjadi simulator interaktif dan panduan yang mudah dipahami.'
+        : 'This section contains 3 practical tools based on Indonesia Financial Services Authority (OJK) Green Taxonomy. Instead of parsing hundreds of regulatory pages, you can simulate outcomes and look up requirements directly below.'}
     </p>
 
     <!-- Fast Stat summary pill ribbon -->

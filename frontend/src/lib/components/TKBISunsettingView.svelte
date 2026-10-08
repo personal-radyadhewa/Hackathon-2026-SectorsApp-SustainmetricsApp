@@ -54,6 +54,7 @@
   let isLoading = $state(true);
 
   // Diagnostic form state for Auditor / Fund Manager
+  let selectedPresetId = $state('pgeo');
   let instrumentType = $state('BOND'); // 'BOND' (Obligasi Hijau / Sukuk), 'SYNDICATED' (Pinjaman Bertarget / Sindikasi), 'GENERAL' (Fasilitas Kredit Umum)
   let contractAmountMiliar = $state(2500); // Rp 2,500 Miliar = Rp 2.5 Trillion
   let issueYear = $state(2023);
@@ -125,6 +126,7 @@
   ];
 
   function applyPreset(p) {
+    selectedPresetId = p.id;
     instrumentType = p.type;
     contractAmountMiliar = p.amount;
     issueYear = p.issue;
@@ -454,7 +456,7 @@ Gunakan gaya bahasa profesional, padat, akurat, dan merujuk ketentuan OJK.`;
         <button
           type="button"
           onclick={() => applyPreset(p)}
-          class="p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-2 shadow-2xs hover:shadow-xs {instrumentName === p.name
+          class="p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-2 shadow-2xs hover:shadow-xs {selectedPresetId === p.id
             ? 'bg-emerald-50/70 dark:bg-emerald-950/30 border-emerald-500 dark:border-emerald-600 ring-1 ring-emerald-500'
             : 'bg-slate-50/60 dark:bg-[#162032]/60 border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'}"
         >
