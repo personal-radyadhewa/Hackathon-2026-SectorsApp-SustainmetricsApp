@@ -1,6 +1,15 @@
 # SustainMetric IDX — The Algorithmic Green Auditor Harness
 
-An end-to-end audit harness and live dashboard built on top of **SustainMetric FastMCP** and **OJK TKBI 2024 (Versi 3)** sustainable finance criteria for Indonesia Stock Exchange (IDX) listed equities.
+[![PyPI - Version](https://img.shields.io/pypi/v/sustainmetric-idx?color=047857&logo=pypi&logoColor=white&label=PyPI%20Package)](https://pypi.org/project/sustainmetric-idx/)
+[![MCP Server Repo](https://img.shields.io/badge/MCP%20Server%20Repo-GitHub-181717?logo=github&label=Ecosystem)](https://github.com/personal-radyadhewa/Hackathon-2026-SectorsApp-SustainmetricsMCP)
+[![Protocol](https://img.shields.io/badge/Model%20Context%20Protocol-MCP%20v1.3-blue)](https://modelcontextprotocol.io/)
+[![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
+
+> **More than an application:** SustainMetric IDX is a full-stack algorithmic audit harness built upon a standalone, independently published **Model Context Protocol (MCP)** server: [`sustainmetric-idx`](https://pypi.org/project/sustainmetric-idx/). The MCP server provides plug-and-play green finance telemetry and OJK TKBI evaluation tools for any MCP-compliant AI client (Cursor, Claude Desktop, Antigravity, VS Code, or custom autonomous agents).
+
+- **MCP Package Deployment (PyPI)**: [https://pypi.org/project/sustainmetric-idx/](https://pypi.org/project/sustainmetric-idx/)
+- **MCP Server Core Repository**: [https://github.com/personal-radyadhewa/Hackathon-2026-SectorsApp-SustainmetricsMCP](https://github.com/personal-radyadhewa/Hackathon-2026-SectorsApp-SustainmetricsMCP)
+- **Regulatory Framework**: OJK Taksonomi Keuangan Berkelanjutan Indonesia (TKBI 2024 Versi 3) & Indonesia Stock Exchange (IDX) Equities.
 
 ---
 
@@ -73,6 +82,57 @@ An end-to-end audit harness and live dashboard built on top of **SustainMetric F
 6. **Scheduled Background Cron Jobs**:
    - APScheduler engine orchestrating recurring portfolio audits.
    - Configurable alert score thresholds.
+
+---
+
+## Model Context Protocol (MCP) Server Integration
+
+This platform is powered by **`sustainmetric-idx`**, an open Model Context Protocol server published on **[PyPI](https://pypi.org/project/sustainmetric-idx/)** and maintained in **[Hackathon-2026-SectorsApp-SustainmetricsMCP](https://github.com/personal-radyadhewa/Hackathon-2026-SectorsApp-SustainmetricsMCP)**.
+
+### Why MCP?
+This project is engineered beyond a conventional web application: it decouples **algorithmic audit logic** into an independent, reusable protocol layer. By adopting the open [Model Context Protocol (MCP)](https://modelcontextprotocol.io/), any MCP-compliant AI assistant or autonomous agent (Cursor, Claude Desktop, Antigravity, or custom agent swarms) can consume IDX green finance data and OJK TKBI auditing primitives directly as native tool calls.
+
+### Package & Repository Links
+- **PyPI Package**: [`sustainmetric-idx`](https://pypi.org/project/sustainmetric-idx/) (`pip install sustainmetric-idx`)
+- **MCP Server Repository**: [`Hackathon-2026-SectorsApp-SustainmetricsMCP`](https://github.com/personal-radyadhewa/Hackathon-2026-SectorsApp-SustainmetricsMCP)
+- **Protocol**: FastMCP over `stdio` and `sse` transports
+
+### Standalone MCP Quickstart
+You can run the MCP server standalone in your own development environment or AI client:
+
+```powershell
+# Direct execution via uvx
+uvx sustainmetric-idx
+
+# Or install via pip
+pip install sustainmetric-idx
+python -m sustainmetric.server
+```
+
+#### Claude Desktop / Cursor Client Config (`claude_desktop_config.json`):
+```json
+{
+  "mcpServers": {
+    "sustainmetric-idx": {
+      "command": "uvx",
+      "args": ["sustainmetric-idx"],
+      "env": {
+        "SECTORS_API_KEY": "<YOUR_SECTORS_APP_API_KEY>"
+      }
+    }
+  }
+}
+```
+
+### Core MCP Tools Exposed
+| MCP Tool | Description |
+| :--- | :--- |
+| `audit_emiten_tkbi` | Evaluates IDX emiten against OJK TKBI 2024 criteria (Technical Screening Criteria, DNSH, RMT). |
+| `inspect_ticker_evidence` | Retrieves audited financial filings, operating cash flows, and capex metrics via SectorsApp API v2. |
+| `query_tkbi_knowledge_base` | Semantic vector search across 8 master sectors, KBLI codes, and Indonesian NDC 2030 targets. |
+| `evaluate_divergence_quadrant` | Mathematical 4-quadrant scoring detecting greenwashing divergence ($\Delta\text{Claims} - \Delta\text{Capex}$). |
+
+---
 
 ## Prerequisites
 
