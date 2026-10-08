@@ -12,6 +12,7 @@
     ShieldCheck,
   } from '@lucide/svelte';
   import { updateHITLEntry, getExportXLSXUrl, getExportPDFUrl } from '../api.js';
+  import { t, currentLang } from '../i18n.js';
 
   let {
     auditRun = null,
@@ -91,12 +92,12 @@
     return 'bg-[#DC2626] dark:bg-[#F87171]';
   }
 
-  function getHumanLabel(val) {
+  function getHumanLabel(val, lang = 'id') {
     const upper = String(val || '').toUpperCase();
-    if (upper.includes('INTERIM')) return 'TRANSISI INTERIM';
-    if (upper.includes('HIJAU')) return 'HIJAU (ALIGNED)';
-    if (upper.includes('TRANSISI')) return 'TRANSISI';
-    return 'TIDAK MEMENUHI';
+    if (upper.includes('INTERIM')) return lang === 'id' ? 'TRANSISI INTERIM' : 'INTERIM TRANSITION';
+    if (upper.includes('HIJAU')) return lang === 'id' ? 'HIJAU (SESUAI)' : 'GREEN (ALIGNED)';
+    if (upper.includes('TRANSISI')) return lang === 'id' ? 'TRANSISI' : 'TRANSITION';
+    return lang === 'id' ? 'TIDAK MEMENUHI' : 'NON-COMPLIANT';
   }
 </script>
 
@@ -106,13 +107,15 @@
     <div>
       <h2 class="text-base font-headline font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
         <FileSpreadsheet size={18} class="text-[#047857] dark:text-[#34D399]" />
-        <span>OJK TKBI Regulatory Audit Grid</span>
+        <span>{$currentLang === 'id' ? 'Tabel Audit Regulasi OJK TKBI' : 'OJK TKBI Regulatory Audit Grid'}</span>
         <span class="text-xs font-mono font-normal text-slate-500 dark:text-slate-400">
-          ({filteredEntries.length} / {entries.length} criteria active)
+          {$currentLang === 'id' ? `(${filteredEntries.length} / ${entries.length} kriteria aktif)` : `(${filteredEntries.length} / ${entries.length} criteria active)`}
         </span>
       </h2>
       <p class="text-xs font-body text-slate-500 dark:text-slate-400 mt-1">
-        Taksonomi Keuangan Berkelanjutan Indonesia (TKBI 2024) Technical Screening Criteria &amp; Auditor HIT Sign-Off.
+        {$currentLang === 'id'
+          ? 'Kriteria Teknis Kuantitatif (TSC) Taksonomi Keuangan Berkelanjutan Indonesia (TKBI 2024) & Validasi Auditor HIT.'
+          : 'Technical Screening Criteria (TSC) Indonesia Sustainable Finance Taxonomy (TKBI 2024) & Auditor HIT Sign-Off.'}
       </p>
     </div>
 
@@ -125,7 +128,7 @@
           class="flex items-center space-x-1.5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-[#162032] dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium transition-colors shadow-2xs"
         >
           <Download size={14} class="text-slate-500" />
-          <span>Export Excel</span>
+          <span>{$currentLang === 'id' ? 'Ekspor Excel' : 'Export Excel'}</span>
         </a>
 
         <a
@@ -134,7 +137,7 @@
           class="flex items-center space-x-1.5 px-4 py-2 bg-[#047857] hover:bg-[#065F46] dark:bg-[#34D399] dark:hover:bg-[#10B981] text-white dark:text-[#064E3B] font-medium rounded-lg text-xs transition-colors shadow-xs"
         >
           <FileText size={14} />
-          <span>Download Audit PDF</span>
+          <span>{$currentLang === 'id' ? 'Unduh PDF Audit' : 'Download Audit PDF'}</span>
         </a>
       {/if}
     </div>
@@ -154,7 +157,7 @@
       <input
         type="text"
         bind:value={searchQuery}
-        placeholder="Filter by TSC-ID, category, keyword..."
+        placeholder={$currentLang === 'id' ? 'Cari ID Kriteria, kategori, kata kunci...' : 'Filter by TSC-ID, category, keyword...'}
         class="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-3 py-1.5 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#047857] dark:focus:ring-[#34D399]"
       />
     </div>
@@ -165,10 +168,10 @@
         <Filter size={12} /> Status:
       </span>
       {#each [
-        { id: 'ALL', label: 'All' },
-        { id: 'HIJAU', label: 'Hijau' },
-        { id: 'TRANSISI', label: 'Transisi' },
-        { id: 'TIDAK', label: 'Tidak Memenuhi' }
+        { id: 'ALL', labelId: 'Semua', labelEn: 'All' },
+        { id: 'HIJAU', labelId: 'Hijau', labelEn: 'Green' },
+        { id: 'TRANSISI', labelId: 'Transisi', labelEn: 'Transition' },
+        { id: 'TIDAK', labelId: 'Tidak Memenuhi', labelEn: 'Non-Compliant' }
       ] as opt}
         <button
           type="button"
@@ -177,7 +180,7 @@
             ? 'bg-white dark:bg-[#0F172A] text-slate-900 dark:text-slate-100 font-bold shadow-2xs'
             : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'}"
         >
-          {opt.label}
+          {$currentLang === 'id' ? opt.labelId : opt.labelEn}
         </button>
       {/each}
     </div>
@@ -189,22 +192,22 @@
       <table class="w-full text-left border-collapse text-xs">
         <thead class="bg-slate-50/90 dark:bg-[#162032]/80 text-slate-500 dark:text-slate-400 font-mono text-[10px] uppercase tracking-wider sticky top-0 z-10 border-b border-slate-200 dark:border-slate-800 backdrop-blur-xs">
           <tr>
-            <th class="py-3 px-3.5 w-16">Stock</th>
-            <th class="py-3 px-3.5 w-28">Sector</th>
-            <th class="py-3 px-3.5 w-36">Category</th>
-            <th class="py-3 px-3.5 w-24">Criterion ID</th>
-            <th class="py-3 px-3.5 w-48">Requirement</th>
-            <th class="py-3 px-3.5 w-32 text-center">OJK Status</th>
-            <th class="py-3 px-3.5 min-w-[200px]">AI Reasoning &amp; Analysis</th>
-            <th class="py-3 px-3.5 min-w-[160px]">Evidence Citation</th>
-            <th class="py-3 px-3.5 min-w-[220px]">Auditor Review (HIT)</th>
+            <th class="py-3 px-3.5 w-16">{$currentLang === 'id' ? 'Emiten' : 'Stock'}</th>
+            <th class="py-3 px-3.5 w-28">{$currentLang === 'id' ? 'Sektor' : 'Sector'}</th>
+            <th class="py-3 px-3.5 w-36">{$currentLang === 'id' ? 'Kategori' : 'Category'}</th>
+            <th class="py-3 px-3.5 w-24">{$currentLang === 'id' ? 'ID Kriteria' : 'Criterion ID'}</th>
+            <th class="py-3 px-3.5 w-48">{$currentLang === 'id' ? 'Ketentuan' : 'Requirement'}</th>
+            <th class="py-3 px-3.5 w-32 text-center">{$currentLang === 'id' ? 'Status OJK' : 'OJK Status'}</th>
+            <th class="py-3 px-3.5 min-w-[200px]">{$currentLang === 'id' ? 'Analisis AI' : 'AI Reasoning & Analysis'}</th>
+            <th class="py-3 px-3.5 min-w-[160px]">{$currentLang === 'id' ? 'Bukti Dokumen' : 'Evidence Citation'}</th>
+            <th class="py-3 px-3.5 min-w-[220px]">{$currentLang === 'id' ? 'Tinjauan Auditor (HIT)' : 'Auditor Review (HIT)'}</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-100 dark:divide-slate-800/80 text-slate-700 dark:text-slate-300">
           {#if filteredEntries.length === 0}
             <tr>
               <td colspan="9" class="text-center py-12 text-slate-400 dark:text-slate-500 text-xs font-mono">
-                No sustainability criteria matched your search or filters.
+                {$currentLang === 'id' ? 'Tidak ada kriteria keberlanjutan yang cocok dengan pencarian atau filter Anda.' : 'No sustainability criteria matched your search or filters.'}
               </td>
             </tr>
           {/if}
@@ -231,11 +234,11 @@
               <td class="py-3 px-3.5 text-center">
                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono font-bold border {getAnswerBadge(effectiveAns)}">
                   <span class="w-1.5 h-1.5 rounded-full {getDotColor(effectiveAns)}"></span>
-                  <span>{getHumanLabel(effectiveAns)}</span>
+                  <span>{getHumanLabel(effectiveAns, $currentLang)}</span>
                 </span>
                 {#if item.is_overridden}
                   <div class="text-[9px] font-mono text-[#D97706] dark:text-[#FBBF24] mt-1 uppercase font-semibold">
-                    Overridden
+                    {$currentLang === 'id' ? 'Diubah Manual' : 'Overridden'}
                   </div>
                 {/if}
               </td>
@@ -247,7 +250,7 @@
 
               <!-- Evidence Citation -->
               <td class="py-3 px-3.5 text-[11px] font-mono text-slate-500 dark:text-slate-400">
-                {item.bukti || 'Filing Reference Pending'}
+                {item.bukti || ($currentLang === 'id' ? 'Menunggu Referensi Dokumen' : 'Filing Reference Pending')}
               </td>
 
               <!-- Auditor Review & Override Form -->
@@ -260,15 +263,15 @@
                         bind:value={overrideChoice}
                         class="bg-slate-50 dark:bg-[#162032] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 text-xs font-mono rounded-lg px-2 py-1 focus:outline-none"
                       >
-                        <option value="HIJAU">HIJAU (Aligned)</option>
-                        <option value="TRANSISI">TRANSISI (Transition)</option>
-                        <option value="TIDAK">TIDAK MEMENUHI</option>
+                        <option value="HIJAU">{$currentLang === 'id' ? 'HIJAU (Sesuai)' : 'HIJAU (Aligned)'}</option>
+                        <option value="TRANSISI">{$currentLang === 'id' ? 'TRANSISI (Masa Transisi)' : 'TRANSISI (Transition)'}</option>
+                        <option value="TIDAK">{$currentLang === 'id' ? 'TIDAK MEMENUHI' : 'NON-COMPLIANT'}</option>
                       </select>
                     </div>
 
                     <textarea
                       bind:value={feedbackText}
-                      placeholder="Auditor rationale / evidence note..."
+                      placeholder={$currentLang === 'id' ? 'Catatan verifikasi auditor / dasar bukti...' : 'Auditor rationale / evidence note...'}
                       rows="2"
                       class="w-full bg-slate-50 dark:bg-[#162032] border border-slate-200 dark:border-slate-700 rounded-lg p-2 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none"
                     ></textarea>
@@ -279,7 +282,7 @@
                         onclick={cancelEditing}
                         class="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 rounded-lg text-xs font-medium cursor-pointer"
                       >
-                        Cancel
+                        {$currentLang === 'id' ? 'Batal' : 'Cancel'}
                       </button>
                       <button
                         type="button"
@@ -288,20 +291,20 @@
                         class="px-3 py-1 bg-[#047857] hover:bg-[#065F46] dark:bg-[#34D399] dark:hover:bg-[#10B981] text-white dark:text-[#064E3B] font-medium rounded-lg text-xs flex items-center gap-1 cursor-pointer disabled:opacity-50"
                       >
                         <Save size={12} />
-                        <span>{savingId === item.id ? 'Saving...' : 'Save'}</span>
+                        <span>{savingId === item.id ? ($currentLang === 'id' ? 'Menyimpan...' : 'Saving...') : ($currentLang === 'id' ? 'Simpan' : 'Save')}</span>
                       </button>
                     </div>
                   </div>
                 {:else}
                   <div class="flex items-start justify-between gap-1 group">
                     <div class="text-[11px] font-body text-slate-600 dark:text-slate-400 italic flex-1">
-                      {item.auditor_feedback || 'No review notes recorded yet'}
+                      {item.auditor_feedback || ($currentLang === 'id' ? 'Belum ada catatan verifikasi' : 'No review notes recorded yet')}
                     </div>
                     <button
                       type="button"
                       onclick={() => startEditing(item)}
                       class="p-1 rounded-md text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-                      title="Edit assessment"
+                      title={$currentLang === 'id' ? 'Ubah penilaian' : 'Edit assessment'}
                     >
                       <Edit3 size={14} />
                     </button>

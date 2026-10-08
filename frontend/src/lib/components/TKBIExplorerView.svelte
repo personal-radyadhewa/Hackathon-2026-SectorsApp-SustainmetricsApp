@@ -39,6 +39,17 @@
     'Aktivitas Profesional, Ilmiah, dan Teknis': FileCheck2,
   };
 
+  const sectorNamesEn = {
+    'Energi': 'Energy',
+    'Konstruksi dan Real Estat': 'Construction & Real Estate',
+    'Transportasi dan Pergudangan': 'Transportation & Storage',
+    'Pertanian, Kehutanan, dan Perikanan': 'Agriculture, Forestry & Fishing',
+    'Manufaktur': 'Manufacturing',
+    'Pengelolaan Air, Air Limbah, Sampah, dan Remediasi': 'Water, Waste Management & Remediation',
+    'Informasi dan Komunikasi': 'Information & Communication',
+    'Aktivitas Profesional, Ilmiah, dan Teknis': 'Professional, Scientific & Technical Activities',
+  };
+
   onMount(async () => {
     try {
       taxonomyData = await fetchTKBITaxonomyExplorer();
@@ -117,7 +128,7 @@
     <div class="bg-white dark:bg-[#0F172A] border border-slate-200/80 dark:border-slate-800 rounded-xl p-4 shadow-sm">
       <div class="text-[10px] font-mono uppercase font-bold text-slate-400 mb-2 flex items-center gap-1.5">
         <ShieldCheck size={13} class="text-[#047857] dark:text-[#34D399]" />
-        <span>Target Komitmen Iklim Nasional (Enhanced NDC Indonesia 2030)</span>
+        <span>{$currentLang === 'id' ? 'Target Komitmen Iklim Nasional (Enhanced NDC Indonesia 2030)' : 'National Climate Commitment Targets (Enhanced NDC Indonesia 2030)'}</span>
       </div>
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
         {#each taxonomyData.ndc_targets as ndc}
@@ -146,7 +157,7 @@
             : 'bg-white dark:bg-[#0F172A] border border-slate-200/80 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#162032]'}"
         >
           <IconComp size={15} />
-          <span>{secKey}</span>
+          <span>{$currentLang === 'id' ? secKey : (sectorNamesEn[secKey] || secKey)}</span>
         </button>
       {/each}
     </div>
@@ -160,14 +171,16 @@
         <div>
           <div class="flex items-center gap-2">
             <h2 class="text-lg font-headline font-bold text-slate-900 dark:text-slate-100">
-              Sektor {activeSector.sector_name}
+              {$currentLang === 'id' ? `Sektor ${activeSector.sector_name}` : `Sector: ${sectorNamesEn[activeSector.sector_name] || activeSector.sector_name}`}
             </h2>
             <span class="font-mono text-xs font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
               {activeSector.sector_type}
             </span>
           </div>
           <span class="text-xs text-slate-500 font-mono mt-0.5 block">
-            Adopsi: {activeSector.tkbi_version} • Kategori NDC: {activeSector.ndc_category}
+            {$currentLang === 'id'
+              ? `Adopsi: ${activeSector.tkbi_version} • Kategori NDC: ${activeSector.ndc_category}`
+              : `Adoption: ${activeSector.tkbi_version} • NDC Category: ${activeSector.ndc_category}`}
           </span>
         </div>
 
@@ -177,7 +190,7 @@
           <input
             type="text"
             bind:value={searchQuery}
-            placeholder="Cari Bab, KBLI, atau kriteria..."
+            placeholder={$currentLang === 'id' ? 'Cari Bab, KBLI, atau kriteria...' : 'Search Chapter, KBLI, or criteria...'}
             class="w-full bg-slate-50 dark:bg-[#162032] border border-slate-200 dark:border-slate-700 rounded-lg pl-9 pr-3 py-1.5 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none"
           />
         </div>
@@ -212,7 +225,7 @@
               </div>
 
               <div class="pt-2 border-t border-slate-200/60 dark:border-slate-800/80 flex items-center justify-between text-[11px] font-mono">
-                <span class="text-slate-400">Opsi Klasifikasi:</span>
+                <span class="text-slate-400">{$currentLang === 'id' ? 'Opsi Klasifikasi:' : 'Classification Output:'}</span>
                 <span class="font-bold text-slate-800 dark:text-slate-200">{item.bentuk_jawaban}</span>
               </div>
             </div>
@@ -220,13 +233,15 @@
         </div>
       {:else}
         <div class="text-center py-12 text-slate-400 text-xs font-mono">
-          Tidak ada kriteria yang cocok dengan pencarian "{searchQuery}".
+          {$currentLang === 'id'
+            ? `Tidak ada kriteria yang cocok dengan pencarian "${searchQuery}".`
+            : `No criteria matched your search "${searchQuery}".`}
         </div>
       {/if}
     </div>
   {:else if isLoading}
     <div class="text-center py-16 text-slate-400 text-xs font-mono">
-      Memuat Master Taksonomi TKBI...
+      {$currentLang === 'id' ? 'Memuat Master Taksonomi TKBI...' : 'Loading TKBI Master Taxonomy...'}
     </div>
   {/if}
 </div>

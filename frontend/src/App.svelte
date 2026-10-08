@@ -9,7 +9,6 @@
   import SchedulesView from './lib/components/SchedulesView.svelte';
   import TKBISimulatorView from './lib/components/TKBISimulatorView.svelte';
   import TKBIExplorerView from './lib/components/TKBIExplorerView.svelte';
-  import TKBIPortfolioView from './lib/components/TKBIPortfolioView.svelte';
   import TKBISunsettingView from './lib/components/TKBISunsettingView.svelte';
   import TKBIRulesOverviewView from './lib/components/TKBIRulesOverviewView.svelte';
   import AnalysisOverviewView from './lib/components/AnalysisOverviewView.svelte';
@@ -210,7 +209,6 @@
     schedules: $t.schedules,
     simulator: $t.simulator,
     explorer: $t.explorer,
-    portfolio: $t.portfolio,
     sunsetting: $t.sunsetting,
     'analysis-overview': $t.analysisOverview,
     'tkbi-overview': $t.tkbiOverview,
@@ -332,8 +330,6 @@
         <TKBISimulatorView />
       {:else if currentView === 'explorer'}
         <TKBIExplorerView />
-      {:else if currentView === 'portfolio'}
-        <TKBIPortfolioView />
       {:else if currentView === 'sunsetting'}
         <TKBISunsettingView />
       {:else if !activeTicker}

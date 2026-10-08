@@ -21,6 +21,7 @@
     ChevronRight,
     ExternalLink,
   } from '@lucide/svelte';
+  import { t, currentLang } from '../i18n.js';
 
   let {
     auditRun = null,
@@ -356,7 +357,7 @@
         <div class="flex items-center space-x-2.5 mb-1.5">
           <ShieldCheck size={20} class="text-[#047857] dark:text-[#34D399]" />
           <h2 class="text-base font-headline font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-            <span>Audit Evidence &amp; Claims Telemetry</span>
+            <span>{$currentLang === 'id' ? 'Telemetri Bukti Audit & Klaim' : 'Audit Evidence & Claims Telemetry'}</span>
             {#if auditRun}
               <span class="px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-[#047857] dark:text-[#34D399] text-xs font-mono font-bold">
                 {auditRun.ticker}
@@ -365,7 +366,9 @@
           </h2>
         </div>
         <p class="text-xs font-body text-slate-500 dark:text-slate-400">
-          Traceable claim-to-evidence telemetry proving compliance against audited financial filings, TKBI v3.0 technical screening criteria, and statutory registries.
+          {$currentLang === 'id'
+            ? 'Jejak telemetri klaim-ke-bukti yang memverifikasi kepatuhan laporan keuangan teraudit, kriteria teknis TKBI 2024, dan regulasi resmi.'
+            : 'Traceable claim-to-evidence telemetry proving compliance against audited financial filings, TKBI v3.0 technical screening criteria, and statutory registries.'}
         </p>
       </div>
 
@@ -380,7 +383,7 @@
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'}"
           >
             <FileCheck2 size={13} class="text-[#047857] dark:text-[#34D399]" />
-            <span>Audit Evidence Trail</span>
+            <span>{$currentLang === 'id' ? 'Jejak Bukti Audit' : 'Audit Evidence Trail'}</span>
             <span class="px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-emerald-100/60 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300">
               {evidenceSpans.length}
             </span>
@@ -393,7 +396,7 @@
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'}"
           >
             <Activity size={13} class="text-slate-500" />
-            <span>System Pipeline Spans</span>
+            <span>{$currentLang === 'id' ? 'Span Pipeline Sistem' : 'System Pipeline Spans'}</span>
             <span class="px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
               {traces.length}
             </span>
@@ -419,9 +422,13 @@
     {#if !auditRun}
       <div class="bg-white dark:bg-[#0F172A] border border-slate-200/80 dark:border-slate-800 rounded-xl p-12 text-center shadow-sm">
         <ShieldCheck size={36} class="mx-auto text-slate-400 mb-3" />
-        <h3 class="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-1">No Audit Run Active</h3>
+        <h3 class="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-1">
+          {$currentLang === 'id' ? 'Belum Ada Audit yang Aktif' : 'No Audit Run Active'}
+        </h3>
         <p class="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-4">
-          Select an emiten from your watchlist and run an audit check to generate the full traceable claim-to-evidence DAG.
+          {$currentLang === 'id'
+            ? 'Pilih emiten dari watchlist Anda dan jalankan audit untuk melihat graf pohon bukti-klaim yang lengkap.'
+            : 'Select an emiten from your watchlist and run an audit check to generate the full traceable claim-to-evidence DAG.'}
         </p>
       </div>
     {:else}
@@ -432,7 +439,7 @@
           <input
             type="text"
             bind:value={searchQuery}
-            placeholder="Search claims, citations, or TSC criteria..."
+            placeholder={$currentLang === 'id' ? 'Cari klaim, kutipan dokumen, atau kriteria TSC...' : 'Search claims, citations, or TSC criteria...'}
             class="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-3 py-1.5 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#047857] dark:focus:ring-[#34D399]"
           />
         </div>

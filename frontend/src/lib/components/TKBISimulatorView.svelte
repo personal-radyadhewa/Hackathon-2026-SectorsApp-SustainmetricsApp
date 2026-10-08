@@ -40,21 +40,45 @@
   let errorMsg = $state(null);
 
   const sectorsList = [
-    'Energi',
-    'Konstruksi dan Real Estat',
-    'Transportasi dan Pergudangan',
-    'Pertanian, Kehutanan, dan Perikanan',
-    'Manufaktur',
-    'Pengelolaan Air, Air Limbah, Sampah, dan Remediasi',
-    'Informasi dan Komunikasi',
-    'Aktivitas Profesional, Ilmiah, dan Teknis',
+    { id: 'Energi', labelId: 'Energi', labelEn: 'Energy' },
+    { id: 'Konstruksi dan Real Estat', labelId: 'Konstruksi dan Real Estat', labelEn: 'Construction & Real Estate' },
+    { id: 'Transportasi dan Pergudangan', labelId: 'Transportasi dan Pergudangan', labelEn: 'Transportation & Storage' },
+    { id: 'Pertanian, Kehutanan, dan Perikanan', labelId: 'Pertanian, Kehutanan, dan Perikanan', labelEn: 'Agriculture, Forestry & Fishing' },
+    { id: 'Manufaktur', labelId: 'Manufaktur', labelEn: 'Manufacturing' },
+    { id: 'Pengelolaan Air, Air Limbah, Sampah, dan Remediasi', labelId: 'Pengelolaan Air, Air Limbah, Sampah, dan Remediasi', labelEn: 'Water, Waste Management & Remediation' },
+    { id: 'Informasi dan Komunikasi', labelId: 'Informasi dan Komunikasi', labelEn: 'Information & Communication' },
+    { id: 'Aktivitas Profesional, Ilmiah, dan Teknis', labelId: 'Aktivitas Profesional, Ilmiah, dan Teknis', labelEn: 'Professional, Scientific & Technical Activities' },
   ];
 
   const eoOptions = [
-    { id: 'EO1', name: 'EO1: Mitigasi Perubahan Iklim', desc: 'Pengurangan emisi GRK & efisiensi dekarbonisasi' },
-    { id: 'EO2', name: 'EO2: Adaptasi Perubahan Iklim', desc: 'Ketahanan terhadap bahaya iklim fisik & ekstrem' },
-    { id: 'EO3', name: 'EO3: Perlindungan Biodiversitas & Ekosistem', desc: 'Konservasi keanekaragaman hayati & kualitas air/tanah' },
-    { id: 'EO4', name: 'EO4: Ekonomi Sirkular & Pemanfaatan Sumber Daya', desc: 'Daur ulang tertutup & efisiensi material' },
+    {
+      id: 'EO1',
+      nameId: 'EO1: Mitigasi Perubahan Iklim',
+      nameEn: 'EO1: Climate Change Mitigation',
+      descId: 'Pengurangan emisi GRK & efisiensi dekarbonisasi',
+      descEn: 'GHG emission reduction & decarbonization efficiency'
+    },
+    {
+      id: 'EO2',
+      nameId: 'EO2: Adaptasi Perubahan Iklim',
+      nameEn: 'EO2: Climate Change Adaptation',
+      descId: 'Ketahanan terhadap bahaya iklim fisik & cuaca ekstrem',
+      descEn: 'Resilience against physical climate hazards & extreme weather'
+    },
+    {
+      id: 'EO3',
+      nameId: 'EO3: Perlindungan Biodiversitas & Ekosistem',
+      nameEn: 'EO3: Protection of Biodiversity & Ecosystems',
+      descId: 'Konservasi keanekaragaman hayati & kualitas air/tanah',
+      descEn: 'Conservation of biodiversity & water/soil quality'
+    },
+    {
+      id: 'EO4',
+      nameId: 'EO4: Ekonomi Sirkular & Pemanfaatan Sumber Daya',
+      nameEn: 'EO4: Circular Economy & Resource Efficiency',
+      descId: 'Daur ulang tertutup & efisiensi material',
+      descEn: 'Closed-loop recycling & raw material efficiency'
+    },
   ];
 
   onMount(async () => {
@@ -188,15 +212,15 @@
         <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
           <span class="font-mono text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2">
             <span class="w-5 h-5 rounded-full bg-[#047857] text-white flex items-center justify-center text-[10px]">1</span>
-            Identifikasi Aktivitas &amp; Skala Usaha
+            {$currentLang === 'id' ? 'Identifikasi Aktivitas & Skala Usaha' : 'Activity & Business Scale Setup'}
           </span>
-          <span class="text-[11px] font-mono text-slate-400">Tahap 1 &amp; 2</span>
+          <span class="text-[11px] font-mono text-slate-400">{$currentLang === 'id' ? 'Tahap 1 & 2' : 'Stages 1 & 2'}</span>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label for="sector-select" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
-              Sektor Ekonomi (8 Master Sektor)
+              {$currentLang === 'id' ? 'Sektor Ekonomi (8 Master Sektor)' : 'Economic Sector (8 Master Sectors)'}
             </label>
             <select
               id="sector-select"
@@ -204,20 +228,20 @@
               class="w-full bg-slate-50 dark:bg-[#162032] border border-slate-200 dark:border-slate-700 rounded-lg p-2 text-xs font-medium text-slate-900 dark:text-slate-100 focus:outline-none"
             >
               {#each sectorsList as s}
-                <option value={s}>{s}</option>
+                <option value={s.id}>{$currentLang === 'id' ? s.labelId : s.labelEn}</option>
               {/each}
             </select>
           </div>
 
           <div>
             <label for="activity-input" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
-              Nama Aktivitas / KBLI
+              {$currentLang === 'id' ? 'Nama Aktivitas / KBLI' : 'Activity Name / KBLI Code'}
             </label>
             <input
               id="activity-input"
               type="text"
               bind:value={activityName}
-              placeholder="Contoh: PLTP Geothermal KBLI 35101"
+              placeholder={$currentLang === 'id' ? 'Contoh: PLTP Geothermal KBLI 35101' : 'e.g. Geothermal Power Plant KBLI 35101'}
               class="w-full bg-slate-50 dark:bg-[#162032] border border-slate-200 dark:border-slate-700 rounded-lg p-2 text-xs text-slate-900 dark:text-slate-100 focus:outline-none"
             />
           </div>
@@ -225,7 +249,7 @@
 
         <div>
           <span class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-            Jalur Evaluasi Skala Usaha (PP No. 7/2021)
+            {$currentLang === 'id' ? 'Jalur Evaluasi Skala Usaha (PP No. 7/2021)' : 'Business Scale Assessment Path (PP No. 7/2021)'}
           </span>
           <div class="grid grid-cols-2 gap-3">
             <button
@@ -237,10 +261,10 @@
             >
               <div class="font-headline font-bold text-xs flex items-center gap-1.5">
                 <Building2 size={14} class="text-[#047857] dark:text-[#34D399]" />
-                <span>Korporasi / Non-UMKM</span>
+                <span>{$currentLang === 'id' ? 'Korporasi / Non-UMKM' : 'Corporate / Enterprise'}</span>
               </div>
               <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-tight">
-                Kriteria Teknis Kuantitatif (TSC) ambang batas emisi terstandar.
+                {$currentLang === 'id' ? 'Kriteria Teknis Kuantitatif (TSC) ambang batas emisi terstandar.' : 'Quantitative Technical Screening Criteria (TSC) emission thresholds.'}
               </p>
             </button>
 
@@ -253,10 +277,10 @@
             >
               <div class="font-headline font-bold text-xs flex items-center gap-1.5">
                 <Briefcase size={14} class="text-[#047857] dark:text-[#34D399]" />
-                <span>Koperasi &amp; UMKM</span>
+                <span>{$currentLang === 'id' ? 'Koperasi & UMKM' : 'Cooperatives & MSMEs'}</span>
               </div>
               <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-tight">
-                Sector-Agnostic Decision Tree (SDT) berbasis prinsip sederhana.
+                {$currentLang === 'id' ? 'Sector-Agnostic Decision Tree (SDT) berbasis prinsip sederhana.' : 'Sector-Agnostic Decision Tree (SDT) based on simple qualitative principles.'}
               </p>
             </button>
           </div>
@@ -268,9 +292,9 @@
         <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
           <span class="font-mono text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2">
             <span class="w-5 h-5 rounded-full bg-[#047857] text-white flex items-center justify-center text-[10px]">2</span>
-            Tujuan Lingkungan Hidup Utama (Primary EO)
+            {$currentLang === 'id' ? 'Tujuan Lingkungan Hidup Utama (Primary EO)' : 'Primary Environmental Objective (EO)'}
           </span>
-          <span class="text-[11px] font-mono text-slate-400">Tahap 3</span>
+          <span class="text-[11px] font-mono text-slate-400">{$currentLang === 'id' ? 'Tahap 3' : 'Stage 3'}</span>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -282,8 +306,12 @@
                 ? 'border-[#047857] bg-emerald-50/40 dark:bg-emerald-950/30 text-slate-900 dark:text-slate-100 font-semibold'
                 : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-[#162032] text-slate-700 dark:text-slate-300'}"
             >
-              <div class="text-xs font-headline font-bold text-emerald-800 dark:text-emerald-300">{opt.name}</div>
-              <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{opt.desc}</div>
+              <div class="text-xs font-headline font-bold text-emerald-800 dark:text-emerald-300">
+                {$currentLang === 'id' ? opt.nameId : opt.nameEn}
+              </div>
+              <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                {$currentLang === 'id' ? opt.descId : opt.descEn}
+              </div>
             </button>
           {/each}
         </div>
@@ -294,15 +322,17 @@
         <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
           <span class="font-mono text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2">
             <span class="w-5 h-5 rounded-full bg-[#047857] text-white flex items-center justify-center text-[10px]">3</span>
-            {scaleType === 'KORPORASI' ? 'Uji Kriteria Teknis (TSC Screening)' : 'Pertanyaan Prinsip SDT (UMKM)'}
+            {scaleType === 'KORPORASI'
+              ? ($currentLang === 'id' ? 'Uji Kriteria Teknis (TSC Screening)' : 'Technical Screening Criteria (TSC)')
+              : ($currentLang === 'id' ? 'Pertanyaan Prinsip SDT (UMKM)' : 'MSME Checklist Questions (SDT)')}
           </span>
-          <span class="text-[11px] font-mono text-slate-400">Tahap 4</span>
+          <span class="text-[11px] font-mono text-slate-400">{$currentLang === 'id' ? 'Tahap 4' : 'Stage 4'}</span>
         </div>
 
         {#if scaleType === 'KORPORASI'}
           <div>
             <span class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">
-              Status Pemenuhan Ambang Batas Kuantitatif TSC:
+              {$currentLang === 'id' ? 'Status Pemenuhan Ambang Batas Kuantitatif TSC:' : 'Quantitative TSC Threshold Compliance Status:'}
             </span>
             <div class="grid grid-cols-3 gap-2.5">
               <button
@@ -312,7 +342,7 @@
                   ? 'border-emerald-500 bg-emerald-50 text-emerald-900 font-bold dark:bg-emerald-950/60 dark:text-emerald-200'
                   : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-[#162032]'}"
               >
-                <div class="text-xs">Hijau (TSC Penuh)</div>
+                <div class="text-xs">{$currentLang === 'id' ? 'Hijau (TSC Penuh)' : 'Green (Full TSC)'}</div>
                 <div class="text-[10px] text-slate-500 font-mono mt-0.5">&lt; 100 gCO2e/kWh</div>
               </button>
 
@@ -323,8 +353,8 @@
                   ? 'border-amber-500 bg-amber-50 text-amber-900 font-bold dark:bg-amber-950/60 dark:text-amber-200'
                   : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-[#162032]'}"
               >
-                <div class="text-xs">Transisi (Roadmap)</div>
-                <div class="text-[10px] text-slate-500 font-mono mt-0.5">Pensiun Dini / Co-fire</div>
+                <div class="text-xs">{$currentLang === 'id' ? 'Transisi (Roadmap)' : 'Transition (Roadmap)'}</div>
+                <div class="text-[10px] text-slate-500 font-mono mt-0.5">{$currentLang === 'id' ? 'Pensiun Dini / Co-fire' : 'Early Phase-Out / Co-fire'}</div>
               </button>
 
               <button
@@ -334,8 +364,8 @@
                   ? 'border-rose-500 bg-rose-50 text-rose-900 font-bold dark:bg-rose-950/60 dark:text-rose-200'
                   : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-[#162032]'}"
               >
-                <div class="text-xs">Tidak Memenuhi</div>
-                <div class="text-[10px] text-slate-500 font-mono mt-0.5">Melebihi Batas</div>
+                <div class="text-xs">{$currentLang === 'id' ? 'Tidak Memenuhi' : 'Non-Compliant'}</div>
+                <div class="text-[10px] text-slate-500 font-mono mt-0.5">{$currentLang === 'id' ? 'Melebihi Batas' : 'Exceeds Threshold'}</div>
               </button>
             </div>
           </div>
@@ -343,7 +373,9 @@
           <!-- UMKM SDT Questions -->
           <div class="space-y-2.5">
             <p class="text-xs text-slate-500 dark:text-slate-400">
-              Evaluasi langkah nyata efisiensi operasional dan ketahanan iklim sesuai prinsip SDT:
+              {$currentLang === 'id'
+                ? 'Evaluasi langkah nyata efisiensi operasional dan ketahanan iklim sesuai prinsip SDT:'
+                : 'Evaluate operational efficiency and climate resilience based on SDT principles:'}
             </p>
             {#if sdtCatalog?.criteria?.[eoPrimary]?.questions}
               {#each sdtCatalog.criteria[eoPrimary].questions as q}
@@ -369,9 +401,9 @@
         <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
           <span class="font-mono text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2">
             <span class="w-5 h-5 rounded-full bg-[#047857] text-white flex items-center justify-center text-[10px]">4</span>
-            3 Essential Criteria (DNSH, RMT, &amp; Sosial)
+            {$currentLang === 'id' ? '3 Kriteria Esensial (DNSH, RMT, & Sosial)' : '3 Essential Criteria (DNSH, RMT, & Social)'}
           </span>
-          <span class="text-[11px] font-mono text-slate-400">Tahap 5, 6, 7</span>
+          <span class="text-[11px] font-mono text-slate-400">{$currentLang === 'id' ? 'Tahap 5, 6, 7' : 'Stages 5, 6, 7'}</span>
         </div>
 
         <!-- DNSH Question -->
@@ -379,10 +411,12 @@
           <div class="flex items-center justify-between">
             <div>
               <span class="text-xs font-bold text-slate-800 dark:text-slate-200">
-                1. Uji Kerugian Signifikan (Do No Significant Harm / DNSH)
+                {$currentLang === 'id' ? '1. Uji Kerugian Signifikan (Do No Significant Harm / DNSH)' : '1. Do No Significant Harm (DNSH) Test'}
               </span>
               <p class="text-[11px] text-slate-500 dark:text-slate-400">
-                Apakah aktivitas menimbulkan bahaya/kerusakan signifikan terhadap salah satu dari 3 EO lainnya?
+                {$currentLang === 'id'
+                  ? 'Apakah aktivitas menimbulkan bahaya/kerusakan signifikan terhadap salah satu dari 3 EO lainnya?'
+                  : 'Does the activity cause significant damage or harm to any of the other 3 Environmental Objectives?'}
               </p>
             </div>
             <button
@@ -392,7 +426,9 @@
                 ? 'bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border border-rose-300'
                 : 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300'}"
             >
-              {dnshHarm ? 'ADA ISU DNSH' : 'LOLOS (AMAN)'}
+              {dnshHarm
+                ? ($currentLang === 'id' ? 'ADA ISU DNSH' : 'DNSH HARM')
+                : ($currentLang === 'id' ? 'LOLOS (AMAN)' : 'PASSED (SAFE)')}
             </button>
           </div>
 
@@ -402,10 +438,12 @@
               <div>
                 <span class="text-xs font-bold text-amber-900 dark:text-amber-300 flex items-center gap-1.5">
                   <Clock size={14} />
-                  Remedial Measures to Transition (RMT) Plan
+                  {$currentLang === 'id' ? 'Rencana Perbaikan Transisi (RMT Plan)' : 'Remedial Measures to Transition (RMT) Plan'}
                 </span>
                 <p class="text-[11px] text-amber-700 dark:text-amber-400">
-                  Apakah entitas memiliki komitmen rencana mitigasi terikat maksimal 3 tahun kalender?
+                  {$currentLang === 'id'
+                    ? 'Apakah entitas memiliki komitmen rencana mitigasi terikat maksimal 3 tahun kalender?'
+                    : 'Does the entity commit to a binding remediation plan capped at 3 calendar years?'}
                 </p>
               </div>
               <input
@@ -422,10 +460,12 @@
           <div>
             <span class="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
               <ShieldCheck size={14} class="text-[#047857] dark:text-[#34D399]" />
-              2. Minimum Social Safeguards (Aspek Sosial Esensial)
+              {$currentLang === 'id' ? '2. Perlindungan Sosial Minimum (Social Safeguards)' : '2. Minimum Social Safeguards (Labor & Human Rights)'}
             </span>
             <p class="text-[11px] text-slate-500 dark:text-slate-400">
-              Kepatuhan penuh pada norma ketenagakerjaan, standar K3, HAM, dan perlindungan masyarakat terdampak.
+              {$currentLang === 'id'
+                ? 'Kepatuhan penuh pada norma ketenagakerjaan, standar K3, HAM, dan perlindungan masyarakat terdampak.'
+                : 'Full compliance with fair labor practices, occupational safety, human rights, and affected communities.'}
             </p>
           </div>
           <button
@@ -435,7 +475,9 @@
               ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300'
               : 'bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border border-rose-300'}"
           >
-            {socialSafeguardsMet ? 'MEMENUHI' : 'GAGAL'}
+            {socialSafeguardsMet
+              ? ($currentLang === 'id' ? 'MEMENUHI' : 'COMPLIANT')
+              : ($currentLang === 'id' ? 'GAGAL' : 'NON-COMPLIANT')}
           </button>
         </div>
 
@@ -447,10 +489,10 @@
         >
           {#if isEvaluating}
             <div class="w-4 h-4 border-2 border-white dark:border-[#064E3B] border-t-transparent rounded-full animate-spin"></div>
-            <span>Mengevaluasi Flow OJK TKBI...</span>
+            <span>{$currentLang === 'id' ? 'Mengevaluasi Flow OJK TKBI...' : 'Running OJK TKBI Decision Engine...'}</span>
           {:else}
             <Sparkles size={15} />
-            <span>Jalankan Evaluasi Keputusan OJK TKBI</span>
+            <span>{$currentLang === 'id' ? 'Jalankan Evaluasi Keputusan OJK TKBI' : 'Run OJK TKBI Decision Engine'}</span>
           {/if}
         </button>
       </div>
@@ -461,7 +503,9 @@
       {#if evaluationResult}
         <div class="bg-white dark:bg-[#0F172A] border border-slate-200/80 dark:border-slate-800 rounded-xl p-6 shadow-sm space-y-5 sticky top-20">
           <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-            <span class="font-mono text-xs uppercase font-bold text-slate-400">Hasil Klasifikasi OJK</span>
+            <span class="font-mono text-xs uppercase font-bold text-slate-400">
+              {$currentLang === 'id' ? 'Hasil Klasifikasi OJK' : 'OJK Classification Result'}
+            </span>
             <span class="font-mono text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
               {evaluationResult.tier}
             </span>
@@ -477,20 +521,28 @@
             : 'bg-rose-50 text-rose-950 border-rose-200 dark:bg-rose-950/40 dark:text-rose-100 dark:border-rose-800'}">
             
             <div class="text-2xl font-headline font-black tracking-tight">
-              {evaluationResult.classification}
+              {evaluationResult.classification === 'HIJAU'
+                ? ($currentLang === 'id' ? 'HIJAU' : 'GREEN')
+                : evaluationResult.classification === 'TRANSISI'
+                ? ($currentLang === 'id' ? 'TRANSISI' : 'TRANSITION')
+                : evaluationResult.classification === 'TRANSISI INTERIM'
+                ? ($currentLang === 'id' ? 'TRANSISI INTERIM' : 'INTERIM TRANSITION')
+                : ($currentLang === 'id' ? 'TIDAK MEMENUHI' : 'NON-COMPLIANT')}
             </div>
 
             {#if evaluationResult.rmt_clock_years > 0}
               <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-200/60 dark:bg-sky-900/60 text-sky-900 dark:text-sky-200 font-mono text-[11px] font-bold">
                 <Clock size={13} />
-                <span>Masa Transisi Interim: Maksimal 3 Tahun RMT</span>
+                <span>{$currentLang === 'id' ? 'Masa Transisi Interim: Maksimal 3 Tahun RMT' : 'Interim Transition Window: Max 3-Year RMT'}</span>
               </div>
             {/if}
           </div>
 
           <!-- Step-by-Step Decision Breadcrumb -->
           <div class="space-y-2">
-            <span class="font-mono text-[10px] uppercase font-bold text-slate-400">Jejak Logika Keputusan:</span>
+            <span class="font-mono text-[10px] uppercase font-bold text-slate-400">
+              {$currentLang === 'id' ? 'Jejak Logika Keputusan:' : 'Decision Logic Path:'}
+            </span>
             <div class="bg-slate-50 dark:bg-[#162032] p-3 rounded-lg border border-slate-100 dark:border-slate-800 space-y-1.5">
               {#each evaluationResult.decision_path as step}
                 <div class="text-xs font-mono text-slate-700 dark:text-slate-300 flex items-start gap-2">
@@ -503,7 +555,9 @@
 
           <!-- Official Regulatory Reasoning -->
           <div class="p-3.5 rounded-lg bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800 text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-            <span class="font-bold text-[#047857] dark:text-[#34D399] block mb-1">Catatan Kepatuhan OJK:</span>
+            <span class="font-bold text-[#047857] dark:text-[#34D399] block mb-1">
+              {$currentLang === 'id' ? 'Catatan Kepatuhan OJK:' : 'OJK Compliance Note:'}
+            </span>
             {evaluationResult.reasoning}
           </div>
         </div>
@@ -514,10 +568,12 @@
             <Layers size={24} />
           </div>
           <h3 class="text-sm font-headline font-bold text-slate-800 dark:text-slate-200">
-            Simulator Siap Dijalankan
+            {$currentLang === 'id' ? 'Simulator Siap Dijalankan' : 'Simulator Ready to Run'}
           </h3>
           <p class="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto leading-relaxed">
-            Sesuaikan parameter di sebelah kiri, lalu klik tombol "Jalankan Evaluasi Keputusan OJK TKBI" untuk melihat hasil klasifikasi trafik light secara presisi.
+            {$currentLang === 'id'
+              ? 'Sesuaikan parameter di sebelah kiri, lalu klik tombol "Jalankan Evaluasi Keputusan OJK TKBI" untuk melihat hasil klasifikasi trafik light secara presisi.'
+              : 'Configure the parameters on the left, then click "Run OJK TKBI Decision Engine" to view the exact traffic light classification.'}
           </p>
         </div>
       {/if}
