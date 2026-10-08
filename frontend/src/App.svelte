@@ -172,11 +172,15 @@
     }
   }
 
-  function handleSelectTicker(ticker) {
+  function handleSelectTicker(ticker, targetView = null) {
     activeTicker = ticker;
     if (ticker) {
       loadTickerData(ticker);
-      currentView = 'dashboard';
+      if (targetView) {
+        currentView = targetView;
+      } else if (currentView === 'watchlist') {
+        currentView = 'dashboard';
+      }
     } else {
       auditRun = null;
       tkbiEntries = [];
