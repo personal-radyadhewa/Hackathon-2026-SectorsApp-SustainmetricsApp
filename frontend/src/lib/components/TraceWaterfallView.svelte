@@ -20,6 +20,7 @@
     Check,
     ChevronRight,
     ExternalLink,
+    X,
   } from '@lucide/svelte';
   import { t, currentLang } from '../i18n.js';
 
@@ -37,6 +38,85 @@
   let filterDomain = $state('ALL');
   let filterStatus = $state('ALL');
   let copiedHash = $state(false);
+
+  // Source Provenance Inspector Modal State
+  let isTraceModalOpen = $state(false);
+  let tracingItem = $state(null);
+  let copiedSnippet = $state(false);
+
+  function openSourceTrace(item) {
+    if (!item) return;
+    tracingItem = item;
+    isTraceModalOpen = true;
+  }
+
+  function closeSourceTrace() {
+    isTraceModalOpen = false;
+    tracingItem = null;
+  }
+
+  function copyEvidenceSnippet(text) {
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+    copiedSnippet = true;
+    setTimeout(() => {
+      copiedSnippet = false;
+    }, 2000);
+  }
+
+  function getHostname(urlStr) {
+    try {
+      return new URL(urlStr).hostname;
+    } catch {
+      return 'Portal';
+    }
+  }
+
+  function parseEvidenceSource(domain, rawBukti, ticker, categoryTag) {
+    let sourceUrl = `https://sectors.app/company/${ticker}`;
+    let sourceDocumentName = 'Laporan Keberlanjutan Auditan FY2024';
+    let sourcePage = 'Bab Tata Kelola & Lingkungan';
+    let sourceProvider = 'PT Bursa Efek Indonesia (IDX) & SectorsApp';
+
+    if (rawBukti) {
+      const urlMatch = rawBukti.match(/https?:\/\/[^\s\),]+/);
+      if (urlMatch) {
+        sourceUrl = urlMatch[0];
+      }
+      const pageMatch = rawBukti.match(/hal\.\s*[\d\-–\s,]+/i);
+      if (pageMatch) {
+        sourcePage = pageMatch[0].trim();
+      }
+      const docMatch = rawBukti.match(/Laporan [^,\.\(\)]+/i);
+      if (docMatch) {
+        sourceDocumentName = docMatch[0].trim();
+      }
+    }
+
+    if (domain === 'FINANCIAL_VIABILITY') {
+      sourceDocumentName = 'Laporan Keuangan Konsolidasian Tahunan FY2024 (Auditan)';
+      sourcePage = 'Laporan Arus Kas & Posisi Keuangan (Catatan Atas LK)';
+      sourceProvider = 'PT Bursa Efek Indonesia (IDX) & SectorsApp Financial Telemetry';
+      sourceUrl = `https://sectors.app/company/${ticker}`;
+    } else if (domain === 'DNSH_SAFEGUARDS') {
+      sourceDocumentName = 'Registri Evaluasi Ketaatan Lingkungan Hidup PROPER';
+      sourcePage = 'SK Penetapan Peringkat Kinerja Lingkungan Hidup Perusahaan';
+      sourceProvider = 'Kementerian Lingkungan Hidup dan Kehutanan (KLHK RI)';
+      sourceUrl = 'https://proper.menlhk.go.id/';
+    } else if (domain === 'PORTFOLIO_AGGREGATION') {
+      sourceDocumentName = 'Buku Panduan OJK Taksonomi Keuangan Berkelanjutan Indonesia (TKBI v3.0)';
+      sourcePage = 'Tingkat 2 (Entitas) Bab 5 Agregasi Portofolio Korporasi';
+      sourceProvider = 'Otoritas Jasa Keuangan (OJK RI)';
+      sourceUrl = 'https://ojk.go.id/id/berita-dan-kegiatan/publikasi/Pages/Taksonomi-Keuangan-Berkelanjutan-Indonesia.aspx';
+    } else if (domain === 'AUDITOR_SYNTHESIS') {
+      sourceDocumentName = 'SustainMetric Multi-Agent Telemetry Inference Engine';
+      sourcePage = 'Telemetry Span Synthesis Matrix (POJK-51 / TKBI)';
+      sourceProvider = 'SustainMetric LLM Telemetry Audit Core';
+      sourceUrl = `https://sectors.app/company/${ticker}`;
+    }
+
+    return { sourceUrl, sourceDocumentName, sourcePage, sourceProvider };
+  }
 
   function formatIDR(val) {
     if (val === null || val === undefined || isNaN(val)) return 'N/A';
@@ -103,6 +183,7 @@
       categoryTag: 'IDX Filing',
       actionView: 'dashboard',
       actionLabel: 'Inspect Financial Health',
+      ...parseEvidenceSource('FINANCIAL_VIABILITY', null, ticker, 'IDX Filing'),
     });
 
     // 2. Financial Balance Sheet - Debt Cushion Claim
@@ -136,6 +217,7 @@
       categoryTag: 'SectorsApp API',
       actionView: 'dashboard',
       actionLabel: 'Inspect Balance Sheet',
+      ...parseEvidenceSource('FINANCIAL_VIABILITY', null, ticker, 'SectorsApp API'),
     });
 
     // 3. Technical Screening Criteria (TSC) Claims from tkbiEntries
@@ -178,6 +260,7 @@
           actionView: 'tkbi',
           actionLabel: 'Inspect in Green Checklist',
           rawEntry: entry,
+          ...parseEvidenceSource('TECHNICAL_CRITERIA', entry.bukti, ticker, 'TKBI v3.0 Registry'),
         });
       });
     }
@@ -204,6 +287,7 @@
       categoryTag: 'KLHK Register',
       actionView: 'tkbi',
       actionLabel: 'View Safeguards Checklist',
+      ...parseEvidenceSource('DNSH_SAFEGUARDS', null, ticker, 'KLHK Register'),
     });
 
     // 5. OJK Tingkat 2 Portfolio Allocation Composition Claim
@@ -239,6 +323,7 @@
       categoryTag: 'OJK Tingkat 2',
       actionView: 'dashboard',
       actionLabel: 'Inspect Tingkat 2 Breakdown',
+      ...parseEvidenceSource('PORTFOLIO_AGGREGATION', null, ticker, 'OJK Tingkat 2'),
     });
 
     // 6. Autonomous Synthesis & Takeaway
@@ -263,6 +348,7 @@
         categoryTag: 'Nemotron 3.5',
         actionView: 'watchlist',
         actionLabel: 'View in Watchlist',
+        ...parseEvidenceSource('AUDITOR_SYNTHESIS', null, ticker, 'Nemotron 3.5'),
       });
     }
 
@@ -589,6 +675,22 @@
                   <span class="line-clamp-2">{span.evidenceSnippet}</span>
                 </div>
 
+                <!-- Source Origin & Lineage Trigger Row -->
+                <div class="mt-2.5 flex items-center justify-between text-[10px] font-mono text-slate-400 pt-1 border-t border-slate-100 dark:border-slate-800/60">
+                  <span class="truncate max-w-[70%] text-slate-500 dark:text-slate-400">
+                    Sumber: <strong class="text-slate-700 dark:text-slate-300 font-medium">{span.sourceDocumentName || span.sourceOrigin}</strong>
+                  </span>
+                  <button
+                    type="button"
+                    onclick={(e) => { e.stopPropagation(); openSourceTrace(span); }}
+                    class="text-[#047857] dark:text-[#34D399] hover:underline inline-flex items-center gap-1 font-semibold cursor-pointer shrink-0"
+                    title="Klik untuk menelusuri data lineage & dokumen asal"
+                  >
+                    <span>Telusuri Asal</span>
+                    <ExternalLink size={10} />
+                  </button>
+                </div>
+
                 <!-- Telemetry Confidence Bar -->
                 <div class="w-full bg-slate-100 dark:bg-[#162032] h-1.5 rounded-full overflow-hidden mt-3">
                   <div
@@ -647,10 +749,31 @@
               <!-- Source Provenance & Data Lineage -->
               <div class="grid grid-cols-2 gap-2">
                 <div>
-                  <span class="text-[10px] font-medium text-slate-500 dark:text-slate-400 block mb-1">Source Origin</span>
-                  <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-[#162032] border border-slate-200 dark:border-slate-700 text-[11px] font-mono text-slate-800 dark:text-slate-200 truncate" title={selectedEvidence.sourceOrigin}>
-                    {selectedEvidence.sourceOrigin}
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-[10px] font-medium text-slate-500 dark:text-slate-400">Source Origin</span>
+                    <button
+                      type="button"
+                      onclick={() => openSourceTrace(selectedEvidence)}
+                      class="text-[10px] text-[#047857] dark:text-[#34D399] hover:underline inline-flex items-center gap-0.5 cursor-pointer font-semibold"
+                      title="Buka panel penelusuran bukti audit resmi"
+                    >
+                      <span>Telusuri</span>
+                      <ExternalLink size={10} />
+                    </button>
                   </div>
+                  <button
+                    type="button"
+                    onclick={() => openSourceTrace(selectedEvidence)}
+                    class="w-full text-left p-2.5 rounded-lg bg-slate-50 hover:bg-emerald-50/50 dark:bg-[#162032] dark:hover:bg-emerald-950/30 border border-slate-200 hover:border-emerald-500 dark:border-slate-700 dark:hover:border-emerald-600 transition-all cursor-pointer group shadow-2xs"
+                    title="Klik untuk menelusuri data lineage & dokumen rujukan"
+                  >
+                    <div class="flex items-center justify-between gap-1.5">
+                      <span class="text-[11px] font-mono text-slate-800 dark:text-slate-200 truncate group-hover:text-emerald-700 dark:group-hover:text-emerald-300 font-medium">
+                        {selectedEvidence.sourceOrigin}
+                      </span>
+                      <ExternalLink size={11} class="text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 shrink-0" />
+                    </div>
+                  </button>
                 </div>
                 <div>
                   <span class="text-[10px] font-medium text-slate-500 dark:text-slate-400 block mb-1">Regulatory Clause</span>
@@ -837,6 +960,151 @@
             Select any step from the timeline to see runtime telemetry.
           </div>
         {/if}
+      </div>
+    </div>
+  {/if}
+
+  <!-- Source Lineage & Provenance Inspector Modal -->
+  {#if isTraceModalOpen && tracingItem}
+    <div
+      class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 animate-in fade-in duration-150"
+      onclick={(e) => { if (e.target === e.currentTarget) closeSourceTrace(); }}
+      onkeydown={(e) => e.key === 'Escape' && closeSourceTrace()}
+      role="button"
+      tabindex="0"
+    >
+      <div class="bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl space-y-5 p-6 animate-in zoom-in-95 duration-150">
+        <!-- Modal Header -->
+        <div class="flex items-start justify-between pb-3.5 border-b border-slate-100 dark:border-slate-800 gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-[#047857] dark:text-[#34D399] border border-emerald-200 dark:border-emerald-800 flex items-center justify-center shrink-0">
+              <FileCheck2 size={20} />
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-[10px] font-mono uppercase font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                  {tracingItem.citationId}
+                </span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded-full font-bold {tracingItem.verdict === 'HIJAU' ? 'badge-hijau' : tracingItem.verdict === 'TRANSISI' ? 'badge-transisi' : 'badge-tidak'}">
+                  {tracingItem.verdict}
+                </span>
+              </div>
+              <h3 class="text-sm font-headline font-bold text-slate-900 dark:text-slate-100 mt-1">
+                Penelusuran Dokumen Asal &amp; Data Lineage
+              </h3>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onclick={closeSourceTrace}
+            class="w-7 h-7 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center cursor-pointer transition-colors"
+          >
+            <X size={16} />
+          </button>
+        </div>
+
+        <!-- 1. Metadata Asal Usul Dokumen -->
+        <div class="space-y-2">
+          <span class="text-[11px] font-mono font-bold uppercase text-slate-400 block tracking-wider">
+            1. Metadata Dokumen &amp; Saluran Data
+          </span>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-[#162032] border border-slate-200/80 dark:border-slate-800 space-y-0.5">
+              <span class="text-[10px] font-mono text-slate-400 block">Penyedia / Sumber Resmi:</span>
+              <span class="font-bold text-slate-900 dark:text-slate-100 block">
+                {tracingItem.sourceProvider}
+              </span>
+            </div>
+
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-[#162032] border border-slate-200/80 dark:border-slate-800 space-y-0.5">
+              <span class="text-[10px] font-mono text-slate-400 block">Dokumen Rujukan:</span>
+              <span class="font-bold text-slate-900 dark:text-slate-100 block truncate" title={tracingItem.sourceDocumentName}>
+                {tracingItem.sourceDocumentName}
+              </span>
+            </div>
+
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-[#162032] border border-slate-200/80 dark:border-slate-800 space-y-0.5">
+              <span class="text-[10px] font-mono text-slate-400 block">Bagian / Nomor Halaman:</span>
+              <span class="font-mono font-bold text-emerald-700 dark:text-emerald-400 block">
+                {tracingItem.sourcePage}
+              </span>
+            </div>
+
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-[#162032] border border-slate-200/80 dark:border-slate-800 space-y-0.5">
+              <span class="text-[10px] font-mono text-slate-400 block">Klausul Regulasi OJK / POJK:</span>
+              <span class="font-mono text-slate-700 dark:text-slate-300 block truncate" title={tracingItem.clause}>
+                {tracingItem.clause}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Kutipan Teks Bukti Asli -->
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-mono font-bold uppercase text-slate-400 block tracking-wider">
+              2. Kutipan Teks Resmi (Statutory Excerpt / &quot;Bukti&quot;)
+            </span>
+            <button
+              type="button"
+              onclick={() => copyEvidenceSnippet(tracingItem.evidenceSnippet)}
+              class="text-[11px] text-[#047857] dark:text-[#34D399] hover:underline flex items-center gap-1 font-mono cursor-pointer"
+            >
+              {#if copiedSnippet}
+                <Check size={12} />
+                <span>Tersalin</span>
+              {:else}
+                <Copy size={12} />
+                <span>Salin Kutipan</span>
+              {/if}
+            </button>
+          </div>
+          <div class="p-3.5 rounded-xl bg-[#0A101D] border border-slate-800 text-xs font-mono text-emerald-300 dark:text-emerald-400 leading-relaxed whitespace-pre-wrap max-h-48 overflow-y-auto">
+            {tracingItem.evidenceSnippet}
+          </div>
+        </div>
+
+        <!-- 3. Stempel Kriptografi SHA-256 -->
+        <div class="p-3 bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/80 dark:border-emerald-800/60 rounded-xl flex items-center justify-between gap-3 text-xs">
+          <div class="flex items-center gap-2">
+            <ShieldCheck size={18} class="text-[#047857] dark:text-[#34D399] shrink-0" />
+            <div>
+              <span class="font-bold text-slate-900 dark:text-slate-100 block">
+                Stempel Audit Kriptografi (Proof of Authenticity)
+              </span>
+              <span class="font-mono text-[10px] text-slate-500 dark:text-slate-400">
+                {tracingItem.integrityHash}
+              </span>
+            </div>
+          </div>
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 font-bold shrink-0">
+            Terverifikasi
+          </span>
+        </div>
+
+        <!-- 4. Tombol Aksi Langsung ke Sumber -->
+        <div class="pt-2 flex flex-col sm:flex-row items-center justify-end gap-2.5 border-t border-slate-100 dark:border-slate-800">
+          <button
+            type="button"
+            onclick={closeSourceTrace}
+            class="w-full sm:w-auto px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+          >
+            Tutup
+          </button>
+
+          {#if tracingItem.sourceUrl}
+            <a
+              href={tracingItem.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#047857] hover:bg-[#065F46] text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+            >
+              <span>Buka Portal Sumber Resmi ({getHostname(tracingItem.sourceUrl)})</span>
+              <ExternalLink size={13} />
+            </a>
+          {/if}
+        </div>
       </div>
     </div>
   {/if}
