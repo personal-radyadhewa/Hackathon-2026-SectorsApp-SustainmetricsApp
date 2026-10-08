@@ -15,11 +15,14 @@ from app.services.seeder import seed_initial_demo_data
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup: Start background cron engine and pre-populate demo emitents
-    start_scheduler()
-    asyncio.create_task(seed_initial_demo_data())
+    import os
+    if not os.getenv("PYTEST_CURRENT_TEST"):
+        start_scheduler()
+        asyncio.create_task(seed_initial_demo_data())
     yield
     # Shutdown: Stop scheduler
-    stop_scheduler()
+    if not os.getenv("PYTEST_CURRENT_TEST"):
+        stop_scheduler()
 
 
 app = FastAPI(
@@ -36,6 +39,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.middleware("http")
+async def add_no_cache_for_html(request, call_next):
+    response = await call_next(request)
+    if request.url.path in ("/", "/index.html") or request.url.path.endswith(".html"):
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+    return response
 
 # Instrument FastAPI with OpenTelemetry
 if settings.ENABLE_OTEL_TRACING:

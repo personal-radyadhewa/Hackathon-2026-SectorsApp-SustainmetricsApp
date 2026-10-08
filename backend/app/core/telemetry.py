@@ -51,21 +51,24 @@ class DatabaseSpanRecorder(SpanProcessor):
         # Store synchronously or fire async task to persist span
         import asyncio
         async def _persist():
-            async with AsyncSessionLocal() as session:
-                record = AuditTraceSpan(
-                    trace_id=trace_id,
-                    span_id=span_id,
-                    parent_span_id=parent_span_id,
-                    name=span.name,
-                    service_name=settings.OTEL_SERVICE_NAME,
-                    start_time=start_time,
-                    end_time=end_time,
-                    duration_ms=duration_ms,
-                    status=status_name,
-                    attributes=clean_attrs,
-                )
-                session.add(record)
-                await session.commit()
+            try:
+                async with AsyncSessionLocal() as session:
+                    record = AuditTraceSpan(
+                        trace_id=trace_id,
+                        span_id=span_id,
+                        parent_span_id=parent_span_id,
+                        name=span.name,
+                        service_name=settings.OTEL_SERVICE_NAME,
+                        start_time=start_time,
+                        end_time=end_time,
+                        duration_ms=duration_ms,
+                        status=status_name,
+                        attributes=clean_attrs,
+                    )
+                    session.add(record)
+                    await session.commit()
+            except Exception:
+                pass
 
         try:
             loop = asyncio.get_event_loop()

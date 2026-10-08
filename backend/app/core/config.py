@@ -21,9 +21,11 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str = ""
     GEMINI_API_KEY: str = ""
     ANTHROPIC_API_KEY: str = ""
+    OPENROUTER_API_KEY: str = ""
+    OPENROUTER_MODEL: str = "nvidia/nemotron-3.5-lightning:free"
     OLLAMA_BASE_URL: str = "http://localhost:11434/v1"
-    DEFAULT_LLM_PROVIDER: str = "gemini"    # gemini, openai, anthropic, ollama
-    DEFAULT_LLM_MODEL: str = "gemini-2.5-flash"
+    DEFAULT_LLM_PROVIDER: str = "openrouter"    # openrouter, gemini, openai, anthropic, ollama
+    DEFAULT_LLM_MODEL: str = "nvidia/nemotron-3.5-lightning:free"
     
     # Server configuration
     HOST: str = "0.0.0.0"

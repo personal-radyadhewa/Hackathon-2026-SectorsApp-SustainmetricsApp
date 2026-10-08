@@ -34,6 +34,9 @@ class AuditRun(Base):
     executive_summary = Column(Text, nullable=True)
     financial_snapshot = Column(JSON, nullable=True, default=dict)
     audit_findings = Column(JSON, nullable=True, default=list)
+    entity_aggregation = Column(JSON, nullable=True, default=dict)
+    activities_breakdown = Column(JSON, nullable=True, default=list)
+    scale_type = Column(String(32), default="KORPORASI", nullable=False)
     trace_id = Column(String(64), nullable=True, index=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
     updated_at = Column(
@@ -65,6 +68,13 @@ class TKBIAuditEntry(Base):
     reasoning_ai = Column(Text, nullable=True)
     bukti = Column(Text, nullable=True)
     
+    # 4 EO & 3 EC Gate Tracking
+    eo_category = Column(String(16), nullable=True, default="EO1")
+    dnsh_status = Column(String(32), nullable=True, default="PASS")
+    rmt_status = Column(String(64), nullable=True, default="N/A")
+    social_status = Column(String(32), nullable=True, default="COMPLIANT")
+    is_interim = Column(Boolean, default=False, nullable=False)
+
     # Human-in-the-loop (HITL) overrides
     auditor_feedback = Column(Text, nullable=True)
     auditor_override = Column(String(32), nullable=True)

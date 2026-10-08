@@ -16,6 +16,10 @@ from typing import Any
 TKBI_8_SECTORS: dict[str, dict[str, Any]] = {
     "Energi": {
         "sector_name": "Energi",
+        "ndc_category": "Energy",
+        "tkbi_version": "TKBI Versi 1 (Feb 2024)",
+        "sector_type": "Focus Sector",
+        "kbli_count": 20,
         "keywords": ["energy", "power", "listrik", "geothermal", "panas bumi", "coal", "batubara", "gas", "minyak", "oil", "solar", "wind", "plts", "pltu", "pltp", "mining"],
         "items": [
             {
@@ -134,6 +138,10 @@ TKBI_8_SECTORS: dict[str, dict[str, Any]] = {
     },
     "Konstruksi dan Real Estat": {
         "sector_name": "Konstruksi dan Real Estat",
+        "ndc_category": "IPPU / Energy",
+        "tkbi_version": "TKBI Versi 2 (Feb 2025)",
+        "sector_type": "Focus Sector",
+        "kbli_count": 42,
         "keywords": ["property", "real estate", "konstruksi", "gedung", "bangunan", "developer", "perumahan", "infrastruktur", "semen"],
         "items": [
             {
@@ -164,6 +172,10 @@ TKBI_8_SECTORS: dict[str, dict[str, Any]] = {
     },
     "Transportasi dan Pergudangan": {
         "sector_name": "Transportasi dan Pergudangan",
+        "ndc_category": "Energy",
+        "tkbi_version": "TKBI Versi 2 (Feb 2025)",
+        "sector_type": "Focus Sector",
+        "kbli_count": 95,
         "keywords": ["transport", "logistik", "logistic", "shipping", "kapal", "penerbangan", "kereta", "truk", "bus", "pergudangan", "warehouse"],
         "items": [
             {
@@ -194,6 +206,10 @@ TKBI_8_SECTORS: dict[str, dict[str, Any]] = {
     },
     "Pertanian, Kehutanan, dan Perikanan": {
         "sector_name": "Pertanian, Kehutanan, dan Perikanan",
+        "ndc_category": "Agriculture & FOLU",
+        "tkbi_version": "TKBI Versi 2 & 3 (2025/2026)",
+        "sector_type": "Focus Sector",
+        "kbli_count": 178,
         "keywords": ["agriculture", "forestry", "sawit", "palm oil", "kehutanan", "perikanan", "fishery", "tambak", "kayu", "pulp", "paper", "tanaman"],
         "items": [
             {
@@ -224,6 +240,10 @@ TKBI_8_SECTORS: dict[str, dict[str, Any]] = {
     },
     "Manufaktur": {
         "sector_name": "Manufaktur",
+        "ndc_category": "IPPU / Energy",
+        "tkbi_version": "TKBI Versi 3 (Feb 2026)",
+        "sector_type": "Focus Sector",
+        "kbli_count": 140,
         "keywords": ["manufacturing", "manufaktur", "pabrik", "smelter", "steel", "baja", "semen", "cement", "kimia", "chemical", "tekstil", "otomotif"],
         "items": [
             {
@@ -254,6 +274,10 @@ TKBI_8_SECTORS: dict[str, dict[str, Any]] = {
     },
     "Pengelolaan Air, Air Limbah, Sampah, dan Remediasi": {
         "sector_name": "Pengelolaan Air, Air Limbah, Sampah, dan Remediasi",
+        "ndc_category": "Waste",
+        "tkbi_version": "TKBI Versi 3 (Feb 2026)",
+        "sector_type": "Focus Sector",
+        "kbli_count": 19,
         "keywords": ["water", "limbah", "waste", "sewerage", "sampah", "recycling", "daur ulang", "tpa", "remediasi", "sanitasi"],
         "items": [
             {
@@ -276,6 +300,10 @@ TKBI_8_SECTORS: dict[str, dict[str, Any]] = {
     },
     "Informasi dan Komunikasi": {
         "sector_name": "Informasi dan Komunikasi",
+        "ndc_category": "Cross-sector Enabling",
+        "tkbi_version": "TKBI Versi 3 (Feb 2026)",
+        "sector_type": "Enabling Sector",
+        "kbli_count": 28,
         "keywords": ["telekomunikasi", "telco", "data center", "cloud", "it", "software", "informasi", "komunikasi", "tower"],
         "items": [
             {
@@ -298,6 +326,10 @@ TKBI_8_SECTORS: dict[str, dict[str, Any]] = {
     },
     "Aktivitas Profesional, Ilmiah, dan Teknis": {
         "sector_name": "Aktivitas Profesional, Ilmiah, dan Teknis",
+        "ndc_category": "Cross-sector Enabling",
+        "tkbi_version": "TKBI Versi 3 (Feb 2026)",
+        "sector_type": "Enabling Sector",
+        "kbli_count": 14,
         "keywords": ["konsultan", "audit", "engineering", "riset", "research", "laboratorium", "sertifikasi", "jasa teknis"],
         "items": [
             {

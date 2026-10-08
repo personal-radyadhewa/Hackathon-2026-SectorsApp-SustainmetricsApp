@@ -1,56 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300..900;1,300..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 @import "tailwindcss";
+
+@variant dark (&:is(.dark *));
 
 @layer base {
   :root {
-    --bg-primary: #090D16;
-    --bg-surface: #0E1424;
-    --bg-card: #131B30;
-    --border-color: #1F2C4C;
-    --accent-emerald: #10B981;
-    --accent-jade: #059669;
-    --text-primary: #F1F5F9;
-    --text-muted: #94A3B8;
+    --background: #faf8ff;
+    --foreground: #131b2e;
+    --card: #ffffff;
+    --card-foreground: #131b2e;
+    --primary: #047857;
+    --primary-foreground: #ffffff;
+    --secondary: #1d4ed8;
+    --secondary-foreground: #ffffff;
+    --tertiary: #d97706;
+    --tertiary-foreground: #ffffff;
+    --muted: #f2f3ff;
+    --muted-foreground: #64748b;
+    --accent: #eaedff;
+    --accent-foreground: #131b2e;
+    --border: #e2e8f0;
+    --ring: #047857;
+  }
+
+  .dark {
+    --background: #070a11;
+    --foreground: #f8fafc;
+    --card: #0f172a;
+    --card-foreground: #f8fafc;
+    --primary: #34d399;
+    --primary-foreground: #064e3b;
+    --secondary: #60a5fa;
+    --secondary-foreground: #0f172a;
+    --tertiary: #fbbf24;
+    --tertiary-foreground: #0f172a;
+    --muted: #162032;
+    --muted-foreground: #94a3b8;
+    --accent: #1e293b;
+    --accent-foreground: #f8fafc;
+    --border: #1e293b;
+    --ring: #34d399;
   }
 
   body {
-    background-color: var(--bg-primary);
-    color: var(--text-primary);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
   }
+}
+
+.font-headline {
+  font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.font-body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.font-mono, code, kbd, samp, pre {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-feature-settings: 'tnum' 1, 'zero' 1;
 }
 
 /* Custom scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #090D16;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1F2C4C;
-  border-radius: 3px;
+  background: #cbd5e1;
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #1e293b;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
   background: #334155;
 }
 
-/* Status Badges */
+/* Executive Precision Status Badges */
 .badge-hijau {
-  background-color: rgba(16, 185, 129, 0.15);
-  color: #34D399;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background-color: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
 }
 
 .badge-transisi {
-  background-color: rgba(245, 158, 11, 0.15);
-  color: #FBBF24;
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  background-color: #fffbeb;
+  color: #92400e;
+  border: 1px solid #fde68a;
 }
 
 .badge-tidak {
-  background-color: rgba(239, 68, 68, 0.15);
-  color: #F87171;
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  background-color: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.dark .badge-hijau {
+  background-color: rgba(52, 211, 153, 0.12);
+  color: #34d399;
+  border: 1px solid rgba(52, 211, 153, 0.35);
+}
+
+.dark .badge-transisi {
+  background-color: rgba(251, 191, 36, 0.12);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.35);
+}
+
+.dark .badge-tidak {
+  background-color: rgba(248, 113, 113, 0.12);
+  color: #f87171;
+  border: 1px solid rgba(248, 113, 113, 0.35);
 }

@@ -319,6 +319,75 @@ class SectorsClient:
 
         return []
 
+    async def get_all_companies(self) -> list[dict[str, Any]]:
+        """Return all IDX listed companies with local disk caching."""
+        cache_key = "all_idx_companies"
+        cached = self._read_cache(cache_key, TTL_SUBSECTORS_SEC)
+        if cached is not None:
+            return cached
+
+        # Check pre-seeded json file if available
+        preseeded_path = self.cache_dir / "all_idx_companies.json"
+        if preseeded_path.exists():
+            try:
+                with open(preseeded_path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                if isinstance(data, list) and len(data) > 0:
+                    self._write_cache(cache_key, data)
+                    return data
+            except Exception:
+                pass
+
+        if not self.api_key:
+            return []
+
+        all_comps = []
+        offset = 0
+        try:
+            async with httpx.AsyncClient(timeout=20.0) as client:
+                while True:
+                    resp = await client.get(
+                        f"{self.base_url}/companies/?limit=100&offset={offset}",
+                        headers={"Authorization": self.api_key},
+                    )
+                    self.api_calls_count += 1
+                    if resp.status_code != 200:
+                        break
+                    d = resp.json()
+                    res = d.get("results", [])
+                    if not res:
+                        break
+                    for x in res:
+                        all_comps.append({
+                            "symbol": x["symbol"].replace(".JK", "").upper(),
+                            "company_name": x.get("company_name", ""),
+                        })
+                    pagination = d.get("pagination", {})
+                    if not pagination.get("has_next"):
+                        break
+                    offset = pagination.get("next_offset", offset + 100)
+
+            if all_comps:
+                self._write_cache(cache_key, all_comps)
+            return all_comps
+        except Exception as e:
+            logger.warning(f"Failed to fetch companies from Sectors API: {e}")
+            return all_comps
+
+    async def search_companies(self, query: str, limit: int = 25) -> list[dict[str, Any]]:
+        """Search companies by ticker symbol or company name."""
+        all_companies = await self.get_all_companies()
+        if not query:
+            return all_companies[:limit]
+        q = query.strip().upper()
+        matches = [
+            c for c in all_companies
+            if q in c.get("symbol", "").upper() or q in c.get("company_name", "").upper()
+        ]
+        # Prioritize exact ticker start
+        matches.sort(key=lambda c: (not c.get("symbol", "").startswith(q), len(c.get("symbol", ""))))
+        return matches[:limit]
+
     def get_quota_stats(self) -> dict[str, int]:
         """Return credit usage and cache statistics."""
         return {
