@@ -74,33 +74,184 @@ An end-to-end audit harness and live dashboard built on top of **SustainMetric F
    - APScheduler engine orchestrating recurring portfolio audits.
    - Configurable alert score thresholds.
 
+## Prerequisites
+
+Before running the application, make sure the following tools are installed.
+
+### Required
+
+| Requirement    | Version               |
+| -------------- | --------------------- |
+| Docker Desktop | Latest stable version |
+| Python         | 3.11+                 |
+| Node.js        | LTS                   |
+| npm            | Included with Node.js |
+| Git            | Latest stable version |
+
+You can check whether the required tools are available by running:
+
+```powershell
+docker --version
+docker compose version
+python --version
+node --version
+npm --version
+git --version
+```
+
+Python virtual environment support is also required:
+
+```powershell
+python -m venv --help
+```
+
+If all commands above work and the versions meet the requirements, you can continue directly to the [Quickstart Guide](#quickstart-guide).
+
+### Optional: Installing the Prerequisites
+
+If one of the required tools is missing, install it using the official sources below.
+
+- **Docker Desktop**  
+  [Download Docker Desktop](https://www.docker.com/products/docker-desktop/)
+
+- **Python 3.11+**  
+  [Download Python](https://www.python.org/downloads/)
+
+- **Node.js LTS**  
+  [Download Node.js](https://nodejs.org/en/download/)
+  
+  npm is included with Node.js.
+
+- **Git**  
+  [Download Git for Windows](https://git-scm.com/download/win)
+
+> **Windows note:** Make sure Docker Desktop is running before starting the application. Also, use a modern Node.js LTS installation. Older Node.js versions bundled with other applications may not provide a compatible `npm` environment.
+
 ---
 
 ## Quickstart Guide
 
+### 1. Configure Environment Variables
+
+Copy:
+
+```text
+backend/.env.template
+```
+
+and rename the copy to:
+
+```text
+backend/.env
+```
+
+Open `backend/.env` and fill in the required API credentials:
+
+```env
+SECTORS_API_KEY=<YOUR SECTORS APP API KEY>
+
+OPENROUTER_API_KEY=<YOUR OPENROUTER API KEY>
+OPENROUTER_MODEL=<YOUR OPENROUTER MODEL>
+```
+
+- `SECTORS_API_KEY`: API key from Sectors App.
+- `OPENROUTER_API_KEY`: OpenRouter API key.
+- `OPENROUTER_MODEL`: OpenRouter model to use.
+
+### 2. Prepare the Python Environment
+
+If `.venv` does not exist yet, create it:
+
+```powershell
+python -m venv .venv
+```
+
+Install the backend dependencies:
+
+```powershell
+.venv\Scripts\python.exe -m pip install -r backend\requirements.txt
+```
+
+> If `.venv` already exists and the dependencies have already been installed, you can skip this step.
+
+### 3. Run the Application
+
+From the project root, run:
+
+```powershell
+powershell.exe -ExecutionPolicy Bypass -File .\run.ps1
+```
+
+The script will:
+
+1. Start PostgreSQL using Docker.
+2. Apply the database migrations.
+3. Build the frontend.
+4. Start the FastAPI backend.
+
+Open:
+
+[**http://localhost:8000**](http://localhost:8000)
+
+You can also verify the backend by opening:
+
+[**http://localhost:8000/docs**](http://localhost:8000/docs)
+
+If the Swagger API documentation appears with the available API endpoints, the backend has started successfully.
+
+> **Note:** The initial startup may take some time because the application also pre-populates demo audit data and creates the default recurring schedule. As long as no error messages appear, allow the process to finish.
+
+---
+
+## Manual Setup
+
+If you prefer to run each component separately, or if `run.ps1` encounters an error, follow these steps.
+
 ### 1. Start PostgreSQL (Docker)
+
 ```powershell
 docker compose up -d
 ```
 
 ### 2. Run Database Migrations (Alembic)
+
 ```powershell
 .\.venv\Scripts\alembic.exe upgrade head
 ```
 
-### 3. Run Backend Server (FastAPI + Embedded Frontend)
+If an error occurs while running the command above, use:
+
+```powershell
+.venv\Scripts\python.exe -m alembic upgrade head
+```
+
+### 3. Run Backend Server
+
 ```powershell
 $env:PYTHONPATH="backend"
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
-Open **`http://localhost:8000`** in your browser.
 
-### 4. (Optional) Run Frontend in Vite Dev Mode
+Open:
+
+[**http://localhost:8000**](http://localhost:8000)
+
+Or verify the API through:
+
+[**http://localhost:8000/docs**](http://localhost:8000/docs)
+
+### 4. Run Frontend in Vite Dev Mode (Optional)
+
 ```powershell
 cd frontend
 npm run dev
 ```
-Open **`http://localhost:5173`** (Vite proxies all `/api` requests to backend at port 8000).
+
+Open:
+
+[**http://localhost:5173**](http://localhost:5173)
+
+Vite proxies `/api` requests to the backend running on port `8000`.
 
 ---
 
