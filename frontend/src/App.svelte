@@ -378,6 +378,8 @@
         <TraceWaterfallView
           {auditRun}
           {traces}
+          {tkbiEntries}
+          onNavigateView={(v) => (currentView = v)}
         />
       {:else if currentView === 'schedules'}
         <SchedulesView
