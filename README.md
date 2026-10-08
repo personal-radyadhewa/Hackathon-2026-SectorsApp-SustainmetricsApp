@@ -232,7 +232,7 @@ docker compose up -d
 If an error occurs while running the command above, use:
 
 ```powershell
-.venv\Scripts\python.exe -m alembic upgrade head
+.\.venv\Scripts\python.exe -m alembic upgrade head
 ```
 
 ### 3. Run Backend Server
