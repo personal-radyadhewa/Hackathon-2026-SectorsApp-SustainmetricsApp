@@ -43,6 +43,33 @@
   let showSettings = $state(false);
   let settingsSaved = $state(false);
 
+  function loadChatHistory(ticker) {
+    if (typeof window === 'undefined' || !ticker) return;
+    try {
+      const saved = localStorage.getItem(`sustainmetric_chat_${ticker}`);
+      if (saved) {
+        messages = JSON.parse(saved);
+        return;
+      }
+    } catch (e) {}
+    messages = [];
+  }
+
+  function saveChatHistory(ticker, msgs) {
+    if (typeof window === 'undefined' || !ticker) return;
+    try {
+      if (msgs && msgs.length > 0) {
+        localStorage.setItem(`sustainmetric_chat_${ticker}`, JSON.stringify(msgs));
+      } else {
+        localStorage.removeItem(`sustainmetric_chat_${ticker}`);
+      }
+    } catch (e) {}
+  }
+
+  $effect(() => {
+    loadChatHistory(activeTicker);
+  });
+
   onMount(() => {
     if (typeof window !== 'undefined') {
       const savedProvider = localStorage.getItem('sustainmetric_chat_provider');
@@ -51,6 +78,7 @@
       if (savedProvider) provider = savedProvider;
       if (savedModel) model = savedModel;
       if (savedKey) apiKey = savedKey;
+      loadChatHistory(activeTicker);
     }
   });
 
@@ -151,12 +179,13 @@
       }
 
       if (!messages[assistantIndex].content.trim()) {
-        messages[assistantIndex].content = `⚠️ No response received from ${selectedProvider} (${selectedModel}). Check your API key in Settings or try another model.`;
+        messages[assistantIndex].content = `⚠️ No response received from ${provider} (${model}). Check your API key in Settings or try another model.`;
       }
     } catch (err) {
       messages[assistantIndex].content += `\n\n❌ Connection error: ${err.message}`;
     } finally {
       isStreaming = false;
+      saveChatHistory(activeTicker, messages);
     }
   }
 
@@ -168,6 +197,7 @@
   function handleNewChat() {
     messages = [];
     inputQuery = '';
+    saveChatHistory(activeTicker, []);
   }
 </script>
 
