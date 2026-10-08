@@ -1,5 +1,6 @@
 <script>
   import { onMount } from 'svelte';
+  import { marked } from 'marked';
   import {
     Clock,
     Hourglass,
@@ -17,9 +18,37 @@
     Check,
     ChevronRight,
     AlertOctagon,
+    Bot,
+    Loader2,
+    Copy,
+    ShieldAlert,
+    ShieldX,
   } from '@lucide/svelte';
   import { fetchTKBIGrandfatheringScenarios } from '../api.js';
   import { t, currentLang } from '../i18n.js';
+
+  marked.setOptions({
+    gfm: true,
+    breaks: true,
+  });
+
+  function stripThinkingProcess(text) {
+    if (!text) return '';
+    let clean = text.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+    if (clean.includes('</think>')) {
+      clean = clean.split('</think>').pop().trim();
+    }
+    return clean;
+  }
+
+  function renderMarkdown(content) {
+    if (!content) return '';
+    try {
+      return marked.parse(stripThinkingProcess(content));
+    } catch {
+      return content;
+    }
+  }
 
   let scenariosData = $state(null);
   let isLoading = $state(true);
@@ -31,6 +60,13 @@
   let facilityTenorYears = $state(7);
   let oldVersionClass = $state('HIJAU');
   let newVersionClass = $state('HIJAU');
+
+  // AI Copilot Live Audit Stress-Tester State
+  let isAiAnalyzing = $state(false);
+  let aiAnalysisResult = $state('');
+  let showAiResult = $state(false);
+  let aiError = $state('');
+  let isCopied = $state(false);
 
   // Real-world Presets for Fund Managers & Auditors
   const PRESETS = [
@@ -107,14 +143,14 @@
     }
   });
 
-  // Regulatory Logic: OJK TKBI Fact Sheet Pages 6-8
+  // Regulatory Logic & Quantitative Calculations: OJK TKBI Fact Sheet Pages 6-8
   let diagnosticResult = $derived.by(() => {
     const maturityYear = issueYear + facilityTenorYears;
     const currentYear = 2026;
     const remainingTenorYears = Math.max(0, maturityYear - currentYear);
 
     let scenarioCode = 'Skenario A (OJK Pg. 8)';
-    let protectionType = 'FULL_MATURITY'; // FULL_MATURITY, CAPPED_7_YEARS, RMT_3_YEARS, LOST
+    let protectionType = 'FULL_MATURITY'; // FULL_MATURITY, CAPPED_7_YEARS, RMT_3_YEARS, ZERO_PROTECTION
     let protectedYears = remainingTenorYears;
     let rmtRequired = false;
     let riskLevel = 'LOW'; // 'LOW', 'MEDIUM', 'HIGH'
@@ -123,24 +159,16 @@
     let fundActionSummary = '';
     let auditorChecklist = [];
 
-    // Rule 1: Allocated Green Bonds retain status until contractual maturity (Page 6)
-    if (instrumentType === 'BOND' && oldVersionClass === 'HIJAU') {
-      scenarioCode = newVersionClass === 'HIJAU' ? 'Skenario A (OJK Pg. 8)' : 'Skenario C / E (OJK Pg. 8)';
-      protectionType = 'FULL_MATURITY';
-      protectedYears = remainingTenorYears;
-      riskLevel = newVersionClass === 'HIJAU' ? 'LOW' : 'MEDIUM';
-      statusBadgeText = 'PROTEKSI PENUH HINGGA JATUH TEMPO OBLIGASI';
-      fundVerdictTitle = 'Status Hijau Aman 100% Sepanjang Tenor Obligasi';
-      fundActionSummary = `Berdasarkan POJK & TKBI Hal. 6, Obligasi Hijau/Sukuk yang dananya telah dialokasikan (allocated) mempertahankan label hijau sah hingga jatuh tempo tahun ${maturityYear}. Portofolio dana kelolaan TIDAK terdampak penurunan rating seketika.`;
-      auditorChecklist = [
-        'Konfirmasi alokasi dana (Use of Proceeds) telah diaudit dan terealisasi 100% pada proyek hijau awal.',
-        'Pertahankan pencatatan Green Bond pada rasio portofolio hijau berkelanjutan tanpa reklasifikasi.',
-        `Saat jatuh tempo tahun ${maturityYear}, fasilitas penerbitan obligasi baru WAJIB diaudit mengacu pada TSC Versi 3 terbaru.`,
-      ];
-    } else if (oldVersionClass === 'HIJAU' && newVersionClass === 'HIJAU') {
+    let protectedPct = 100;
+    let atRiskPct = 0;
+
+    // Skenario A: Hijau -> Hijau
+    if (oldVersionClass === 'HIJAU' && newVersionClass === 'HIJAU') {
       scenarioCode = 'Skenario A (OJK Pg. 8)';
       protectionType = 'FULL_MATURITY';
       protectedYears = remainingTenorYears;
+      protectedPct = 100;
+      atRiskPct = 0;
       riskLevel = 'LOW';
       statusBadgeText = 'AMAN: KRITERIA HIJAU TETAP TERPENUHI';
       fundVerdictTitle = 'Kepatuhan Hijau Tidak Berubah (Zero Downgrade Risk)';
@@ -149,10 +177,14 @@
         'Lakukan verifikasi berkala atas data emisi dan DNSH pada Laporan Keberlanjutan tahunan debitur.',
         'Pertahankan pembobotan portofolio hijau 100% pada rasio pembiayaan berkelanjutan institusi.',
       ];
-    } else if (oldVersionClass === 'TRANSISI' && newVersionClass === 'TRANSISI') {
+    }
+    // Skenario B: Transisi -> Transisi
+    else if (oldVersionClass === 'TRANSISI' && newVersionClass === 'TRANSISI') {
       scenarioCode = 'Skenario B (OJK Pg. 8)';
       protectionType = 'FULL_MATURITY';
       protectedYears = remainingTenorYears;
+      protectedPct = 100;
+      atRiskPct = 0;
       riskLevel = 'LOW';
       statusBadgeText = 'AMAN: STATUS TRANSISI BERKELANJUTAN';
       fundVerdictTitle = 'Lintasan Transisi Berjalan Normal';
@@ -161,48 +193,103 @@
         'Pantau milestone dekarbonisasi tahunan sesuai dokumen roadmap awal.',
         'Pastikan kepatuhan prinsip Do No Significant Harm (DNSH) terhadap keanekaragaman hayati dan pencegahan polusi.',
       ];
-    } else if (oldVersionClass === 'HIJAU' && newVersionClass === 'TRANSISI') {
+    }
+    // Skenario C: Hijau -> Transisi (Cap 7 Tahun OJK)
+    else if (oldVersionClass === 'HIJAU' && newVersionClass === 'TRANSISI') {
       scenarioCode = 'Skenario C (OJK Pg. 8)';
-      protectedYears = Math.min(7, remainingTenorYears);
-      protectionType = 'CAPPED_7_YEARS';
-      riskLevel = 'MEDIUM';
-      statusBadgeText = `MASA TENGGANG ${protectedYears} TAHUN (CAP MAKSIMAL 7 TAHUN)`;
-      fundVerdictTitle = 'Terlindungi Grandfathering (Hingga 7 Tahun OJK)';
-      fundActionSummary = `Standar TSC diperketat sehingga aktivitas turun ke kategori Transisi. Sesuai regulasi OJK Hal. 7, pembiayaan ini diberikan masa tenggang perlindungan hingga ${protectedYears} tahun kalender untuk mencegah disrupsi portofolio.`;
+      if (remainingTenorYears <= 7) {
+        protectedYears = remainingTenorYears;
+        protectedPct = 100;
+        atRiskPct = 0;
+        protectionType = 'FULL_MATURITY';
+        riskLevel = 'LOW';
+        statusBadgeText = `TERLINDUNGI PENUH: SISA TENOR ${protectedYears} THN (DALAM CAP 7 THN)`;
+        fundVerdictTitle = 'Terlindungi Grandfathering Sepenuhnya';
+        fundActionSummary = `Standar TSC diperketat sehingga aktivitas turun ke kategori Transisi. Sisa tenor kontrak (${remainingTenorYears} thn) berada dalam batas toleransi OJK (maks 7 tahun), sehingga 100% plafon terlindungi hingga jatuh tempo thn ${maturityYear}.`;
+      } else {
+        protectedYears = 7;
+        protectedPct = Math.round((7 / remainingTenorYears) * 100);
+        atRiskPct = 100 - protectedPct;
+        protectionType = 'CAPPED_7_YEARS';
+        riskLevel = 'MEDIUM';
+        statusBadgeText = `MASA TENGGANG 7 TAHUN (SISA ${remainingTenorYears - 7} THN TERANCAM REKLASIFIKASI)`;
+        fundVerdictTitle = 'Proteksi Parsial: Terkena Plafon Waktu 7 Tahun OJK';
+        fundActionSummary = `Sisa tenor (${remainingTenorYears} tahun) melampaui batas maksimal masa tenggang OJK (7 tahun). Hanya porsi tahun 2026-2033 (${protectedPct}%) yang terlindungi status hijau. Sisa ${atRiskPct}% plafon berisiko turun ke Transisi setelah tahun ke-7 jika debitur tidak meng-upgrade teknologi.`;
+      }
       auditorChecklist = [
         `Berikan notifikasi resmi kepada debitur bahwa batas proteksi masa tenggang berlaku hingga tahun ${2026 + protectedYears}.`,
         'Minta debitur menyusun rencana aksi penyesuaian teknologi/efisiensi sebelum masa proteksi 7 tahun berakhir.',
         'Setelah tahun ke-7 berakhir, sisa pembiayaan otomatis direklasifikasi menjadi kategori Transisi.',
       ];
-    } else if (oldVersionClass === 'TRANSISI' && newVersionClass === 'TIDAK MEMENUHI') {
+    }
+    // Skenario D: Transisi -> Tidak Memenuhi (Kritis! Grandfathering Tidak Berlaku Otomatis)
+    else if (oldVersionClass === 'TRANSISI' && newVersionClass === 'TIDAK MEMENUHI') {
       scenarioCode = 'Skenario D (OJK Pg. 8)';
       protectionType = 'RMT_3_YEARS';
-      protectedYears = 3;
       rmtRequired = true;
       riskLevel = 'HIGH';
-      statusBadgeText = 'PERINGATAN: WAJIB RMT 3 TAHUN ATAU DELISTING';
-      fundVerdictTitle = 'Berisiko Kehilangan Label Berkelanjutan (Kritis)';
-      fundActionSummary = 'Aktivitas tidak lagi memenuhi kriteria ambang batas minimum. Debitur WAJIB menandatangani program Remedial Measures to Transition (RMT) maksimal 3 tahun agar tetap diakui sebagai Transisi Interim. Jika gagal, fasilitas wajib direklasifikasi menjadi Brown.';
+      protectedYears = 0; // 0 tahun proteksi otomatis
+      protectedPct = 0;   // 0% proteksi hukum otomatis!
+      atRiskPct = 100;    // 100% plafon terancam delisting/brown!
+      statusBadgeText = 'KRITIS: 0% PROTEKSI OTOMATIS (100% TERANCAM BROWN/DELISTING)';
+      fundVerdictTitle = 'Gugur dari Portofolio Berkelanjutan (Wajib RMT 3 Tahun)';
+      fundActionSummary = 'Berdasarkan Panduan OJK Hal. 8, grandfathering TIDAK berlaku otomatis untuk fasilitas yang gagal memenuhi kriteria transisi minimum. 100% plafon wajib direklasifikasi menjadi Brown KECUALI debitur menandatangani program RMT (Remedial Measures to Transition) maksimal 3 tahun.';
       auditorChecklist = [
         'Keluarkan temuan audit kepatuhan: Emisi operasional debitur berada di bawah ambang batas baru.',
-        'Wajibkan debitur menyusun dokumen komitmen RMT maksimal 3 tahun yang diaudit pihak ketiga independen.',
-        'Jika dalam 3 tahun target perbaikan tidak tercapai, bank/fund manager wajib menghapus fasilitas dari portofolio hijau.',
+        'Wajibkan debitur menyusun dokumen komitmen RMT maksimal 3 tahun yang diaudit pihak ketiga independen agar mendapat status Transisi Interim.',
+        'Jika dalam 3 tahun target perbaikan tidak tercapai, bank/fund manager wajib mencabut label hijau dan mereklasifikasi plafon ke non-eligible.',
       ];
-    } else if (oldVersionClass === 'HIJAU' && newVersionClass === 'TIDAK MEMENUHI') {
+    }
+    // Skenario E: Hijau -> Tidak Memenuhi (Kontrak Lama Dilindungi, Refinancing 100% Gugur)
+    else if (oldVersionClass === 'HIJAU' && newVersionClass === 'TIDAK MEMENUHI') {
       scenarioCode = 'Skenario E (OJK Pg. 8)';
-      protectedYears = remainingTenorYears;
-      protectionType = 'FULL_MATURITY';
       riskLevel = 'HIGH';
-      statusBadgeText = 'PROTEKSI KONTRAK SAAT INI (REFINANCING WAJIB AUDIT ULANG)';
-      fundVerdictTitle = 'Kontrak Lama Terlindungi, Dilarang Perpanjangan Otomatis';
-      fundActionSummary = `Sesuai asas kepastian hukum OJK, kontrak yang telah berjalan tetap sah hingga jatuh tempo tahun ${maturityYear}. Namun saat perpanjangan fasilitas atau refinancing, label hijau otomatis gugur kecuali debitur merombak teknologi operasional.`;
+      if (instrumentType === 'GENERAL') {
+        // Fasilitas kredit umum tanpa komitmen alokasi proyek spesifik
+        protectedYears = Math.min(7, remainingTenorYears);
+        protectedPct = remainingTenorYears > 7 ? Math.round((7 / remainingTenorYears) * 50) : 50;
+        atRiskPct = 100 - protectedPct;
+        protectionType = 'CAPPED_7_YEARS';
+        statusBadgeText = 'RISIKO TINGGI: KREDIT UMUM DIPANGKAS (CAP 7 THN & NO ROLLOVER)';
+        fundVerdictTitle = 'Fasilitas Umum Terkena Penalti Sunsetting OJK';
+        fundActionSummary = `Karena fasilitas berbentuk kredit umum tanpa penelusuran aset proyek hijau (unallocated), OJK membatasi toleransi perlindungan sebesar ${protectedPct}%. Sisa plafon ${atRiskPct}% wajib dicabut dari klaim taksonomi hijau.`;
+      } else if (instrumentType === 'BOND') {
+        // Green bond dengan alokasi awal: kontrak lama terlindungi sepanjang sisa tenor, namun rollover 0%
+        protectedYears = remainingTenorYears;
+        protectedPct = 100;
+        atRiskPct = 0;
+        protectionType = 'FULL_MATURITY';
+        statusBadgeText = 'PROTEKSI KONTRAK SAAT INI (REFINANCING 100% DITOLAK)';
+        fundVerdictTitle = 'Obligasi Lama Terlindungi, Dilarang Rollover Berlabel Hijau';
+        fundActionSummary = `Sesuai asas kepastian hukum OJK Hal. 6 & 8, dana obligasi hijau yang telah dialokasikan tetap diakui hingga jatuh tempo thn ${maturityYear} (100% terlindungi). Namun, penerbitan refinancing mendatang berstatus 0% proteksi dan dilarang menyandang label hijau.`;
+      } else {
+        // Pinjaman Sindikasi / Terarah
+        if (remainingTenorYears <= 7) {
+          protectedYears = remainingTenorYears;
+          protectedPct = 100;
+          atRiskPct = 0;
+        } else {
+          protectedYears = 7;
+          protectedPct = Math.round((7 / remainingTenorYears) * 100);
+          atRiskPct = 100 - protectedPct;
+        }
+        protectionType = 'CAPPED_7_YEARS';
+        statusBadgeText = `PROTEKSI TERBATAS ${protectedYears} TAHUN (REFINANCING DILARANG)`;
+        fundVerdictTitle = 'Pinjaman Terarah: Terlindungi Parsial (Cap 7 Tahun)';
+        fundActionSummary = `Kontrak sindikasi yang telah berjalan diakui selama ${protectedYears} tahun (${protectedPct}% plafon). Reklasifikasi wajib dilakukan setelah batas waktu atau saat perpanjangan tenor fasilitas.`;
+      }
       auditorChecklist = [
-        `Pertahankan pencatatan status hingga jatuh tempo kontrak (${maturityYear}) tanpa sanksi penalti retroaktif.`,
-        'Beri tanda peringatan pada sistem perbankan: Fasilitas DILARANG diperpanjang otomatis dengan label hijau.',
-        'Informasikan kepada debitur untuk menyiapkan investasi dekarbonisasi sebelum jatuh tempo agar tidak kehilangan insentif bunga hijau.',
+        `Pertahankan pencatatan status kontrak lama hingga ${maturityYear} tanpa sanksi penalti retroaktif.`,
+        'Beri tanda peringatan pada sistem: Fasilitas DILARANG diperpanjang otomatis (rollover) dengan label hijau.',
+        'Informasikan kepada debitur untuk menyiapkan belanja modal dekarbonisasi baru sebelum jatuh tempo.',
       ];
     }
 
+    const protectedAmountMiliar = Math.round((contractAmountMiliar * protectedPct) / 100);
+    const atRiskAmountMiliar = Math.max(0, contractAmountMiliar - protectedAmountMiliar);
+
+    const protectedAmountFormatted = (protectedAmountMiliar * 1_000_000_000).toLocaleString('id-ID');
+    const atRiskAmountFormatted = (atRiskAmountMiliar * 1_000_000_000).toLocaleString('id-ID');
     const formattedAmount = (contractAmountMiliar * 1_000_000_000).toLocaleString('id-ID');
 
     return {
@@ -218,8 +305,113 @@
       fundActionSummary,
       auditorChecklist,
       formattedAmount,
+      protectedPct,
+      atRiskPct,
+      protectedAmountMiliar,
+      atRiskAmountMiliar,
+      protectedAmountFormatted,
+      atRiskAmountFormatted,
     };
   });
+
+  async function runAiStressTest() {
+    isAiAnalyzing = true;
+    showAiResult = true;
+    aiAnalysisResult = '';
+    aiError = '';
+
+    const instrumentLabel = instrumentType === 'BOND'
+      ? 'Obligasi Hijau / Sukuk Berkelanjutan'
+      : instrumentType === 'SYNDICATED'
+      ? 'Pinjaman Sindikasi / Project Finance Bertarget'
+      : 'Fasilitas Kredit Korporasi Umum (General Corporate Loan)';
+
+    const promptText = `Lakukan audit regulasi OJK & stress-test hukum mendalam berdasarkan POJK 18/2023 dan Panduan TKBI Hal. 6-8 untuk fasilitas pembiayaan berikut:
+- Tipe Fasilitas: ${instrumentLabel}
+- Plafon Kontrak: Rp ${diagnosticResult.formattedAmount} (${contractAmountMiliar} Miliar IDR)
+- Tahun Terbit / Akad: ${issueYear}
+- Total Tenor Kontrak: ${facilityTenorYears} tahun (Jatuh tempo: ${diagnosticResult.maturityYear}, Sisa tenor: ${diagnosticResult.remainingTenorYears} tahun)
+- Status Taksonomi Awal: ${oldVersionClass}
+- Klasifikasi Kriteria Baru (Sunsetting): ${newVersionClass}
+- Skenario OJK: ${diagnosticResult.scenarioCode}
+- Plafon Terlindungi: Rp ${diagnosticResult.protectedAmountFormatted} (${diagnosticResult.protectedPct}%)
+- Plafon Berisiko Brown/Delisting: Rp ${diagnosticResult.atRiskAmountFormatted} (${diagnosticResult.atRiskPct}%)
+- Sisa Masa Proteksi: ${diagnosticResult.protectedYears} Tahun
+- Status RMT: ${diagnosticResult.rmtRequired ? 'Wajib Remedial Measures 3 Tahun' : 'Bebas RMT'}
+
+Berikan audit memo resmi terstruktur untuk Auditor Keberlanjutan & Portfolio Fund Manager:
+1. **Kepastian Hukum & Masa Tenggang (Grandfathering vs Sunsetting OJK)**
+2. **Kalkulasi & Risiko Revaluasi Portofolio (Greenium, Haircut Agunan, atau Delisting)**
+3. **Audit Kepatuhan Pelaporan POJK 18/2023**
+4. **Rekomendasi Aksi Mitigasi Segera (Mitigation Action Plan)**
+Gunakan gaya bahasa profesional, padat, akurat, dan merujuk ketentuan OJK.`;
+
+    const savedProvider = localStorage.getItem('sustainmetric_chat_provider') || 'gemini';
+    const savedModel = localStorage.getItem('sustainmetric_chat_model') || 'gemini-2.5-flash';
+    const savedKey = localStorage.getItem('sustainmetric_chat_api_key') || '';
+
+    try {
+      const response = await fetch('/api/v1/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: promptText }],
+          provider: savedProvider,
+          model: savedModel,
+          api_key: savedKey,
+          ticker: 'TKBI-AUDIT',
+        }),
+      });
+
+      if (!response.ok) {
+        aiError = `Gagal menghubungi server AI: ${response.statusText}`;
+        isAiAnalyzing = false;
+        return;
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (line.includes('event: delta')) {
+            const dataMatch = line.match(/data: (.+)/);
+            if (dataMatch) {
+              try {
+                const parsed = JSON.parse(dataMatch[1]);
+                if (parsed.content) {
+                  aiAnalysisResult += parsed.content;
+                }
+              } catch (e) {}
+            }
+          } else if (line.includes('event: done')) {
+            isAiAnalyzing = false;
+          }
+        }
+      }
+    } catch (err) {
+      aiError = `Error koneksi: ${err.message}`;
+    } finally {
+      isAiAnalyzing = false;
+    }
+  }
+
+  function copyAiMemo() {
+    if (!aiAnalysisResult) return;
+    navigator.clipboard.writeText(aiAnalysisResult);
+    isCopied = true;
+    setTimeout(() => {
+      isCopied = false;
+    }, 2000);
+  }
 </script>
 
 <div class="space-y-6">
@@ -518,30 +710,46 @@
           </span>
         </div>
 
-        <!-- 3 Quantitative Impact Metrics for Fund Managers -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div class="p-3 bg-slate-50 dark:bg-[#162032] rounded-xl border border-slate-100 dark:border-slate-800">
+        <!-- 4 Quantitative Impact Metrics for Fund Managers & Auditors -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <!-- Card 1: Plafon Terlindungi -->
+          <div class="p-3 bg-slate-50 dark:bg-[#162032] rounded-xl border {diagnosticResult.protectedPct === 100 ? 'border-emerald-200 dark:border-emerald-800/80 bg-emerald-50/20 dark:bg-emerald-950/10' : diagnosticResult.protectedPct > 0 ? 'border-amber-200 dark:border-amber-800/80 bg-amber-50/20 dark:bg-amber-950/10' : 'border-rose-200 dark:border-rose-800/80 bg-rose-50/20 dark:bg-rose-950/10'}">
             <span class="text-[10px] font-mono text-slate-400 block mb-0.5">Plafon Terlindungi</span>
-            <span class="text-base font-mono font-bold text-slate-900 dark:text-slate-100 block">
-              Rp {diagnosticResult.formattedAmount}
+            <span class="text-base font-mono font-bold {diagnosticResult.protectedPct === 100 ? 'text-emerald-700 dark:text-emerald-400' : diagnosticResult.protectedPct > 0 ? 'text-amber-700 dark:text-amber-400' : 'text-rose-700 dark:text-rose-400'} block">
+              Rp {diagnosticResult.protectedAmountFormatted}
             </span>
-            <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">100% Proteksi Hukum</span>
+            <span class="text-[10px] font-medium {diagnosticResult.protectedPct === 100 ? 'text-emerald-600 dark:text-emerald-400' : diagnosticResult.protectedPct > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-rose-600 dark:text-rose-400'}">
+              {diagnosticResult.protectedPct}% Proteksi Regulasi
+            </span>
           </div>
 
+          <!-- Card 2: Plafon Berisiko Terdegradasi -->
+          <div class="p-3 bg-slate-50 dark:bg-[#162032] rounded-xl border {diagnosticResult.atRiskPct > 0 ? 'border-rose-200 dark:border-rose-800/80 bg-rose-50/30 dark:bg-rose-950/20' : 'border-slate-100 dark:border-slate-800'}">
+            <span class="text-[10px] font-mono text-slate-400 block mb-0.5">Plafon Berisiko Terdegradasi</span>
+            <span class="text-base font-mono font-bold {diagnosticResult.atRiskPct > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-slate-700 dark:text-slate-300'} block">
+              Rp {diagnosticResult.atRiskAmountFormatted}
+            </span>
+            <span class="text-[10px] font-medium {diagnosticResult.atRiskPct > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}">
+              {diagnosticResult.atRiskPct > 0 ? `${diagnosticResult.atRiskPct}% Terancam Brown/Delisting` : '0% Risiko Degradasi (Aman)'}
+            </span>
+          </div>
+
+          <!-- Card 3: Sisa Masa Proteksi -->
           <div class="p-3 bg-slate-50 dark:bg-[#162032] rounded-xl border border-slate-100 dark:border-slate-800">
             <span class="text-[10px] font-mono text-slate-400 block mb-0.5">Sisa Masa Proteksi</span>
-            <span class="text-base font-mono font-bold {diagnosticResult.riskLevel === 'LOW' ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'} block">
+            <span class="text-base font-mono font-bold {diagnosticResult.riskLevel === 'LOW' ? 'text-emerald-600 dark:text-emerald-400' : diagnosticResult.riskLevel === 'MEDIUM' ? 'text-amber-600 dark:text-amber-400' : 'text-rose-600 dark:text-rose-400'} block">
               {diagnosticResult.protectedYears} Tahun
             </span>
             <span class="text-[10px] text-slate-400 font-medium">Hingga Thn {2026 + diagnosticResult.protectedYears}</span>
           </div>
 
+          <!-- Card 4: Kewajiban RMT OJK -->
           <div class="p-3 bg-slate-50 dark:bg-[#162032] rounded-xl border border-slate-100 dark:border-slate-800">
             <span class="text-[10px] font-mono text-slate-400 block mb-0.5">Kewajiban RMT OJK</span>
             <span class="text-base font-mono font-bold {diagnosticResult.rmtRequired ? 'text-rose-600 dark:text-rose-400' : 'text-slate-700 dark:text-slate-300'} block">
-              {diagnosticResult.rmtRequired ? 'WAJIB (Maks 3 Thn)' : 'TIDAK PERLU'}
+              {diagnosticResult.rmtRequired ? 'WAJIB (Maks 3 Thn)' : 'BEBAS RMT'}
             </span>
-            <span class="text-[10px] text-slate-400 font-medium">{diagnosticResult.scenarioCode}</span>
+            <span class="text-[10px] text-slate-400 font-medium truncate block">{diagnosticResult.scenarioCode}</span>
           </div>
         </div>
 
@@ -568,6 +776,90 @@
               </div>
             {/each}
           </div>
+        </div>
+
+        <!-- Real AI Copilot Stress-Test Action Bar & Audit Memo Display -->
+        <div class="pt-2 border-t border-slate-100 dark:border-slate-800/80 space-y-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gradient-to-r from-emerald-500/5 via-teal-500/5 to-transparent dark:from-emerald-950/30 dark:via-teal-950/20 p-3.5 rounded-xl border border-emerald-500/20 dark:border-emerald-500/30">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-emerald-600/10 dark:bg-emerald-400/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                <Bot size={18} />
+              </div>
+              <div>
+                <span class="text-xs font-bold text-slate-900 dark:text-slate-100 block">
+                  AI Copilot Auditor Kepatuhan POJK
+                </span>
+                <span class="text-[11px] text-slate-500 dark:text-slate-400">
+                  Stress-test kepatuhan hukum, risiko greenium haircut, dan mitigasi spesifik skenario ini secara real-time.
+                </span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onclick={runAiStressTest}
+              disabled={isAiAnalyzing}
+              class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-[#047857] hover:bg-[#065f46] text-white shadow-sm transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+            >
+              {#if isAiAnalyzing}
+                <Loader2 size={14} class="animate-spin" />
+                <span>Menganalisis Regulasi...</span>
+              {:else}
+                <Sparkles size={14} />
+                <span>Jalankan AI Stress-Test</span>
+              {/if}
+            </button>
+          </div>
+
+          <!-- Live AI Memo Output Box -->
+          {#if showAiResult}
+            <div class="rounded-xl border border-emerald-500/30 bg-white dark:bg-[#0c1322] p-4.5 shadow-sm space-y-3">
+              <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full {isAiAnalyzing ? 'bg-amber-400 animate-pulse' : 'bg-emerald-500'}"></span>
+                  <span class="text-xs font-headline font-bold text-slate-900 dark:text-slate-100">
+                    Memo Resmi Auditor AI (POJK 18/2023 & TKBI Sunsetting)
+                  </span>
+                  {#if isAiAnalyzing}
+                    <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300">
+                      Streaming Evaluasi...
+                    </span>
+                  {/if}
+                </div>
+
+                {#if aiAnalysisResult && !isAiAnalyzing}
+                  <button
+                    type="button"
+                    onclick={copyAiMemo}
+                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-mono text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
+                  >
+                    {#if isCopied}
+                      <Check size={12} class="text-emerald-500" />
+                      <span>Tersalin</span>
+                    {:else}
+                      <Copy size={12} />
+                      <span>Salin Memo</span>
+                    {/if}
+                  </button>
+                {/if}
+              </div>
+
+              {#if aiError}
+                <div class="p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 rounded-lg text-xs text-rose-700 dark:text-rose-300">
+                  {aiError}
+                </div>
+              {:else if aiAnalysisResult}
+                <div class="prose prose-sm dark:prose-invert max-w-none text-xs leading-relaxed text-slate-800 dark:text-slate-200 space-y-2">
+                  {@html renderMarkdown(aiAnalysisResult)}
+                </div>
+              {:else if isAiAnalyzing}
+                <div class="flex items-center gap-2.5 py-4 text-xs text-slate-500">
+                  <Loader2 size={16} class="animate-spin text-emerald-600" />
+                  <span>AI Copilot sedang memetakan implikasi klausul POJK 18/2023 untuk instrumen ini...</span>
+                </div>
+              {/if}
+            </div>
+          {/if}
         </div>
       </div>
     </div>
