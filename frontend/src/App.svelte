@@ -359,6 +359,8 @@
         <AIChatView
           {activeTicker}
           companyName={auditRun?.company_name || ''}
+          {watchlist}
+          onSelectTicker={handleSelectTicker}
         />
       {:else if currentView === 'dashboard'}
         <DashboardView

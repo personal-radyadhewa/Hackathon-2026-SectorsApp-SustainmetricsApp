@@ -82,7 +82,11 @@ async def stream_chat_completion(
     api_key: str = "",
 ) -> AsyncGenerator[str, None]:
     """Stream chat responses with tool-calling support."""
-    key = api_key or (settings.GEMINI_API_KEY if provider == "gemini" else settings.OPENAI_API_KEY)
+    key = api_key or (
+        settings.GEMINI_API_KEY if provider == "gemini"
+        else getattr(settings, "OPENROUTER_API_KEY", "") if provider == "openrouter"
+        else settings.OPENAI_API_KEY
+    )
     last_user_msg = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
     
     # 1. Fallback / Offline intelligent synthesis mode if API key not provided
@@ -103,7 +107,7 @@ async def stream_chat_completion(
                 f"- **Consistency Score**: {data.get('consistency_score')}/100\\n"
                 f"- **Viability Score**: {data.get('viability_score')}/100\\n\\n"
                 f"**Audit Findings & Disclosures Analysis:**\\n{findings_bullets}\\n\\n"
-                f"*To enable live generative multi-step LLM reasoning, configure your GEMINI_API_KEY or OPENAI_API_KEY in Settings.*"
+                f"*To enable live generative multi-step LLM reasoning, configure your API Key in Settings.*"
             )
             yield f"event: delta\ndata: {json.dumps({'content': resp})}\n\n"
         else:
@@ -119,9 +123,12 @@ async def stream_chat_completion(
         yield f"event: done\ndata: [DONE]\n\n"
         return
 
-    # 2. OpenAI / Gemini OpenAI-compatible endpoint
-    base_url = "https://generativelanguage.googleapis.com/v1beta/openai/" if provider == "gemini" else (
-        settings.OLLAMA_BASE_URL if provider == "ollama" else "https://api.openai.com/v1"
+    # 2. OpenAI / Gemini / OpenRouter OpenAI-compatible endpoint
+    base_url = (
+        "https://generativelanguage.googleapis.com/v1beta/openai/" if provider == "gemini"
+        else "https://openrouter.ai/api/v1" if provider == "openrouter"
+        else settings.OLLAMA_BASE_URL if provider == "ollama"
+        else "https://api.openai.com/v1"
     )
 
     client_headers = {"Authorization": f"Bearer {key}"} if key else {}
